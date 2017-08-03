@@ -652,8 +652,9 @@ let module_ s =
     s (len s) "function and code section have inconsistent lengths";
   let funcs =
     List.map2 Source.(fun t f -> {f.it with ftype = t} @@ f.at)
-      func_types func_bodies
-  in {types; tables; memories; globals; funcs; imports; exports; elems; data; start}
+      func_types func_bodies in
+  let exceptions = []
+  in {types; tables; memories; globals; funcs; imports; exports; elems; data; start; exceptions}
 
 
 let decode name bs = at module_ (stream name bs)

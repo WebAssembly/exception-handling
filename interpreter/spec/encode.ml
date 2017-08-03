@@ -362,6 +362,14 @@ let encode m =
       | Convert (F64 F64Op.DemoteF64) -> assert false
       | Convert (F64 F64Op.ReinterpretInt) -> op 0xbf
 
+      | Throw x -> op 0x08; var x
+      | Try (ts, es, cs, ca) ->
+        op 0x06; stack_type ts; list instr es;
+        match ca with
+        | Some es -> op 0x05; list instr es.it
+        | None -> ();
+        end_ ()
+
     let const c =
       list instr c.it; end_ ()
 

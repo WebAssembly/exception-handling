@@ -21,7 +21,9 @@ let br_table xs x = BrTable (xs, x)
 let return = Return
 let if_ ts es1 es2 = If (ts, es1, es2)
 let select = Select
-
+let throw_ x = Throw x
+let try_ tts tes ces = Try (tts, tes, [], Some ces)
+  
 let call x = Call x
 let call_indirect x = CallIndirect x
 

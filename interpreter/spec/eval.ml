@@ -39,15 +39,33 @@ let numeric_error at = function
 
 type 'a stack = 'a list
 
+type etag = int32
+type handlers = (etag * instr list) list * instr list option
+
+let empty_handlers : handlers = [], None
+
+let rec handler_for handlers x =
+  match handlers with
+  | [], Some catch_all -> Some (catch_all, 0)
+  | [], None -> None
+  | (y, es) :: _, _ when y = x -> Some (es, 0)
+  | _ :: handlers, catch_all -> handler_for (handlers, catch_all) x
+
+let handlers_from catches catch_all =
+  [], match catch_all with
+  | Some {it = instrs; _} -> Some instrs
+  | None -> None
+    
 type admin_instr = admin_instr' phrase
 and admin_instr' =
   | Plain of instr'
   | Trapped of string
   | Break of int32 * value stack
-  | Label of stack_type * instr list * value stack * admin_instr list
+  | Label of stack_type * instr list * value stack * admin_instr list * handlers
   | Local of instance * value ref list * value stack * admin_instr list
   | Invoke of closure
-
+  | Thrown of int32 * value stack
+      
 type config =
 {
   locals : value ref list;
@@ -121,10 +139,10 @@ let rec step (inst : instance) (c : config) : config =
         vs, []
 
       | Block (ts, es'), vs ->
-        vs, [Label (ts, [], [], List.map plain es') @@ e.at]
+        vs, [Label (ts, [], [], List.map plain es', empty_handlers) @@ e.at]
 
       | Loop (ts, es'), vs ->
-        vs, [Label ([], [e' @@ e.at], [], List.map plain es') @@ e.at]
+        vs, [Label ([], [e' @@ e.at], [], List.map plain es', empty_handlers) @@ e.at]
 
       | If (ts, es1, es2), I32 0l :: vs' ->
         vs', [Plain (Block (ts, es2)) @@ e.at]
@@ -243,6 +261,12 @@ let rec step (inst : instance) (c : config) : config =
         (try Eval_numeric.eval_cvtop cvtop v :: vs', []
         with exn -> vs', [Trapped (numeric_error e.at exn) @@ e.at])
 
+      | Throw x, vs ->
+	[], [Thrown (x.it, vs) @@ e.at]
+
+      | Try (ts, es', catches, catch_all), vs ->
+        vs, [Label (ts, [], [], List.map plain es', handlers_from catches catch_all) @@ e.at]
+	  
       | _ ->
         let s1 = string_of_values (List.rev vs) in
         let s2 = string_of_value_types (List.map type_of (List.rev vs)) in
@@ -256,22 +280,31 @@ let rec step (inst : instance) (c : config) : config =
     | Break (k, vs'), vs ->
       Crash.error e.at "undefined label"
 
-    | Label (ts, es0, vs', []), vs ->
+    | Label (ts, es0, vs', [], handlers), vs ->
       vs' @ vs, []
 
-    | Label (ts, es0, vs', {it = Trapped msg; at} :: es'), vs ->
+    (* TODO(eholk): Should this case trigger catch_all? *)
+    | Label (ts, es0, vs', {it = Trapped msg; at} :: es', handlers), vs ->
       vs, [Trapped msg @@ at]
 
-    | Label (ts, es0, vs', {it = Break (0l, vs0); at} :: es'), vs ->
+    | Label (ts, es0, vs', {it = Thrown (tag, exn_args); at} :: es', handlers), vs ->
+      (match handler_for handlers tag with
+      | Some (instrs, arg_count) -> take arg_count exn_args e.at @ vs, List.map plain instrs
+      | None -> vs, [Thrown (tag, exn_args) @@ at])
+
+    | Label (ts, es0, vs', {it = Break (0l, vs0); at} :: es', handlers), vs ->
       take (List.length ts) vs0 e.at @ vs, List.map plain es0
 
-    | Label (ts, es0, vs', {it = Break (k, vs0); at} :: es'), vs ->
+    | Label (ts, es0, vs', {it = Break (k, vs0); at} :: es', handlers), vs ->
       vs, [Break (Int32.sub k 1l, vs0) @@ at]
 
-    | Label (ts, es0, values, instrs), vs ->
+    | Label (ts, es0, values, instrs, handlers), vs ->
       let c' = step inst {c with values; instrs; depth = c.depth + 1} in
-      vs, [Label (ts, es0, c'.values, c'.instrs) @@ e.at]
+      vs, [Label (ts, es0, c'.values, c'.instrs, handlers) @@ e.at]
 
+    | Thrown _, vs ->
+      vs, [Trapped "webassembly exception" @@ e.at]
+	
     | Local (inst', locals, vs', []), vs ->
       vs' @ vs, []
 

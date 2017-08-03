@@ -166,6 +166,12 @@ rule token = parse
   | "get_global" { GET_GLOBAL }
   | "set_global" { SET_GLOBAL }
 
+  | "exception" { EXCEPTION }
+  | "try" { TRY }
+  | "catch" { CATCH }
+  | "catch_all" {CATCH_ALL }
+  | "throw" { THROW }
+
   | (nxx as t)".load"
     { LOAD (fun a o ->
         numop t (i32_load (opt a 2)) (i64_load (opt a 3))

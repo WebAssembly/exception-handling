@@ -25,11 +25,12 @@ type context =
   locals : value_type list;
   results : value_type list;
   labels : stack_type list;
+  exceptions : func_type list;
 }
 
 let context m =
   { module_ = m; types = []; funcs = []; tables = []; memories = [];
-    globals = []; locals = []; results = []; labels = [] }
+    globals = []; locals = []; results = []; labels = []; exceptions = [] }
 
 let lookup category list x =
   try Lib.List32.nth list x.it with Failure _ ->
@@ -42,6 +43,7 @@ let global (c : context) x = lookup "global" c.globals x
 let label (c : context) x = lookup "label" c.labels x
 let table (c : context) x = lookup "table" c.tables x
 let memory (c : context) x = lookup "memory" c.memories x
+let exception_ (c : context) x = lookup "exception" c.exceptions x
 
 
 (* Stack typing *)
@@ -286,6 +288,19 @@ let rec check_instr (c : context) (e : instr) (s : infer_stack_type) : op_type =
     let t1, t2 = type_cvtop e.at cvtop in
     [t1] --> [t2]
 
+  | Throw x ->
+    let FuncType (ins, out) = exception_ c x in
+    ins -->... []
+
+  | Try (ts, tes, _, ces) ->
+    check_arity (List.length ts) e.at;
+    check_block {c with labels = ts :: c.labels} tes ts e.at;
+    (* TODO(eholk): check catches *)
+    let _ = match ces with
+    | Some ces -> check_block {c with labels = ts :: c.labels} ces.it ts ces.at
+    | None -> ()
+    in [] --> ts
+    
 and check_seq (c : context) (es : instr list) : infer_stack_type =
   match es with
   | [] ->
@@ -428,7 +443,7 @@ let check_export (c : context) (set : NameSet.t) (ex : export) : NameSet.t =
 let check_module (m : module_) =
   let
     { types; imports; tables; memories; globals; funcs; start; elems; data;
-      exports } = m.it
+      exports; exceptions } = m.it
   in
   let c0 = List.fold_right check_import imports {(context m) with types} in
   let c1 =
@@ -436,6 +451,7 @@ let check_module (m : module_) =
       funcs = c0.funcs @ List.map (fun f -> type_ c0 f.it.ftype) funcs;
       tables = c0.tables @ List.map (fun tab -> tab.it.ttype) tables;
       memories = c0.memories @ List.map (fun mem -> mem.it.mtype) memories;
+      exceptions = c0.exceptions @ List.map (fun exc -> exc.it.etype) exceptions;
     }
   in
   let c =

@@ -61,12 +61,12 @@ let empty_types () = {tmap = VarMap.empty; tlist = []}
 
 type context =
   { types : types; tables : space; memories : space;
-    funcs : space; locals : space; globals : space; labels : int32 VarMap.t }
+    funcs : space; locals : space; globals : space; labels : int32 VarMap.t; exceptions : space }
 
 let empty_context () =
   { types = empty_types (); tables = empty (); memories = empty ();
     funcs = empty (); locals = empty (); globals = empty ();
-    labels = VarMap.empty }
+    labels = VarMap.empty; exceptions = empty () }
 
 let enter_func (c : context) =
   {c with labels = VarMap.empty; locals = empty ()}
@@ -115,6 +115,7 @@ let bind_table (c : context) x = bind "table" c.tables x
 let bind_memory (c : context) x = bind "memory" c.memories x
 let bind_label (c : context) x =
   {c with labels = VarMap.add x.it 0l (VarMap.map (Int32.add 1l) c.labels)}
+let bind_exception (c : context) x = bind "exception" c.exceptions x
 
 let anon category space n =
   let i = space.count in
@@ -131,6 +132,7 @@ let anon_table (c : context) = anon "table" c.tables 1l
 let anon_memory (c : context) = anon "memory" c.memories 1l
 let anon_label (c : context) =
   {c with labels = VarMap.map (Int32.add 1l) c.labels}
+let anon_exception (c : context) = anon "exception" c.exceptions 1l
 
 let empty_type = FuncType ([], [])
 
@@ -154,6 +156,7 @@ let inline_type (c : context) ty at =
 
 %token NAT INT FLOAT TEXT VAR VALUE_TYPE ANYFUNC MUT LPAR RPAR
 %token NOP DROP BLOCK END IF THEN ELSE SELECT LOOP BR BR_IF BR_TABLE
+%token EXCEPTION THROW TRY CATCH CATCH_ALL
 %token CALL CALL_INDIRECT RETURN
 %token GET_LOCAL SET_LOCAL TEE_LOCAL GET_GLOBAL SET_GLOBAL
 %token LOAD STORE OFFSET_EQ_NAT ALIGN_EQ_NAT
@@ -328,6 +331,7 @@ plain_instr :
   | UNARY { fun c -> $1 }
   | BINARY { fun c -> $1 }
   | CONVERT { fun c -> $1 }
+  | THROW var { fun c -> throw_ ($2 c label) }
 
 block_instr :
   | BLOCK labeling_opt block END labeling_end_opt
@@ -338,8 +342,8 @@ block_instr :
     { fun c -> let c' = $2 c $5 in let ts, es = $3 c' in if_ ts es [] }
   | IF labeling_opt block ELSE labeling_end_opt instr_list END labeling_end_opt
     { fun c -> let c' = $2 c ($5 @ $8) in
-      let ts, es1 = $3 c' in if_ ts es1 ($6 c') }
-
+               let ts, es1 = $3 c' in if_ ts es1 ($6 c') }
+      
 block :
   | value_type_list instr_list { fun c -> $1, $2 c }
 
@@ -356,7 +360,21 @@ expr1 :  /* Sugar */
   | IF labeling_opt value_type_list if_
     { fun c -> let c' = $2 c [] in
       let es, es1, es2 = $4 c c' in es, if_ $3 es1 es2 }
+  | TRY labeling_opt value_type_list try_body
+    { fun c -> let c' = $2 c [] in
+               let ts = $3 in
+               let es, _, cs = $4 c' in
+               [], try_ ts es cs }
 
+/* returns c -> try_instrs, catches, catch_all option; or will eventually */
+try_body :
+  | LPAR CATCH_ALL instr_list RPAR
+    { fun c -> [], [], ($3 c) @@ (at ())}
+  | expr try_body
+    { fun c -> let e = $1 c in
+               let es, cs, ca = $2 c in
+               e @ es, cs, ca }
+      
 if_ :
   | LPAR THEN instr_list RPAR LPAR ELSE instr_list RPAR
     { fun c c' -> [], $3 c', $7 c' }
@@ -508,16 +526,22 @@ memory :
 
 global :
   | LPAR GLOBAL bind_var_opt inline_export global_type const_expr RPAR
-    { let at = at () in
-      fun c -> let x = $3 c anon_global bind_global @@ at in
-      (fun () -> {gtype = $5; value = $6 c} @@ at),
-      $4 (GlobalExport x) c }
+      { let at = at () in
+        fun c -> let x = $3 c anon_global bind_global @@ at in
+                 (fun () -> {gtype = $5; value = $6 c} @@ at),
+                 $4 (GlobalExport x) c }
   /* Duplicate above for empty inline_export_opt to avoid LR(1) conflict. */
   | LPAR GLOBAL bind_var_opt global_type const_expr RPAR
     { let at = at () in
       fun c -> ignore ($3 c anon_global bind_global);
-      (fun () -> {gtype = $4; value = $5 c} @@ at), [] }
+        (fun () -> {gtype = $4; value = $5 c} @@ at), [] }
 
+exception_ :
+  | LPAR EXCEPTION bind_var_opt func_type RPAR
+    { let at = at () in
+      fun c ->
+        ignore ($3 c anon_exception bind_exception);
+        {etype = $4} @@ at }    
 
 /* Imports & Exports */
 
@@ -643,6 +667,9 @@ module_fields :
   | export module_fields
     { fun c -> let m = $2 c in
       {m with exports = $1 c :: m.exports} }
+  | exception_ module_fields
+    { fun c -> let m = $2 c in
+      {m with exceptions = $1 c :: m.exceptions} }
 
 module_ :
   | LPAR MODULE script_var_opt module_fields RPAR

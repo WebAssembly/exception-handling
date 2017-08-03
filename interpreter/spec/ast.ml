@@ -96,6 +96,10 @@ and instr' =
   | Unary of unop                     (* unary numeric operator *)
   | Binary of binop                   (* binary numeric operator *)
   | Convert of cvtop                  (* conversion *)
+  | Throw of var                      (* throw exception *)
+  | Try of stack_type * instr list * catch list * catch_all option (* try ... catch ... catch_all block *)
+and catch = (var * instr list) Source.phrase
+and catch_all = instr list Source.phrase
 
 
 (* Globals & Functions *)
@@ -175,6 +179,12 @@ and import' =
   idesc : import_desc;
 }
 
+type exception_ = exception_' Source.phrase
+and exception_' =
+{
+  etype : func_type;
+}
+
 type module_ = module_' Source.phrase
 and module_' =
 {
@@ -188,6 +198,7 @@ and module_' =
   data : string segment list;
   imports : import list;
   exports : export list;
+  exceptions : exception_ list;
 }
 
 
@@ -205,6 +216,7 @@ let empty_module =
   data = [];
   imports = [];
   exports = [];
+  exceptions = [];
 }
 
 open Source

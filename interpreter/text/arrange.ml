@@ -243,6 +243,10 @@ let rec instr e =
     | Unary op -> unop op, []
     | Binary op -> binop op, []
     | Convert op -> cvtop op, []
+    | Throw x -> "throw " ^ var x, []
+    | Try (ts, tes, _, ces) -> "try", list instr tes @ match ces with
+      | Some ces -> [Node ("catch_all", list instr ces.it)]
+      | None -> []
   in Node (head, inner)
 
 let const c =
