@@ -365,9 +365,9 @@ let encode m =
       | Throw x -> op 0x08; var x
       | Try (ts, es, cs, ca) ->
         op 0x06; stack_type ts; list instr es;
-        match ca with
+        (match ca with
         | Some es -> op 0x05; list instr es.it
-        | None -> ();
+        | None -> ());
         end_ ()
 
     let const c =
@@ -387,6 +387,12 @@ let encode m =
     (* Type section *)
     let type_section ts =
       section 1 (vec func_type) ts (ts <> [])
+
+    (* Exception Section *)
+    let exception_ x =
+      func_type x.it.etype
+    let exception_section xs =
+      section 13 (vec exception_) xs (xs <> [])
 
     (* Import section *)
     let import_desc d =
@@ -505,6 +511,7 @@ let encode m =
       export_section m.it.exports;
       start_section m.it.start;
       elem_section m.it.elems;
+      exception_section m.it.exceptions;
       code_section m.it.funcs;
       data_section m.it.data
   end

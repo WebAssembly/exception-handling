@@ -38,8 +38,17 @@ let region s left right =
 let error s pos msg = raise (Code (region s pos pos, msg))
 let require b s pos msg = if not b then error s pos msg
 
+let current_scope = ref "binary"
+let with_scope scope f =
+  let old_scope = !current_scope in
+  current_scope := scope;
+  try let result = f () in
+      current_scope := old_scope;
+      result
+  with e -> current_scope := old_scope; raise e
+
 let guard f s =
-  try f s with EOS -> error s (len s) "unexpected end of binary or function"
+  try f s with EOS -> error s (len s) ("unexpected end of " ^ !current_scope)
 
 let get = guard get
 let get_string n = guard (get_string n)
@@ -196,6 +205,7 @@ let memop s =
   Int32.to_int align, offset
 
 let rec instr s =
+  with_scope "instr" (fun () ->
   let pos = pos s in
   match op s with
   | 0x00 -> unreachable
@@ -223,9 +233,18 @@ let rec instr s =
       end_ s;
       if_ ts es1 []
     end
+  | 0x06 ->
+    let ts = stack_type s in
+    let es = instr_block s in
+    let cs = catches s in
+    end_ s;
+    try_ ts es cs
+
+  | 0x08 ->
+    throw_ (at var s)
 
   | 0x05 -> error s pos "misplaced ELSE opcode"
-  | 0x06| 0x07 | 0x08 | 0x09 | 0x0a as b -> illegal s pos b
+  | 0x07 | 0x09 | 0x0a as b -> illegal s pos b
   | 0x0b -> error s pos "misplaced END opcode"
 
   | 0x0c -> br (at var s)
@@ -427,16 +446,35 @@ let rec instr s =
   | 0xbe -> f32_reinterpret_i32
   | 0xbf -> f64_reinterpret_i64
 
-  | b -> illegal s pos b
+  | b -> illegal s pos b)
 
-and instr_block s = List.rev (instr_block' s [])
+and instr_block s =
+  with_scope "block" (fun () ->
+  let es = instr_block' s [] in
+  List.rev es)
 and instr_block' s es =
   match peek s with
-  | None | Some (0x05 | 0x0b) -> es
+  | None | Some (0x05 | 0x07 | 0x0b) -> es
   | _ ->
     let pos = pos s in
     let e' = instr s in
     instr_block' s (Source.(e' @@ region s pos pos) :: es)
+
+(* TODO(eholk): For now catches only can handle a single catch_all *)
+and catches s =
+  match (List.rev (catches' s [])) with
+  | c :: _ -> c
+  | _ -> error s (len s) "too many catches"
+and catches' s cs =
+  match peek s with
+  | None | Some (0x0b) -> cs
+  | Some (0x05) ->
+    expect 0x05 s "CATCH or CATCH_ALL opcode expected";
+    let c = (at (fun s -> instr_block s) s) in
+    c :: catches' s cs
+  | Some (0x07) ->
+    error s (len s) "catch is not yet implemented"
+  | Some (b) -> illegal s (len s) b
 
 let const s =
   let c = at instr_block s in
@@ -462,6 +500,7 @@ let id s =
     | 9 -> `ElemSection
     | 10 -> `CodeSection
     | 11 -> `DataSection
+    | 13 -> `ExceptionSection
     | _ -> error s (pos s) "invalid section id"
     ) bo
 
@@ -478,6 +517,15 @@ let section tag f default s =
 
 let type_section s =
   section `TypeSection (vec func_type) [] s
+
+
+(* Exception Section *)
+
+let exception_ s =
+  { etype = func_type s }
+
+let exception_section s =
+  section `ExceptionSection (vec (at exception_)) [] s
 
 
 (* Import section *)
@@ -570,10 +618,11 @@ let local s =
   Lib.List.make n t
 
 let code _ s =
+  with_scope "function" (fun () ->
   let locals = List.flatten (vec local s) in
   let body = instr_block s in
   end_ s;
-  {locals; body; ftype = Source.((-1l) @@ Source.no_region)}
+  {locals; body; ftype = Source.((-1l) @@ Source.no_region)})
 
 let code_section s =
   section `CodeSection (vec (at (sized code))) [] s
@@ -639,6 +688,8 @@ let module_ s =
   iterate custom_section s;
   let exports = export_section s in
   iterate custom_section s;
+  let exceptions = exception_section s in
+  iterate custom_section s;
   let start = start_section s in
   iterate custom_section s;
   let elems = elem_section s in
@@ -653,8 +704,7 @@ let module_ s =
   let funcs =
     List.map2 Source.(fun t f -> {f.it with ftype = t} @@ f.at)
       func_types func_bodies in
-  let exceptions = []
-  in {types; tables; memories; globals; funcs; imports; exports; elems; data; start; exceptions}
+  {types; tables; memories; globals; funcs; imports; exports; elems; data; start; exceptions}
 
 
 let decode name bs = at module_ (stream name bs)
