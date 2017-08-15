@@ -307,13 +307,29 @@ or defined:
 ### Exception section
 
 The `exception` section is the named section 'exception' with id 13. The
-exception section must occur before the code section.  The exception section
-declares exception types using exception type signatures.
+exception section may occur anywhere after the import section and before the
+export section. There may be at most one exception section.  The exception
+section declares exception types using exception type signatures.
 
 | Field | Type | Description |
 |-------|------|-------------|
 | count | `varuint32` | count of the number of exceptions to follow |
 | sig | `except_type*` | The type signature of the data fields for each exception |
+
+#### Rationale
+
+The exception is assigned the number 13 because this is the next available
+identifier.
+The [spec](https://webassembly.github.io/spec/binary/modules.html#sections)
+currently shows numbers 0 through 11 are assigned. Section 12 appears to be
+reserved for the name section.
+
+The position of the exception section is driven by the requirement that items be
+defined before they are used. Having the exception section after the import
+section allows imported exceptions to be assigned the lower number
+tags. Similarly, defining the exceptions before the export section allows
+exceptions to be exported. Beyond these constraints, no additional requirements
+are imposed.
 
 ### Import section
 
