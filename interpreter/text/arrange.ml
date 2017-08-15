@@ -244,9 +244,11 @@ let rec instr e =
     | Binary op -> binop op, []
     | Convert op -> cvtop op, []
     | Throw x -> "throw " ^ var x, []
-    | Try (ts, tes, _, ces) -> "try", list instr tes @ match ces with
-      | Some ces -> [Node ("catch_all", list instr ces.it)]
-      | None -> []
+    | Try (ts, tes, _, ces) ->
+      let catches = match ces with
+	| Some ces -> [Node ("catch_all", list instr ces.it)]
+	| None -> [] in
+      "try", stack_type ts @ list instr tes @ catches
   in Node (head, inner)
 
 let const c =
@@ -329,6 +331,8 @@ let global off i g =
   let {gtype; value} = g.it in
   Node ("global $" ^ nat (off + i), global_type gtype :: const value)
 
+let exception_ i x =
+  Node ("exception $" ^ nat i, [struct_type x.it.etype])
 
 (* Modules *)
 
@@ -360,6 +364,7 @@ let module_with_var_opt x_opt m =
     listi (memory (List.length memory_imports)) m.it.memories @
     listi (global (List.length global_imports)) m.it.globals @
     listi (func_with_index (List.length func_imports)) m.it.funcs @
+    listi exception_ m.it.exceptions @
     list export m.it.exports @
     opt start m.it.start @
     list elems m.it.elems @
