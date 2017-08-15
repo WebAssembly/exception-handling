@@ -306,7 +306,8 @@ or defined:
 
 ### Exception section
 
-The `exception` section is the named section 'exception'. The exception section
+The `exception` section is the named section 'exception' with id 13. The
+exception section must occur before the code section.  The exception section
 declares exception types using exception type signatures.
 
 | Field | Type | Description |
