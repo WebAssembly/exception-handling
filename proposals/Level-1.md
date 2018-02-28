@@ -418,7 +418,7 @@ throws, and rethrows as follows:
 | `catch` | `0x07` | | begins the catch block of the try block |
 | `throw` | `0x08` | index : `varint32` | Creates an exception defined by the exception `index`and then throws it |
 | `rethrow` | `0x09` | | Pops the `except_ref` on top of the stack and throws it |
-| `if_except` | `0x0a` | sig : `block_type` , index : `varuint32` | Begin exception data extraction if exception on stack was created using the corresponding exception `index` |
+| `if_except` | `0x0a` |  index : `varuint32`, sig : `block_type` | Begin exception data extraction if exception on stack was created using the corresponding exception `index` |
 
 The *sig* fields of `block`, `if`, `try` and `if_except` operators are block
 signatures which describe their use of the operand stack.
