@@ -109,11 +109,9 @@ The type of an event is denoted by an index to a function signature defined in
 the `type` section. The parameters of the function signature defines the list of
 values associated with the exception event. The result type must be 'void'.
 
-Within a module, each event is identified by an `event index` in the [event
-index space](#event-index-space). The `event index` is used to identify the
-event in WebAssembly code. At runtime, a corresponding `event tag` is associated
-with each event index, and is used to identify an event. Tags are used to
-reconcile event indices imported/exported between modules.
+An `event tag` is a value to distinguish different events, while an `event index
+is a numeric name to refer to an (imported or defined) event tag within a module
+(see [event index space](#event-index-space) for details).
 
 ### Exceptions
 
@@ -317,7 +315,7 @@ An exception reference points to an exception.
 
 | Opcode | Type constructor |
 |--------|------------------|
-| -0x12  |  `except_ref`    |
+| -0x18  |  `except_ref`    |
 
 #### value_type
 
