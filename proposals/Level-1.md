@@ -135,7 +135,7 @@ Exception indices are used by:
 ### The exception reference data type
 
 Data types are extended to have a new `except_ref` type, that refers to an
-exception. The representation of an exception is left to the embedder.
+exception. The representation of an exception is left to the implementation.
 
 ### Try and catch blocks
 
@@ -191,9 +191,6 @@ A throw inside the body of a catch block is never caught by the corresponding
 try block of the catch block, since instructions in the body of the catch block
 are not in the body of the try block.
 
-As expected, it is left to the embedder to define how WebAssembly exceptions are
-handled within code defined by the embedder.
-
 Once a catching try block is found for the thrown exception, the operand stack
 is popped back to the size the operand stack had when the try block was entered,
 and then an except_ref referring to the caught exception is pushed back onto the
@@ -218,8 +215,7 @@ exception on top of the stack is popped and then thrown.
 ### Exception data extraction
 
 The `if_except` block begins with an `if_except` instruction, and
-has two instruction blocks, defined by the `then` and `else` instructions
-like that of an `if` block.
+has two instruction blocks,
 
 That is, the forms of an if_except block is:
 
@@ -235,21 +231,19 @@ else
 end
 ```
 
-The `if_except` instruction queries the exception on top of the stack, and then
-pops the exception. If the exception has the same exception tag as defined by
-the `if_except` instruction, the `then` block is entered. Otherwise the `else`
-block is entered. If the if_except block doesn't have an else block, control
-passes to the instruction following that block.
+In the first form, the instructions between the `if_except` and 'end' define the
+`then block`. In the second form, the instructions between the `if_except` and
+`else` define the `then block`, while the instructions between the `else` and
+the `end define the `else block`.
 
-The conditional query of an exception succeeds when the exception on the top of
-the stack has the corresponding exception tag (defined by `except_index`).
+The conditional query of an exception checks the exception tag of exception on
+top of the stack. It succeeds only if the exception index of the instruction
+matches the corresponding exception tag. Once the query completes, the exception
+is poppod off the stack.
 
-If the query succeeds, the values (associated with the exception value) are
+If the query succeeds the values (associated with the popped exception) are
 extracted and pushed onto the stack, and control transfers to the instructions
 in the then block.
-
-If the query fails, it either enters the else block, or transfer control to the
-end of the if_except block if there is no else block.
 
 If the query fails, it either enters the else block, or transfer control to the
 end of the if_except block if there is no else block.
