@@ -1,4 +1,4 @@
- Level 1 exception handling
+# Level 1 exception handling
 
 Level 1 of exception handling is the MVP (minimal viable proposal) for
 implementing exceptions in WebAssembly. As such, it doesn't include higher-level
@@ -248,11 +248,10 @@ end of the if_except block if there is no else block.
 
 ### Stack traces
 
-When an exception is thrown, the runtime will pop the operand stack across
+When an exception is thrown, the runtime will pop the stack across
 function calls until a corresponding, enclosing try block is found. It may also
 associate a stack trace that can be used to report uncaught exceptions. However,
-the details of this is left to the embedder, and WebAssembly does not have
-(direct) access to the stack trace.
+the details of this is left to the embedder.
 
 ## Changes to the text format.
 
@@ -357,7 +356,7 @@ or defined:
 A new `event` section is introduced and is named `event`. If included, it must
 appear after immediately after the global section.
 
-##### event section
+##### Event section
 
 The `section` section is the named section 'event'. The event section
 declares a list of event types as follows:
