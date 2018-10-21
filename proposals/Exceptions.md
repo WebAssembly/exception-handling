@@ -44,8 +44,7 @@ list of exceptions. Each exception has a _type signature_. The type signature
 defines the list of values associated with an exception.
 
 Within the module, exceptions are identified by an index into the [exception
-index space](#exception-index-space). This index is referred to as the
-_exception tag_.
+index space](#exception-index-space). This index references an _exception tag_.
 
 Exceptions can be imported and exported by adding the appropriate entries to the
 import and export sections of the module. All imported/exported exceptions must
@@ -250,9 +249,9 @@ Like the `block`, `loop`, and `if` instructions, the `try` instruction is a
 *structured* instruction, and is implicitly labeled. This allows branch
 instructions to exit try blocks.
 
-The `except_index` of the `catch` instruction is the exception tag for the
-caught exception. Similarly, the `except_index` of the `throw` instruction is
-the tag for the constructed exception. See [exception index
+The `except_index` of the `catch` instruction denotes the exception tag for the
+caught exception. Similarly, the `except_index` of the `throw` instruction
+denotes the tag for the constructed exception. See [exception index
 space](#exception-index-space) for further clarification of exception tags.
 
 The `label` of the `rethrow` instruction is the label to the corresponding try
@@ -337,8 +336,9 @@ WebAssembly exceptions are designed to allow other storage management methods,
 such as reference counting, to perform the garbage collection in the embedder.
 
 To do this, WebAssembly exceptions are immutable once created, to avoid cyclic
-data structures that cannot be garbage collected. It also means that exceptions
-can't be stored into linear memory. The rationale for this is twofold:
+data structures that cannot easily be reference-counted. It also means that
+exceptions can't be stored into linear memory. The rationale for this is
+twofold:
 
 * For security. Loads and stores do not guarantee that the data read was of the
   same type as stored. This allows spoofing of exception references that may
@@ -348,7 +348,10 @@ can't be stored into linear memory. The rationale for this is twofold:
   find places where exception references are stored.
 
 Hence, while an exception reference is a new first class type, this proposal
-disallows their usage in linear memory.
+disallows their usage in linear memory. The exception reference type can be
+represented as a subtype of `anyref` type introduced in [WebAssembly reference
+type
+proposal](https://github.com/WebAssembly/reference-types/blob/master/proposals/reference-types/Overview.md).
 
 A WebAssembly exception is created when you throw it with the `throw`
 instruction. Thrown exceptions are handled as follows:
