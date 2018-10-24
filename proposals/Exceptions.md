@@ -276,7 +276,7 @@ throws, and rethrows as follows:
 | `if` | `0x04` | sig : `block_type` | begin if expression |
 | `else` | `0x05` | | begin else expression of if or try  |
 | `try` | `0x06` | sig : `block_type` | begins a block which can handle thrown exceptions |
-| `catch` | `0x07` | tag : `varuint32` | begins a block when the exception `tag` is thrown |
+| `catch` | `0x07` | tag : `varuint32` | begins a block when the exception `tag` is caught |
 | `throw` | `0x08` | tag : `varuint32` | Throws an exception defined by the exception `tag` |
 | `rethrow` | `0x09` | relative_depth : `varuint32` | re-throws the exception caught by the corresponding try block |
 | `end` | `0x0b` | | end a block, loop, if, and try |
@@ -549,7 +549,6 @@ The following rules are added to *instructions*:
 
 ```
   try resulttype instruction* catch instruction* end |
-  except except_index |
   throw except_index |
   rethrow |
   if_except resulttype except_index then instruction* end |
@@ -672,11 +671,11 @@ or defined:
 #### High-level structure
 
 A new `event` section is introduced and is named `event`. If included, it must
-appear after immediately after the global section.
+appear immediately after the global section.
 
 ##### Event section
 
-The `section` section is the named section 'event'. The event section declares a
+The `event` section is the named section 'event'. The event section declares a
 list of event types as follows:
 
 | Field | Type | Description |
