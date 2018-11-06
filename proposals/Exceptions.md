@@ -364,9 +364,26 @@ appear immediately after the global section.
 
 The `event` section is the named section 'event'. For ease of validation, this
 section comes after the [import
-section(https://github.com/WebAssembly/design/blob/master/BinaryEncoding.md#import-section)
+section](https://github.com/WebAssembly/design/blob/master/BinaryEncoding.md#import-section)
 and before the [export
 section](https://github.com/WebAssembly/design/blob/master/BinaryEncoding.md#export-section).
+So the list of all sections will be:
+
+| Section Name | Code | Description |
+| ------------ | ---- | ----------- |
+| Type | `1` | Function signature declarations |
+| Import | `2` | Import declarations |
+| Function | `3` | Function declarations |
+| Table | `4` | Indirect function table and other tables |
+| Memory | `5` | Memory attributes |
+| Global | `6` | Global declarations |
+| Event | `12` | Event declarations |
+| Export | `7` | Exports |
+| Start | `8` | Start function declaration |
+| Element | `9` | Elements section |
+| Code | `10` | Function bodies (code) |
+| Data | `11` | Data segments |
+
 The event section declares a list of event types as follows:
 
 | Field | Type | Description |
