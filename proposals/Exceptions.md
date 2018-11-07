@@ -157,10 +157,10 @@ A try block ends with a `catch block` that is defined by the list of
 instructions after the `catch` instruction.
 
 Try blocks, like control-flow blocks, have a _block type_. The block type of a
-try block defines the values yielded by the evaluating the try block when either
-no exception is thrown, or the exception is successfully caught by the catch
-block. Because `try` and `end` instructions define a control-flow block, they
-can be targets for branches (`br` and `br_if`) as well.
+try block defines the values yielded by evaluating the try block when either no
+exception is thrown, or the exception is successfully caught by the catch block.
+Because `try` and `end` instructions define a control-flow block, they can be
+targets for branches (`br` and `br_if`) as well.
 
 In the initial implementation, try blocks may only yield 0 or 1 values.
 
