@@ -160,6 +160,12 @@ try block defines the values yielded by the evaluation the try block when either
 no exception is thrown, or the exception is successfully caught by the catch
 block.
 
+Try blocks, like control-flow blocks, have a _block type_. The block type of a
+try block defines the values yielded by the evaluation the try block when
+either no exception is thrown, or the exception is successfully caught by the
+catch block. Because `try` and `end` instructions define a control-flow block,
+they can be targets for branches (`br` and `br_if`) as well.
+
 In the initial implementation, try blocks may only yield 0 or 1 values.
 
 ### Throwing an exception
@@ -364,7 +370,7 @@ appear immediately after the global section.
 
 The `event` section is the named section 'event'. For ease of validation, this
 section comes after the [import
-section(https://github.com/WebAssembly/design/blob/master/BinaryEncoding.md#import-section)
+section](https://github.com/WebAssembly/design/blob/master/BinaryEncoding.md#import-section)
 and before the [export
 section](https://github.com/WebAssembly/design/blob/master/BinaryEncoding.md#export-section).
 The event section declares a list of event types as follows:
@@ -372,7 +378,7 @@ The event section declares a list of event types as follows:
 | Field | Type | Description |
 |-------|------|-------------|
 | count | `varuint32` | count of the number of events to follow |
-| type | `except_type*` | The definitions of the event types |
+| type | `event_type*` | The definitions of the event types |
 
 ##### Import section
 
