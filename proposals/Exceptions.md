@@ -1,13 +1,14 @@
 # Exception handling
 
-So far there have been two proposals ([first proposal](old/Exceptions.md),
-[second proposal](old/Level-1.md)) proposed. In the TPAC meeting in Oct 2018, we
-[took a vote and decided to use the second
-proposal](https://github.com/WebAssembly/meetings/blob/master/2018/TPAC.md#exception-handling-ben-titzer)
-with the first-class exception type mainly based on the reasoning that it is
-more expressive and thus also more extendible to other kinds of events. This
-documents presents the second, the agreed-on version of the exception handling
-proposal.
+There were two alternative proposals
+([1st](https://github.com/WebAssembly/exception-handling/blob/master/proposals/old/Exceptions.md)
+and
+[2nd](https://github.com/WebAssembly/exception-handling/blob/master/proposals/old/Level-1.md))
+for the design of exception handling and we
+[decided](https://github.com/WebAssembly/meetings/blob/master/2018/TPAC.md#exception-handling-ben-titzer)
+on the second proposal, which uses first-class exception types, mainly based on
+the reasoning that it is more expressive and also more extendible to other kinds
+of events.
 
 ---
 
@@ -156,9 +157,10 @@ A try block ends with a `catch block` that is defined by the list of
 instructions after the `catch` instruction.
 
 Try blocks, like control-flow blocks, have a _block type_. The block type of a
-try block defines the values yielded by the evaluation the try block when either
-no exception is thrown, or the exception is successfully caught by the catch
-block.
+try block defines the values yielded by evaluating the try block when either no
+exception is thrown, or the exception is successfully caught by the catch block.
+Because `try` and `end` instructions define a control-flow block, they can be
+targets for branches (`br` and `br_if`) as well.
 
 In the initial implementation, try blocks may only yield 0 or 1 values.
 
