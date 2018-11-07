@@ -156,11 +156,6 @@ A try block ends with a `catch block` that is defined by the list of
 instructions after the `catch` instruction.
 
 Try blocks, like control-flow blocks, have a _block type_. The block type of a
-try block defines the values yielded by the evaluation the try block when either
-no exception is thrown, or the exception is successfully caught by the catch
-block.
-
-Try blocks, like control-flow blocks, have a _block type_. The block type of a
 try block defines the values yielded by the evaluating the try block when either
 no exception is thrown, or the exception is successfully caught by the catch
 block. Because `try` and `end` instructions define a control-flow block, they
