@@ -128,10 +128,10 @@ Exception indices are used by:
 1. The `throw` instruction which creates a WebAssembly exception with the
    corresponding exception tag, and then throws it.
 
-2. The `br_on_exn` instruction queries an exception to see if the corresponding
-   exception tag denoted by the exception index. If true it branches to the
-   given label and pushes the corresponding values of the exception onto the
-   stack.
+2. The `br_on_exn` instruction queries an exception to see if it matches the
+   corresponding exception tag denoted by the exception index. If true it
+   branches to the given label and pushes the corresponding argument values of
+   the exception onto the stack.
 
 ### The exception reference data type
 
@@ -227,13 +227,14 @@ The `br_on_exn` instruction checks the exception tag of an `except_ref` on top
 of the stack if it matches the given exception index. If it does, it branches
 out to the label referenced by the instruction (In the binary form, the label
 will be converted to a relative depth immediate, like other branch
-instructions), and while doing that, pops exception values from the `except_ref`
-and places them on top of the stack. In order to use these popped values, the
-block signature of the branch target has to match the exception types - because
-it receives the exception arguments as branch operands. If the exception tag
-does not match, the `except_ref` value remains on the stack. For example, when
-an `except_ref` contains an exception of type (i32 i64), the target block
-signature should be (i32 i64) as well, as in the following example:
+instructions), and while doing that, pops the `except_ref` value from the stack
+and instead pushes the exception's argument values on top of the stack. In order
+to use these popped values, the block signature of the branch target has to
+match the exception types - because it receives the exception arguments as
+branch operands. If the exception tag does not match, the `except_ref` value
+remains on the stack. For example, when an `except_ref` contains an exception of
+type (i32 i64), the target block signature should be (i32 i64) as well, as in
+the following example:
 
 ```
 block $l (result i32 i64)
