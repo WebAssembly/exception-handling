@@ -291,7 +291,7 @@ The `catch` instruction catches foreign exceptions generated from calls to
 function imports as well, including JavaScript exceptions, with a few
 exceptions:
 1. In order to be consistent before and after a trap reaches a JavaScript frame,
-   the `catch` instruction does not catch exception generated from traps. This
+   the `catch` instruction does not catch exceptions generated from traps. This
    is currently
    [`WebAssembly.RuntimeError`](https://webassembly.github.io/reference-types/js-api/#exceptiondef-runtimeerror)
    type.
