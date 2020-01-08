@@ -291,18 +291,18 @@ The `catch` instruction catches foreign exceptions generated from calls to
 function imports as well, including JavaScript exceptions, with a few
 exceptions:
 1. In order to be consistent before and after a trap reaches a JavaScript frame,
-   the `catch` instruction does not catch exceptions generated from traps. This
-   is currently
-   [`WebAssembly.RuntimeError`](https://webassembly.github.io/reference-types/js-api/#exceptiondef-runtimeerror)
-   type.
+   the `catch` instruction does not catch exceptions generated from traps.
 1. The `catch` instruction does not catch JavaScript exceptions generated from
    stack overflow and out of memory.
 
 Filtering these exceptions should be based on a predicate that is not observable
-by JavaScript, because
-[`instanceof`](https://tc39.es/ecma262/#sec-instanceofoperator) predicate can be
-intercepted in JS, and types of exceptions generated from stack overflow and out
-of memory are implementation-defined.
+by JavaScript. Traps currently generate instances of
+[`WebAssembly.RuntimeError`](https://webassembly.github.io/reference-types/js-api/#exceptiondef-runtimeerror),
+but this detail is not used to decide type. Implementations are supposed to
+specially mark non-catchable exceptions.
+([`instanceof`](https://tc39.es/ecma262/#sec-instanceofoperator) predicate can
+be intercepted in JS, and types of exceptions generated from stack overflow and
+out of memory are implementation-defined.)
 
 ## Changes to the text format
 
