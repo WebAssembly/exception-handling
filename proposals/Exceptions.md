@@ -295,7 +295,7 @@ exceptions:
    is currently
    [`WebAssembly.RuntimeError`](https://webassembly.github.io/reference-types/js-api/#exceptiondef-runtimeerror)
    type.
-2. The `catch` instruction does not catch JavaScript exceptions generated from
+1. The `catch` instruction does not catch JavaScript exceptions generated from
    stack overflow and out of memory.
 
 Filtering these exceptions should be based on a predicate that is not observable
