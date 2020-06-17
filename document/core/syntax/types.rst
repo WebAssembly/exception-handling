@@ -41,7 +41,7 @@ Conventions
   That is, :math:`|\I32| = |\F32| = 32` and :math:`|\I64| = |\F64| = 64`.
 
 
-.. index:: ! reference type, reference, table, function, function type, null
+.. index:: ! reference type, reference, table, function, function type, exception, exception type, null
    pair: abstract syntax; reference type
    pair: reference; type
 .. _syntax-reftype:
@@ -54,12 +54,14 @@ Reference Types
 .. math::
    \begin{array}{llll}
    \production{reference type} & \reftype &::=&
-     \FUNCREF ~|~ \EXTERNREF \\
+     \FUNCREF ~|~ \EXTERNREF ~|~ \EXNREF \\
    \end{array}
 
 The type |FUNCREF| denotes the infinite union of all references to :ref:`functions <syntax-func>`, regardless of their :ref:`function types <syntax-functype>`.
 
 The type |EXTERNREF| denotes the infinite union of all references to objects owned by the :ref:`embedder <embedder>` and that can be passed into WebAssembly under this type.
+
+The type |EXNREF| denotes the infinite union of all references to exception :ref:`events <syntax-event>`, regardless of their :ref:`event types <syntax-eventtype>`.
 
 Reference types are *opaque*, meaning that neither their size nor their bit pattern can be observed.
 Values of reference type can be stored in :ref:`tables <syntax-table>`.
@@ -190,6 +192,33 @@ The limits are given in numbers of entries.
    In future versions of WebAssembly, additional element types may be introduced.
 
 
+.. index:: ! event, exception, event type, attribute
+   pair: abstract syntax; event
+   pair: abstract syntax; exception
+   single: event; type
+   single: event; attribute
+.. _syntax-attribute:
+.. _syntax-eventtype:
+
+Event Types
+~~~~~~~~~~~
+
+*Event types* classify the signature of :ref:`events <syntax-event>`,
+with an attribute and a function type.
+
+.. math::
+   \begin{array}{llll}
+   \production{event type} &\eventtype &::=& \attribute~~\functype \\
+   \production{attribute} &\attribute &::=& \EXCEPTION \\
+   \end{array}
+
+The |attribute| |EXCEPTION| specifies that the event is an exception, in which case the result type of its function type |functype| must be void.
+The parameters of |functype| define the list of values associated with the exception event.
+
+
+.. note:: In the current version of WebAssembly, events may only be exceptions. In future versions additional events may be added.
+
+
 .. index:: ! global type, ! mutability, value type, global, mutability
    pair: abstract syntax; global type
    pair: abstract syntax; mutability
@@ -229,6 +258,7 @@ External Types
      \ETFUNC~\functype ~|~
      \ETTABLE~\tabletype ~|~
      \ETMEM~\memtype ~|~
+     \ETEVENT~\eventtype ~|~
      \ETGLOBAL~\globaltype \\
    \end{array}
 
@@ -244,5 +274,7 @@ It filters out entries of a specific kind in an order-preserving fashion:
 * :math:`\ettables(\externtype^\ast) = [\tabletype ~|~ (\ETTABLE~\tabletype) \in \externtype^\ast]`
 
 * :math:`\etmems(\externtype^\ast) = [\memtype ~|~ (\ETMEM~\memtype) \in \externtype^\ast]`
+
+* :math:`\etevents(\externtype^\ast) = [\eventtype ~|~ (\ETEVENT~\eventtype) \in \externtype^\ast]`
 
 * :math:`\etglobals(\externtype^\ast) = [\globaltype ~|~ (\ETGLOBAL~\globaltype) \in \externtype^\ast]`

@@ -1615,6 +1615,117 @@ Control Instructions
    \end{array}
 
 
+.. _exec-try:
+
+:math:`\TRY~\blocktype~\instr_1^\ast~\CATCH~\instr_2^\ast~\END`
+...............................................................
+
+1. Assert: due to :ref:`validation <valid-blocktype>`, :math:`\expand_F(\blocktype)` is defined.
+
+2. Let :math:`[t_1^n] \to [t_2^m]` be the :ref:`function type <syntax-functype>` :math:`\expand_F(\blocktype)`.
+
+3. Assert: due to :ref:`validation <valid-if>`, there are at least :math:`n` values on the top of the stack.
+
+4. Pop the values :math:`\val^n` from the stack.
+
+5. Let :math:`L` be the label whose arity is :math:`m` and whose continuation is the end of the |TRY| instruction.
+
+4. Execute the administrative instruction :math:`\CATCHN_m` by :ref:`entering <exec-instr-seq-enter>` the block :math:`\instr_1^\ast` with label :math:`L`, and reducing the resulting :ref:`throw context <syntax-ctxt-throw>`.
+
+.. math::
+   ~\\[-1ex]
+   \begin{array}{lcl@{\qquad}}
+   F; \val^n~(\TRY~\X{bt}~\instr_1^\ast~\CATCH~\instr_2^\ast~\END &\stepto&
+   \CATCHN_m\{\instr_2\}~(\LABEL_m \{\}~\val^n~\instr_1^\ast~\END)~\END \\
+   \hspace{5ex}(\iff \expand_F(\X{bt}) = [t_1^n] \to [t_2^m]) &&\\
+   \end{array}
+
+
+.. _exec-throw:
+
+:math:`\THROW~x`
+................
+
+1. Let :math:`F` be the :ref:`current <exec-notation-textual>` :ref:`frame <syntax-frame>`.
+
+2. Assert: due to :ref:`validation <valid-throw>`, :math:`F.\AMODULE.\MIEVENTS[x]` exists.
+
+3. Let :math:`a` be the :ref:`event address <syntax-eventaddr>` :math:`F.\AMODULE.\MIEVENTS[x]`.
+
+4. :ref:`Throw <syntax-throwaddr>` the :ref:`event address <syntax-eventaddr>` :math:`a`.
+
+.. math::
+   ~\\[-1ex]
+   \begin{array}{lclr@{\qquad}l}
+   \THROW~x &\stepto& \THROWADDR~a & (\iff F.\AMODULE.\MIEVENTS[x]=a) \\
+   \end{array}
+
+
+.. _exec-rethrow:
+
+:math:`\RETHROW`
+................
+
+1. Assert: due to :ref:`validation <valid-rethrow>`, there is a value with :ref:`reference type <syntax-reftype>` :math:`\EXNREF` on top of the stack.
+
+2. Pop the :math:`\EXNREF` value from the stack.
+
+3. If the :math:`\EXNREF` value is :math:`\REFNULL~\EXNREF` then:
+
+   a. Trap.
+
+4. Else the :math:`\EXNREF` value is of the form :math:`(\EXNREFADDR~a~\val^\ast)`.
+
+5. Put the values :math:`\val^\ast` on the stack.
+
+6. :ref:`Throw <syntax-throwaddr>` the :ref:`event address <syntax-eventaddr>` :math:`a`.
+
+.. math::
+   ~\\[-1ex]
+   \begin{array}{lclr@{\qquad}}
+     (\REFNULL~\EXNREF)~\RETHROW &\stepto& \TRAP \\
+     (\EXNREFADDR~a~\val^\ast)~\RETHROW &\stepto& \val^\ast~(\THROWADDR~a) \\
+   \end{array}
+
+
+.. _exec-br_on_exn:
+
+:math:`\BRONEXN~l~x`
+....................
+
+1. Assert: due to :ref:`validation <valid-br_on_exn>`, there is a value with :ref:`reference type <syntax-reftype>` :math:`\EXNREF` on top of the stack.
+
+2. Pop the :math:`\EXNREF` value from the stack.
+
+3. If the :math:`\EXNREF` value is :math:`\REFNULL~\EXNREF` then:
+
+   a. Trap.
+
+4. Else the :math:`\EXNREF` value is of the form :math:`(\EXNREFADDR~a~\val^\ast)`.
+
+5. Let :math:`F` be the :ref:`current <exec-notation-textual>` :ref:`frame <syntax-frame>`.
+
+6. Assert: due to :ref:`validation <valid-br_on_exn>`, :math:`F.\AMODULE.\MIEVENTS[x]` exists.
+
+7. If :math:`F.\AMODULE.\MIEVENTS[x]=a`, then:
+
+   a. Put the values :math:`\val^\ast` on the stack.
+
+   b. :ref:`Execute <exec-br>` the instruction :math:`(\BR~l)`.
+
+8. Else:
+
+   a. Put the value :math:`(\EXNREFADDR~a~\val^\ast)` back on the stack.
+
+.. math::
+   ~\\[-1ex]
+   \begin{array}{lclr@{\qquad}l}
+     F; (\REFNULL~\EXNREF)~\BRONEXN~l~x &\stepto& F; \TRAP \\
+     F; (\EXNREFADDR~a~\val^\ast)~\BRONEXN~l~x &\stepto& F; \val^\ast~(\BR~l)     & (\iff F.\AMODULE.\MIEVENTS[x] = a) \\
+     F; (\EXNREFADDR~a~\val^\ast)~\BRONEXN~l~x &\stepto& F; (\EXNREFADDR~a~\val^\ast) & (\iff F.\AMODULE.\MIEVENTS[x] \neq a) \\
+   \end{array}
+
+
 .. _exec-br:
 
 :math:`\BR~l`

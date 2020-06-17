@@ -34,10 +34,12 @@ Reference Types
    \begin{array}{llcll@{\qquad\qquad}l}
    \production{reference type} & \Treftype &::=&
      \text{funcref} &\Rightarrow& \FUNCREF \\ &&|&
-     \text{externref} &\Rightarrow& \EXTERNREF \\
+     \text{externref} &\Rightarrow& \EXTERNREF \\ &&|&
+     \text{exnref} &\Rightarrow& \EXNREF \\
    \production{referenced type} & \Trefedtype &::=&
      \text{func} &\Rightarrow& \FUNCREF \\ &&|&
-     \text{extern} &\Rightarrow& \EXTERNREF \\
+     \text{extern} &\Rightarrow& \EXTERNREF \\ &&|&
+     \text{event} &\Rightarrow& \EXNREF \\
    \end{array}
 
 
@@ -135,6 +137,21 @@ Table Types
    \begin{array}{llclll}
    \production{table type} & \Ttabletype &::=&
      \X{lim}{:}\Tlimits~~\X{et}{:}\Treftype &\Rightarrow& \X{lim}~\X{et} \\
+   \end{array}
+
+
+.. index:: event type, exception attribute, exception, function type
+   pair: text format; event type
+   pair: text format; exception attribute
+.. _text-eventtype:
+
+Event Types
+~~~~~~~~~~~
+
+.. math::
+   \begin{array}{llclll}
+   \production{event type} & \Teventtype &::=&
+     \text{(}~\text{exception}~~t^\ast{:}\Tvec(\Tparam)~\text{)} &\Rightarrow& \EXCEPTION~~[t^\ast] \to [] \\
    \end{array}
 
 

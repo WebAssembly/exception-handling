@@ -7,7 +7,7 @@ Runtime Structure
 :ref:`Store <store>`, :ref:`stack <stack>`, and other *runtime structure* forming the WebAssembly abstract machine, such as :ref:`values <syntax-val>` or :ref:`module instances <syntax-moduleinst>`, are made precise in terms of additional auxiliary syntax.
 
 
-.. index:: ! value, number, reference, constant, number type, reference type, ! host address, value type, integer, floating-point, ! default value
+.. index:: ! value, number, reference, constant, number type, reference type, ! host address, ! event address, value type, integer, floating-point, ! default value, embedder
    pair: abstract syntax; value
 .. _syntax-num:
 .. _syntax-ref:
@@ -25,6 +25,7 @@ It is convenient to reuse the same notation as for the |CONST| :ref:`instruction
 
 References other than null are represented with additional :ref:`administrative instructions <syntax-instr-admin>`.
 They either are *function references*, pointing to a specific :ref:`function address <syntax-funcaddr>`,
+*exception references* pointing to a specific :ref:`event address <syntax-eventaddr>` (sometimes referred to as the exception tag) and carrying a sequence of :ref:`values <syntax-val>`,
 or *external references* pointing to an uninterpreted form of :ref:`extern address <syntax-externaddr>` that can be defined by the :ref:`embedder <embedder>` to represent its own objects.
 
 .. math::
@@ -37,10 +38,14 @@ or *external references* pointing to an uninterpreted form of :ref:`extern addre
    \production{(reference)} & \reff &::=&
      \REFNULL~t \\&&|&
      \REFFUNCADDR~\funcaddr \\&&|&
-     \REFEXTERNADDR~\externaddr \\
+     \REFEXTERNADDR~\externaddr \\&&|&
+     \EXNREFADDR~\eventaddr~\val^\ast \\
    \production{(value)} & \val &::=&
      \num ~|~ \reff \\
    \end{array}
+
+The administrative value |EXNREFADDR| is an exception reference of type |EXNREF|, representing a thrown exception on the stack, identified by the exception's :ref:`event address <syntax-eventaddr>`, and carrying the exception event's arguments.
+If it is uncaught by a |CATCHN| block, then the embedder defines how to handle it. It is an abstract value, and it is an implementation detail how and where its argument values are stored. It is separate from any linear memory.
 
 .. note::
    Future versions of WebAssembly may add additional forms of reference.
@@ -84,7 +89,7 @@ It is either a sequence of :ref:`values <syntax-val>` or a :ref:`trap <syntax-tr
    In the current version of WebAssembly, a result can consist of at most one value.
 
 
-.. index:: ! store, function instance, table instance, memory instance, global instance, module, allocation
+.. index:: ! store, function instance, table instance, memory instance, event instance, global instance, module, allocation
    pair: abstract syntax; store
 .. _syntax-store:
 .. _store:
@@ -93,7 +98,7 @@ Store
 ~~~~~
 
 The *store* represents all global state that can be manipulated by WebAssembly programs.
-It consists of the runtime representation of all *instances* of :ref:`functions <syntax-funcinst>`, :ref:`tables <syntax-tableinst>`, :ref:`memories <syntax-meminst>`, and :ref:`globals <syntax-globalinst>`, :ref:`element segments <syntax-eleminst>`, and :ref:`data segments <syntax-datainst>` that have been :ref:`allocated <alloc>` during the life time of the abstract machine. [#gc]_
+It consists of the runtime representation of all *instances* of :ref:`functions <syntax-funcinst>`, :ref:`tables <syntax-tableinst>`, :ref:`memories <syntax-meminst>`, :ref:`events <syntax-eventinst>`, and :ref:`globals <syntax-globalinst>`, :ref:`element segments <syntax-eleminst>`, and :ref:`data segments <syntax-datainst>` that have been :ref:`allocated <alloc>` during the life time of the abstract machine. [#gc]_
 
 It is an invariant of the semantics that no element or data instance is :ref:`addressed <syntax-addr>` from anywhere else but the owning module instances.
 
@@ -106,6 +111,7 @@ Syntactically, the store is defined as a :ref:`record <notation-record>` listing
      \SFUNCS & \funcinst^\ast, \\
      \STABLES & \tableinst^\ast, \\
      \SMEMS & \meminst^\ast, \\
+     \SEVENTS & \eventinst^\ast, \\
      \SGLOBALS & \globalinst^\ast, \\
      \SELEMS & \eleminst^\ast, \\
      \SDATAS & \datainst^\ast ~\} \\
@@ -124,10 +130,11 @@ Convention
 * The meta variable :math:`S` ranges over stores where clear from context.
 
 
-.. index:: ! address, store, function instance, table instance, memory instance, global instance, element instance, data instance, embedder
+.. index:: ! address, store, function instance, table instance, memory instance, event instance, global instance, element instance, data instance, embedder
    pair: abstract syntax; function address
    pair: abstract syntax; table address
    pair: abstract syntax; memory address
+   pair: abstract syntax; event address
    pair: abstract syntax; global address
    pair: abstract syntax; element address
    pair: abstract syntax; data address
@@ -135,6 +142,7 @@ Convention
    pair: function; address
    pair: table; address
    pair: memory; address
+   pair: event; address
    pair: global; address
    pair: element; address
    pair: data; address
@@ -142,6 +150,7 @@ Convention
 .. _syntax-funcaddr:
 .. _syntax-tableaddr:
 .. _syntax-memaddr:
+.. _syntax-eventaddr:
 .. _syntax-globaladdr:
 .. _syntax-elemaddr:
 .. _syntax-dataaddr:
@@ -151,7 +160,7 @@ Convention
 Addresses
 ~~~~~~~~~
 
-:ref:`Function instances <syntax-funcinst>`, :ref:`table instances <syntax-tableinst>`, :ref:`memory instances <syntax-meminst>`, and :ref:`global instances <syntax-globalinst>`, :ref:`element instances <syntax-eleminst>`, and :ref:`data instances <syntax-datainst>` in the :ref:`store <syntax-store>` are referenced with abstract *addresses*.
+:ref:`Function instances <syntax-funcinst>`, :ref:`table instances <syntax-tableinst>`, :ref:`memory instances <syntax-meminst>`, :ref:`event instances <syntax-eventinst>`, :ref:`global instances <syntax-globalinst>`, :ref:`element instances <syntax-eleminst>`, and :ref:`data instances <syntax-datainst>` in the :ref:`store <syntax-store>` are referenced with abstract *addresses*.
 These are simply indices into the respective store component.
 In addition, an :ref:`embedder <embedder>` may supply an uninterpreted set of *host addresses*.
 
@@ -164,6 +173,8 @@ In addition, an :ref:`embedder <embedder>` may supply an uninterpreted set of *h
    \production{(table address)} & \tableaddr &::=&
      \addr \\
    \production{(memory address)} & \memaddr &::=&
+     \addr \\
+   \production{(event address)} & \eventaddr &::=&
      \addr \\
    \production{(global address)} & \globaladdr &::=&
      \addr \\
@@ -190,7 +201,7 @@ even where this identity is not observable from within WebAssembly code itself
    hence logical addresses can be arbitrarily large natural numbers.
 
 
-.. index:: ! instance, function type, function instance, table instance, memory instance, global instance, element instance, data instance, export instance, table address, memory address, global address, element address, data address, index, name
+.. index:: ! instance, function type, function instance, table instance, memory instance, event, instance, global instance, element instance, data instance, export instance, table address, memory address, event address, global address, element address, data address, index, name
    pair: abstract syntax; module instance
    pair: module; instance
 .. _syntax-moduleinst:
@@ -210,6 +221,7 @@ and collects runtime representations of all entities that are imported, defined,
      \MIFUNCS & \funcaddr^\ast, \\
      \MITABLES & \tableaddr^\ast, \\
      \MIMEMS & \memaddr^\ast, \\
+     \MIEVENTS & \eventaddr^\ast, \\
      \MIGLOBALS & \globaladdr^\ast, \\
      \MIELEMS & \elemaddr^\ast, \\
      \MIDATAS & \dataaddr^\ast, \\
@@ -218,7 +230,7 @@ and collects runtime representations of all entities that are imported, defined,
    \end{array}
 
 Each component references runtime instances corresponding to respective declarations from the original module -- whether imported or defined -- in the order of their static :ref:`indices <syntax-index>`.
-:ref:`Function instances <syntax-funcinst>`, :ref:`table instances <syntax-tableinst>`, :ref:`memory instances <syntax-meminst>`, and :ref:`global instances <syntax-globalinst>` are referenced with an indirection through their respective :ref:`addresses <syntax-addr>` in the :ref:`store <syntax-store>`.
+:ref:`Function instances <syntax-funcinst>`, :ref:`table instances <syntax-tableinst>`, :ref:`memory instances <syntax-meminst>`, :ref:`event instances <syntax-eventinst>`, and :ref:`global instances <syntax-globalinst>` are referenced with an indirection through their respective :ref:`addresses <syntax-addr>` in the :ref:`store <syntax-store>`.
 
 It is an invariant of the semantics that all :ref:`export instances <syntax-exportinst>` in a given module instance have different :ref:`names <syntax-name>`.
 
@@ -303,6 +315,31 @@ The bytes can be mutated through :ref:`memory instructions <syntax-instr-memory>
 It is an invariant of the semantics that the length of the byte vector, divided by page size, never exceeds the maximum size of :math:`\memtype`, if present.
 
 
+.. index:: ! event instance, event, exception attribute, exception tag
+   pair: abstract syntax; event instance
+   pair: event; instance
+.. _syntax-eventinst:
+
+Event Instances
+~~~~~~~~~~~~~~~
+
+An *event instance* is the runtime representation of an :ref:`event <syntax-event>`.
+It records the :ref:`attribute <syntax-attribute>` and :ref:`function type <syntax-functype>` of its :ref:`type <syntax-eventtype>`.
+
+.. math::
+   \begin{array}{llll}
+   \production{(event instance)} & \eventinst &::=&
+     \{ \EVIATTRIBUTE~\EXCEPTION, \EVITYPE~\functype \} \\
+   \end{array}
+
+Because :ref:`events <syntax-event>` :ref:`have type <valid-event>` |eventtype|, it is an invariant of the semantics that the function type :math:`\functype` has void result type.
+
+.. note::
+   In the current version of WebAssembly, events may only be exceptions. This may change in future versions.
+
+   The event address of an event instance is also called an exception tag.
+
+
 .. index:: ! global instance, global, value, mutability, instruction, embedder
    pair: abstract syntax; global instance
    pair: global; instance
@@ -379,7 +416,7 @@ It defines the export's :ref:`name <syntax-name>` and the associated :ref:`exter
    \end{array}
 
 
-.. index:: ! external value, function address, table address, memory address, global address, store, function, table, memory, global
+.. index:: ! external value, function address, table address, memory address, event address, global address, store, function, table, memory, event, global
    pair: abstract syntax; external value
    pair: external; value
 .. _syntax-externval:
@@ -388,7 +425,7 @@ External Values
 ~~~~~~~~~~~~~~~
 
 An *external value* is the runtime representation of an entity that can be imported or exported.
-It is an :ref:`address <syntax-addr>` denoting either a :ref:`function instance <syntax-funcinst>`, :ref:`table instance <syntax-tableinst>`, :ref:`memory instance <syntax-meminst>`, or :ref:`global instances <syntax-globalinst>` in the shared :ref:`store <syntax-store>`.
+It is an :ref:`address <syntax-addr>` denoting either a :ref:`function instance <syntax-funcinst>`, :ref:`table instance <syntax-tableinst>`, :ref:`memory instance <syntax-meminst>`, :ref:`global instances <syntax-globalinst>`, or :ref:`event instances <syntax-eventinst>` in the shared :ref:`store <syntax-store>`.
 
 .. math::
    \begin{array}{llcl}
@@ -396,6 +433,7 @@ It is an :ref:`address <syntax-addr>` denoting either a :ref:`function instance 
      \EVFUNC~\funcaddr \\&&|&
      \EVTABLE~\tableaddr \\&&|&
      \EVMEM~\memaddr \\&&|&
+     \EVEVENT~\eventaddr \\&&|&
      \EVGLOBAL~\globaladdr \\
    \end{array}
 
@@ -412,7 +450,10 @@ It filters out entries of a specific kind in an order-preserving fashion:
 
 * :math:`\evmems(\externval^\ast) = [\memaddr ~|~ (\EVMEM~\memaddr) \in \externval^\ast]`
 
+* :math:`\evevents(\externval^\ast) = [\eventaddr ~|~ (\EVEVENT~\eventaddr) \in \externval^\ast]`
+
 * :math:`\evglobals(\externval^\ast) = [\globaladdr ~|~ (\EVGLOBAL~\globaladdr) \in \externval^\ast]`
+
 
 
 .. index:: ! stack, ! frame, ! label, instruction, store, activation, function, call, local, module instance
@@ -510,11 +551,14 @@ Conventions
    \end{array}
 
 
-.. index:: ! administrative instructions, function, function instance, function address, label, frame, instruction, trap, call, memory, memory instance, table, table instance, element, data, segment
+.. index:: ! administrative instructions, function, function instance, function address, label, frame, instruction, trap, call, memory, memory instance, table, table instance, element, data, segment, event, event instance, event address, exception, reftype
    pair:: abstract syntax; administrative instruction
 .. _syntax-trap:
 .. _syntax-reffuncaddr:
 .. _syntax-invoke:
+.. _syntax-exnrefaddr:
+.. _syntax-throwaddr:
+.. _syntax-catchn:
 .. _syntax-instr-admin:
 
 Administrative Instructions
@@ -523,7 +567,7 @@ Administrative Instructions
 .. note::
    This section is only relevant for the :ref:`formal notation <exec-notation>`.
 
-In order to express the reduction of :ref:`traps <trap>`, :ref:`calls <syntax-call>`, and :ref:`control instructions <syntax-instr-control>`, the syntax of instructions is extended to include the following *administrative instructions*:
+In order to express the reduction of :ref:`traps <trap>`, :ref:`calls <syntax-call>`, :ref:`exception events <syntax-event>`, and :ref:`control instructions <syntax-instr-control>`, the syntax of instructions is extended to include the following *administrative instructions*:
 
 .. math::
    \begin{array}{llcl}
@@ -533,6 +577,9 @@ In order to express the reduction of :ref:`traps <trap>`, :ref:`calls <syntax-ca
      \REFFUNCADDR~\funcaddr \\ &&|&
      \REFEXTERNADDR~\externaddr \\ &&|&
      \INVOKE~\funcaddr \\ &&|&
+     \EXNREFADDR~\eventaddr~val^\ast \\ &&|&
+     \THROWADDR~\eventaddr \\ &&|&
+     \CATCHN_n~\{\instr_2^\ast\}~\instr_1^\ast~\END \\ &&|&
      \LABEL_n\{\instr^\ast\}~\instr^\ast~\END \\ &&|&
      \FRAME_n\{\frame\}~\instr^\ast~\END \\
    \end{array}
@@ -540,12 +587,17 @@ In order to express the reduction of :ref:`traps <trap>`, :ref:`calls <syntax-ca
 The |TRAP| instruction represents the occurrence of a trap.
 Traps are bubbled up through nested instruction sequences, ultimately reducing the entire program to a single |TRAP| instruction, signalling abrupt termination.
 
-The |REFFUNCADDR| instruction represents :ref:`function reference values <syntax-ref.func>`. Similarly, |REFEXTERNADDR| represents :ref:`external references <syntax-ref.extern>`.
+The |REFFUNCADDR| instruction represents :ref:`function reference values <syntax-ref.func>`. Similarly, |REFEXTERNADDR| represents :ref:`external references <syntax-ref.extern>`,
+, and |EXNREFADDR| represents :ref:`exception reference values <syntax-exnrefaddr>` of thrown exception events.
 
 The |INVOKE| instruction represents the imminent invocation of a :ref:`function instance <syntax-funcinst>`, identified by its :ref:`address <syntax-funcaddr>`.
 It unifies the handling of different forms of calls.
 
-The |LABEL| and |FRAME| instructions model :ref:`labels <syntax-label>` and :ref:`frames <syntax-frame>` :ref:`"on the stack" <exec-notation>`.
+The |THROWADDR| instruction represents the imminent throw of an :ref:`exception reference value <syntax-exnrefaddr>` based on an :ref:`event instance <syntax-eventinst>`, identified by its :ref:`address <syntax-eventaddr>`.
+The values it will consume to create the exception depend on the event's :ref:`event type <syntax-eventtype>`.
+It unifies the throwing of different forms of events.
+
+The |LABEL|, |FRAME|, and |CATCHN| instructions model :ref:`labels <syntax-label>`, :ref:`frames <syntax-frame>`, and :ref:`try-catch blocks <syntax-try>` respectively, :ref:`"on the stack" <exec-notation>`.
 Moreover, the administrative syntax maintains the nesting structure of the original :ref:`structured control instruction <syntax-instr-control>` or :ref:`function body <syntax-func>` and their :ref:`instruction sequences <syntax-instr-seq>` with an |END| marker.
 That way, the end of the inner instruction sequence is known when part of an outer sequence.
 
@@ -608,6 +660,66 @@ This definition allows to index active labels surrounding a :ref:`branch <syntax
    The selected label is identified through the :ref:`label index <syntax-labelidx>` :math:`l`, which corresponds to the number of surrounding |LABEL| instructions that must be hopped over -- which is exactly the count encoded in the index of a block context.
 
 
+.. index:: ! throw context, event, exception, throw address, catch block
+.. _syntax-ctxt-throw:
+
+Throw Contexts
+..............
+
+In order to specify the reduction of :ref:`try-catch blocks <syntax-try>`
+with the help of the administrative instructions |THROWADDR|, |EXNREFADDR|, and |CATCHN|,
+the following syntax of *throw contexts* is defined, as well as associated structural rules:
+
+.. math::
+   \begin{array}{llll}
+   \production{(throw contexts)} & \XT &::=&
+     \val^\ast~[\_]~\instr^\ast \\ &&|&
+     \LABEL_n\{\instr^\ast\}~\XT~\END \\ &&|&
+     \CATCHN_n\{\instr^\ast\}~\XT~\END \\ &&|&
+     \FRAME_n\{F\}~\XT~\END \\
+   \end{array}
+
+.. math::
+   \begin{array}{rcl}
+   S;~F;~\CATCHN_m~\{\instr^\ast\}~\val^m~\END &\stepto& S;~F;~\val^m \\
+   S;~F;~\CATCHN_m~\{\instr^\ast\}~\XT[\val^n~[\_]~(\THROWADDR~a)]~\END &\stepto&
+      S;~F;~\LABEL_m~\{\}~(\EXNREFADDR~a~\val^n)~{\instr}^\ast~\END \\
+   && \hspace{-12ex} (\iff S.\SEVENTS[a]=\{\EVATTRIBUTE~\EXCEPTION, \EVTYPE~[t^n]\to[]\}) \\
+   \end{array}
+
+Throw contexts allow to potentially capture the throw of an exception event by surrounding catch blocks.
+
+.. note::
+   For example, catching a simple :ref:`throw <exec-throw>` in a :ref:`try-catch block <exec-try>` would be as follows.
+
+   Let :math:`x` be the :ref:`event index <syntax-eventidx>` of an event in :math:`F.\AMODULE`, such that
+
+   .. math::
+      F.\AMODULE.\MIEVENTS[x] = \{ \EVIATTRIBUTE~\EXCEPTION, \EVITYPE~[t^n]\to[]\} = S.\SEVENTS[a]
+
+   Let :math:`\expand_F(\X{bt}) = [t^n] \to [\EXNREF]`, and consider arbitrary :ref:`values <syntax-val>` :math:`(val : t)^n`.
+
+   .. math::
+      \begin{array}{ll}
+      & \hspace{-5ex} S;~F;~\val^n~(\TRY~\X{bt}~\THROW~x~\CATCH~\RETURN~\END) \\
+      \stepto & S;~F;~\CATCHN_1\{\RETURN\}~(\LABEL_1 \{\}~\val^n~\THROWADDR~a~\END)~\END \\
+      \end{array}
+
+   Reducing :math:`\CATCHN` for the throw context :math:`T[\val^n~\THROWADDR~a]`, where :math:`T=\LABEL_1 \{\}[\_]~\END` gives:
+
+   .. math::
+      \begin{array}{lll}
+      \stepto & S;~F;~\LABEL_1~\{\}~(\EXNREFADDR~a~\val^n)~\RETURN~\END & \hspace{9ex}\ \\
+      \stepto & (\EXNREFADDR~a~\val^n) & \\
+      \end{array}
+
+   When a throw occurs, execution halts until that throw is the continuation of a throw context in a catching try block.
+
+   In this particular case, the exception reference is returned normally, as opposed to being thrown as the result of a plain
+   :math:`\THROW~x` without a catching try-block.
+
+   *(TODO: add administrative values to describe unresolved throws).*
+
 .. index:: ! configuration, ! thread, store, frame, instruction, module instruction
 .. _syntax-thread:
 .. _syntax-config:
@@ -662,6 +774,8 @@ Finally, the following definition of *evaluation context* and associated structu
 
 Reduction terminates when a thread's instruction sequence has been reduced to a :ref:`result <syntax-result>`,
 that is, either a sequence of :ref:`values <syntax-val>` or to a |TRAP|.
+
+*(TODO: add rules to deal with unresolved* :math:`\THROWADDR~\eventaddr`, *and extend results to include such situations.)*
 
 .. note::
    The restriction on evaluation contexts rules out contexts like :math:`[\_]` and :math:`\epsilon~[\_]~\epsilon` for which :math:`E[\TRAP] = \TRAP`.

@@ -42,7 +42,8 @@ Reference Types
    \begin{array}{llclll@{\qquad\qquad}l}
    \production{reference type} & \Breftype &::=&
      \hex{70} &\Rightarrow& \FUNCREF \\ &&|&
-     \hex{6F} &\Rightarrow& \EXTERNREF \\
+     \hex{6F} &\Rightarrow& \EXTERNREF \\ &&|&
+     \hex{68} &\Rightarrow& \EXNREF \\
    \end{array}
 
 
@@ -168,3 +169,28 @@ Global Types
      \hex{00} &\Rightarrow& \MCONST \\ &&|&
      \hex{01} &\Rightarrow& \MVAR \\
    \end{array}
+
+
+.. index:: event type, exception attribute, function type
+   pair: binary format; event type
+   pair: binary format; attribute
+.. _binary-attribute:
+.. _binary-eventtype:
+
+Event Types
+~~~~~~~~~~~
+
+:ref:`Event types <syntax-eventtype>` are encoded as function types with a preceding flag indicating their :ref:`attribute <syntax-attribute>`.
+
+.. math::
+   \begin{array}{llclll}
+   \production{event type} & \Beventtype &::=&
+     a{:}\Battribute~~ft{:}\Bfunctype &\Rightarrow& a~ft \\
+   \production{attribute} & \Battribute &::=&
+     \hex{00} &\Rightarrow& \EXCEPTION \\
+   \end{array}
+
+|EXCEPTION| is the |attribute| of an exception, whose function type must have void result.
+
+.. note::
+   Currently events can only be exceptions.

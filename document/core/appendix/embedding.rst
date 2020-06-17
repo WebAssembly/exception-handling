@@ -76,7 +76,7 @@ Store
 
 .. math::
    \begin{array}{lclll}
-   \F{store\_init}() &=& \{ \SFUNCS~\epsilon,~ \SMEMS~\epsilon,~ \STABLES~\epsilon,~ \SGLOBALS~\epsilon \} \\
+   \F{store\_init}() &=& \{ \SFUNCS~\epsilon,~ \SMEMS~\epsilon, ~\SEVENTS~\epsilon,~ \STABLES~\epsilon,~ \SGLOBALS~\epsilon \} \\
    \end{array}
 
 
@@ -538,6 +538,28 @@ Memories
    \F{mem\_grow}(S, a, n) &=& \ERROR && (\otherwise) \\
    \end{array}
 
+
+.. index: event, event address, store, event instance, event type, exception attribute, function type
+.. _embed-event:
+
+Events
+~~~~~~
+
+.. _embedd-event-alloc:
+
+:math:`\F{event\_alloc}(\store, \eventtype) : (\store, \eventaddr)`
+...................................................................
+
+1. Pre-condition: :math:`eventtype` is :ref:`valid <valid-eventtype>`.
+
+2. Let :math:`\eventaddr` be the result of :ref:`allocating an event <alloc-event>` in :math:`\store` with :ref:`event type <syntax-eventtype>` :math:`\eventtype`.
+
+3. Return the new store paired with :math:`\eventaddr`.
+
+.. math::
+   \begin{array}{lclll}
+   \F{event\_alloc}(S, \X{et}) &=& (S', \X{a}) && (\iff \allocevent(S, \X{et}) = S', \X{a}) \\
+   \end{array}
 
 
 .. index:: global, global address, store, global instance, global type, value

@@ -67,14 +67,14 @@ Store Validity
 
 The following typing rules specify when a runtime :ref:`store <syntax-store>` :math:`S` is *valid*.
 A valid store must consist of
-:ref:`function <syntax-funcinst>`, :ref:`table <syntax-tableinst>`, :ref:`memory <syntax-meminst>`, :ref:`global <syntax-globalinst>`, and :ref:`module <syntax-moduleinst>` instances that are themselves valid, relative to :math:`S`.
+:ref:`function <syntax-funcinst>`, :ref:`table <syntax-tableinst>`, :ref:`memory <syntax-meminst>`, :ref:`event <syntax-eventinst>`, :ref:`global <syntax-globalinst>`, and :ref:`module <syntax-moduleinst>` instances that are themselves valid, relative to :math:`S`.
 
-To that end, each kind of instance is classified by a respective :ref:`function <syntax-functype>`, :ref:`table <syntax-tabletype>`, :ref:`memory <syntax-memtype>`, or :ref:`global <syntax-globaltype>` type.
+To that end, each kind of instance is classified by a respective :ref:`function <syntax-functype>`, :ref:`table <syntax-tabletype>`, :ref:`memory <syntax-memtype>`, :ref:`event <syntax-eventtype>`, or :ref:`global <syntax-globaltype>` type.
 Module instances are classified by *module contexts*, which are regular :ref:`contexts <context>` repurposed as module types describing the :ref:`index spaces <syntax-index>` defined by a module.
 
 
 
-.. index:: store, function instance, table instance, memory instance, global instance, function type, table type, memory type, global type
+.. index:: store, function instance, table instance, memory instance, event instance, global instance, function type, table type, memory type, event type, global type
 
 :ref:`Store <syntax-store>` :math:`S`
 .....................................
@@ -84,6 +84,8 @@ Module instances are classified by *module contexts*, which are regular :ref:`co
 * Each :ref:`table instance <syntax-tableinst>` :math:`\tableinst_i` in :math:`S.\STABLES` must be :ref:`valid <valid-tableinst>` with some :ref:`table type <syntax-tabletype>` :math:`\tabletype_i`.
 
 * Each :ref:`memory instance <syntax-meminst>` :math:`\meminst_i` in :math:`S.\SMEMS` must be :ref:`valid <valid-meminst>` with some :ref:`memory type <syntax-memtype>` :math:`\memtype_i`.
+
+* Each :ref:`event instance <syntax-eventinst>` :math:`\eventinst_i` in :math:`S.\SEVENTS` must be :ref:`valid <valid-eventinst>` with some :ref:`event type <syntax-eventtype>` :math:`\eventtype_i`.
 
 * Each :ref:`global instance <syntax-globalinst>` :math:`\globalinst_i` in :math:`S.\SGLOBALS` must be :ref:`valid <valid-globalinst>` with some  :ref:`global type <syntax-globaltype>` :math:`\globaltype_i`.
 
@@ -103,6 +105,8 @@ Module instances are classified by *module contexts*, which are regular :ref:`co
      \\
      (S \vdashmeminst \meminst : \memtype)^\ast
      \qquad
+     (S \vdasheventinst \eventinst : \eventtype)^\ast
+     \\
      (S \vdashglobalinst \globalinst : \globaltype)^\ast
      \\
      (S \vdasheleminst \eleminst \ok)^\ast
@@ -113,6 +117,8 @@ Module instances are classified by *module contexts*, which are regular :ref:`co
        \SFUNCS~\funcinst^\ast,
        \STABLES~\tableinst^\ast,
        \SMEMS~\meminst^\ast,
+       \SEVENTS~\eventinst^\ast,
+       \\
        \SGLOBALS~\globalinst^\ast,
        \SELEMS~\eleminst^\ast,
        \SDATAS~\datainst^\ast \}
@@ -253,6 +259,24 @@ Module instances are classified by *module contexts*, which are regular :ref:`co
    }
 
 
+.. index:: event type, event instance, exception tag, function type
+.. _valid-eventinst:
+
+:ref:`Event Instances <syntax-eventinst>` :math:`\{ \EVIATTRIBUTE~\EXCEPTION, \EVITYPE~\functype \}`
+....................................................................................................
+
+* The :ref:`event type <syntax-eventtype>` :math:`\EXCEPTION~\functype` must be :ref:`valid <valid-eventtype>`.
+
+* Then the event instance is valid with :ref:`event type <syntax-eventtype>` :math:`\EXCEPTION~\functype`.
+
+.. math::
+   \frac{
+     \vdasheventtype \EXCEPTION~\functype \ok
+   }{
+     S \vdasheventinst \{ \EVIATTRIBUTE~\EXCEPTION, \EVITYPE~\functype \} : \EXCEPTION~\functype
+   }
+
+
 .. index:: global type, global instance, value, mutability
 .. _valid-globalinst:
 
@@ -342,6 +366,8 @@ Module instances are classified by *module contexts*, which are regular :ref:`co
 
 * For each :ref:`memory address <syntax-memaddr>` :math:`\memaddr_i` in :math:`\moduleinst.\MIMEMS`, the :ref:`external value <syntax-externval>` :math:`\EVMEM~\memaddr_i` must be :ref:`valid <valid-externval-mem>` with some :ref:`external type <syntax-externtype>` :math:`\ETMEM~\memtype_i`.
 
+* For each :ref:`event address <syntax-eventaddr>` :math:`\eventaddr_i` in :math:`\moduleinst.\MIEVENTS`, the :ref:`external value <syntax-externval>` :math:`\EVEVENT~\eventaddr_i` must be :ref:`valid <valid-externval-event>` with some :ref:`external type <syntax-externtype>` :math:`\ETEVENT~\eventtype_i`.
+
 * For each :ref:`global address <syntax-globaladdr>` :math:`\globaladdr_i` in :math:`\moduleinst.\MIGLOBALS`, the :ref:`external value <syntax-externval>` :math:`\EVGLOBAL~\globaladdr_i` must be :ref:`valid <valid-externval-global>` with some :ref:`external type <syntax-externtype>` :math:`\ETGLOBAL~\globaltype_i`.
 
 * For each :ref:`element address <syntax-elemaddr>` :math:`\elemaddr_i` in :math:`\moduleinst.\MIELEMS`, the :ref:`element instance <syntax-eleminst>` :math:`S.\SELEMS[\elemaddr_i]` must be :ref:`valid <valid-eleminst>`.
@@ -358,31 +384,26 @@ Module instances are classified by *module contexts*, which are regular :ref:`co
 
 * Let :math:`\memtype^\ast` be the concatenation of all :math:`\memtype_i` in order.
 
+* Let :math:`\eventtype^\ast` be the concatenation of all :math:`\eventtype_i` in order.
+
 * Let :math:`\globaltype^\ast` be the concatenation of all :math:`\globaltype_i` in order.
 
-* Then the module instance is valid with :ref:`context <context>` :math:`\{\CTYPES~\functype^\ast, \CFUNCS~{\functype'}^\ast, \CTABLES~\tabletype^\ast, \CMEMS~\memtype^\ast, \CGLOBALS~\globaltype^\ast\}`.
+* Then the module instance is valid with :ref:`context <context>` :math:`\{\CTYPES~\functype^\ast, \CFUNCS~{\functype'}^\ast,` :math:`\CTABLES~\tabletype^\ast, \CMEMS~\memtype^\ast, \CEVENTS~\eventtype^\ast, \CGLOBALS~\globaltype^\ast\}`.
 
 .. math::
    ~\\[-1ex]
    \frac{
-     \begin{array}{@{}c@{}}
-     (\vdashfunctype \functype \ok)^\ast
-     \\
-     (S \vdashexternval \EVFUNC~\funcaddr : \ETFUNC~\functype')^\ast
-     \qquad
-     (S \vdashexternval \EVTABLE~\tableaddr : \ETTABLE~\tabletype)^\ast
-     \\
-     (S \vdashexternval \EVMEM~\memaddr : \ETMEM~\memtype)^\ast
-     \qquad
-     (S \vdashexternval \EVGLOBAL~\globaladdr : \ETGLOBAL~\globaltype)^\ast
-     \\
-     (S \vdasheleminst S.\SELEMS[\elemaddr] \ok)^\ast
-     \qquad
-     (S \vdashdatainst S.\SDATAS[\dataaddr] \ok)^\ast
-     \\
-     (S \vdashexportinst \exportinst \ok)^\ast
-     \qquad
-     (\exportinst.\EINAME)^\ast ~\mbox{disjoint}
+     \begin{array}{rcl}
+     (\vdashfunctype \functype \ok)^\ast & \quad &
+     (S \vdashexternval \EVFUNC~\funcaddr : \ETFUNC~\functype')^\ast \\
+     (S \vdashexternval \EVTABLE~\tableaddr : \ETTABLE~\tabletype)^\ast   & \quad &
+     (S \vdashexternval \EVMEM~\memaddr : \ETMEM~\memtype)^\ast  \\
+     (S \vdashexternval \EVEVENT~\eventaddr : \ETEVENT~\eventtype)^\ast   & \quad &
+     (S \vdashexternval \EVGLOBAL~\globaladdr : \ETGLOBAL~\globaltype)^\ast \\
+     (S \vdasheleminst S.\SELEMS[\elemaddr] \ok)^\ast  & \quad &
+     (S \vdashdatainst S.\SDATAS[\dataaddr] \ok)^\ast \\
+     (S \vdashexportinst \exportinst \ok)^\ast  & \quad &
+     (\exportinst.\EINAME)^\ast ~\mbox{disjoint} \\
      \end{array}
    }{
      S \vdashmoduleinst \{
@@ -391,6 +412,7 @@ Module instances are classified by *module contexts*, which are regular :ref:`co
        \MIFUNCS & \funcaddr^\ast, \\
        \MITABLES & \tableaddr^\ast, \\
        \MIMEMS & \memaddr^\ast, \\
+       \MIEVENTS & \eventaddr^\ast, \\
        \MIGLOBALS & \globaladdr^\ast, \\
        \MIELEMS & \elemaddr^\ast, \\
        \MIDATAS & \dataaddr^\ast, \\
@@ -400,6 +422,7 @@ Module instances are classified by *module contexts*, which are regular :ref:`co
          \CFUNCS & {\functype'}^\ast, \\
          \CTABLES & \tabletype^\ast, \\
          \CMEMS & \memtype^\ast, \\
+         \CEVENTS & \eventtype^\ast \\
          \CGLOBALS & \globaltype^\ast ~\}
          \end{array}
        \end{array}
@@ -554,6 +577,67 @@ To that end, all previous typing judgements :math:`C \vdash \X{prop}` are genera
    }
 
 
+.. index:: event address, event type, function type, value type, exception attribute, exception tag
+
+:math:`\EXNREFADDR~\eventaddr~\val^\ast`
+........................................
+
+* The :ref:`external event value <syntax-externval>` :math:`\EVEVENT~\eventaddr` must be :ref:`valid <valid-externval-event>` with :ref:`external event type <syntax-externtype>` :math:`\ETEVENT~\EXCEPTION~[t^\ast]\to[]`.
+
+* Each :ref:`value <syntax-val>` :math:`\val_i` in :math:`\val^\ast` must be :ref:`valid <valid-val>` with :ref:`value type <syntax-valtype>` :math:`t_i` in :math:`t^\ast`.
+
+* Then the instruction is valid with type :math:`[] \to [\EXNREF]`.
+
+.. math::
+   \frac{
+     S \vdashexternval \EVEVENT~\eventaddr : \ETEVENT~\EXCEPTION~[t^\ast]\to[]
+     \qquad
+     (S \vdashval \val : t)^\ast
+   }{
+     S; C \vdashadmininstr \EXNREFADDR~\eventaddr~\val^\ast : [] \to [\EXNREF]
+   }
+
+
+.. index:: throw, throw context, event address, exception tag
+
+:math:`\THROWADDR~\eventaddr`
+.............................
+
+* The :ref:`external event value <syntax-externval>` :math:`\EVEVENT~\eventaddr` must be :ref:`valid <valid-externval-event>` with :ref:`external event type <syntax-externtype>` :math:`\ETEVENT~\EXCEPTION~[t^\ast]\to[]`.
+
+* Then the instruction is valid with type :math:`[t_1^\ast t^\ast] -> [t_2^\ast]` for any sequences of :ref:`value types <syntax-valtype>` :math:`t_1^\ast` and :math:`t_2^\ast`.
+
+.. math::
+   \frac{
+     S \vdashexternval \EVEVENT~\eventaddr : \ETEVENT~\EXCEPTION~[t^\ast]\to[]
+   }{
+     S; C \vdashadmininstr \THROWADDR~\eventaddr : [t_1^\ast t^\ast] \to [t_2^\ast]
+   }
+
+.. index:: catch, throw context
+
+:math:`\CATCH_n\{ \instr_0^\ast \} \instr^\ast \END`
+....................................................
+
+* The instruction sequence :math:`\instr_0^\ast` must be :ref:`valid <valid-instr-seq>` with type of the form :math:`[\EXNREF] \to [t^n]`.
+
+* Let :math:`C'` be the same :ref:`context <context>` as :math:`C`, but with the :ref:`result type <syntax-resulttype>` :math:`[\EXNREF]` prepended to the |CLABELS| vector.
+
+* Under context :math:`C'`,
+  the instruction sequence :math:`\instr^\ast` must be :ref:`valid <valid-instr-seq>` with type :math:`[] \to [t^n]`.
+
+* Then the compound instruction is valid with type :math:`[] \to [t^n]`.
+
+.. math::
+   \frac{
+     S; C \vdashinstrseq \instr_0^\ast : [\EXNREF] \to [t^n]
+     \qquad
+     S; C,\CLABELS\,[\EXNREF] \vdashinstrseq \instr^\ast : [] \to [t^n]
+   }{
+     S; C \vdashadmininstr \CATCH_n\{\instr_0^\ast\}~\instr^\ast~\END : [] \to [t^n]
+   }
+
+
 .. index:: function address, extern value, extern type, function type
 
 :math:`\INVOKE~\funcaddr`
@@ -644,6 +728,8 @@ a store state :math:`S'` extends state :math:`S`, written :math:`S \extendsto S'
 
 * The length of :math:`S.\SMEMS` must not shrink.
 
+* The length of :math:`S.\SEVENTS` must not shrink.
+
 * The length of :math:`S.\SGLOBALS` must not shrink.
 
 * The length of :math:`S.\SELEMS` must not shrink.
@@ -655,6 +741,8 @@ a store state :math:`S'` extends state :math:`S`, written :math:`S \extendsto S'
 * For each :ref:`table instance <syntax-tableinst>` :math:`\tableinst_i` in the original :math:`S.\STABLES`, the new table instance must be an :ref:`extension <extend-tableinst>` of the old.
 
 * For each :ref:`memory instance <syntax-meminst>` :math:`\meminst_i` in the original :math:`S.\SMEMS`, the new memory instance must be an :ref:`extension <extend-meminst>` of the old.
+
+* For each :ref:`event instance <syntax-eventinst>` :math:`\eventinst_i` in the original :math:`S.\SEVENTS`, the new event instance must be an :ref:`extension <extend-eventinst>` of the old.
 
 * For each :ref:`global instance <syntax-globalinst>` :math:`\globalinst_i` in the original :math:`S.\SGLOBALS`, the new global instance must be an :ref:`extension <extend-globalinst>` of the old.
 
@@ -674,6 +762,9 @@ a store state :math:`S'` extends state :math:`S`, written :math:`S \extendsto S'
      S_1.\SMEMS = \meminst_1^\ast &
      S_2.\SMEMS = {\meminst'_1}^\ast~\meminst_2^\ast &
      (\vdashmeminstextends \meminst_1 \extendsto \meminst'_1)^\ast \\
+     S_1.\SEVENTS = \eventinst_1^\ast &
+     S_2.\SEVENTS = {\eventinst'_1}^\ast~\eventinst_2^\ast &
+     (\vdasheventinstextends \eventinst_1 \extendsto \eventinst'_1)^\ast \\
      S_1.\SGLOBALS = \globalinst_1^\ast &
      S_2.\SGLOBALS = {\globalinst'_1}^\ast~\globalinst_2^\ast &
      (\vdashglobalinstextends \globalinst_1 \extendsto \globalinst'_1)^\ast \\
@@ -737,6 +828,21 @@ a store state :math:`S'` extends state :math:`S`, written :math:`S \extendsto S'
      n_1 \leq n_2
    }{
      \vdashmeminstextends \{\MITYPE~\X{mt}, \MIDATA~b_1^{n_1}\} \extendsto \{\MITYPE~\X{mt}, \MIDATA~b_2^{n_2}\}
+   }
+
+
+.. index:: event instance
+.. _extend-eventinst:
+
+:ref:`Event Instance <syntax-eventinst>` :math:`\eventinst`
+...........................................................
+
+* An event instance must remain unchanged.
+
+.. math::
+   \frac{
+   }{
+     \vdasheventinstextends \eventinst \extendsto \eventinst
    }
 
 
