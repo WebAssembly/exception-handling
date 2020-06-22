@@ -34,12 +34,12 @@ Reference Types
    \begin{array}{llcll@{\qquad\qquad}l}
    \production{reference type} & \Treftype &::=&
      \text{funcref} &\Rightarrow& \FUNCREF \\ &&|&
-     \text{externref} &\Rightarrow& \EXTERNREF \\ &&|&
-     \text{exnref} &\Rightarrow& \EXNREF \\
+     \text{exnref} &\Rightarrow& \EXNREF \\ &&|&
+     \text{externref} &\Rightarrow& \EXTERNREF \\
    \production{referenced type} & \Trefedtype &::=&
      \text{func} &\Rightarrow& \FUNCREF \\ &&|&
-     \text{extern} &\Rightarrow& \EXTERNREF \\ &&|&
-     \text{event} &\Rightarrow& \EXNREF \\
+     \text{exn} &\Rightarrow& \EXNREF \\ &&|&
+     \text{extern} &\Rightarrow& \EXTERNREF \\
    \end{array}
 
 

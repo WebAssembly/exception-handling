@@ -388,12 +388,12 @@ Module instances are classified by *module contexts*, which are regular :ref:`co
 
 * Let :math:`\globaltype^\ast` be the concatenation of all :math:`\globaltype_i` in order.
 
-* Then the module instance is valid with :ref:`context <context>` :math:`\{\CTYPES~\functype^\ast, \CFUNCS~{\functype'}^\ast,` :math:`\CTABLES~\tabletype^\ast, \CMEMS~\memtype^\ast, \CEVENTS~\eventtype^\ast, \CGLOBALS~\globaltype^\ast\}`.
+* Then the module instance is valid with :ref:`context <context>` :math:`\{\CTYPES~\functype^\ast, \CFUNCS~{\functype'}^\ast, \CTABLES~\tabletype^\ast, \CMEMS~\memtype^\ast, \CEVENTS~\eventtype^\ast, \CGLOBALS~\globaltype^\ast\}`.
 
 .. math::
    ~\\[-1ex]
    \frac{
-     \begin{array}{rcl}
+     \begin{array}{@{}rcl@{}}
      (\vdashfunctype \functype \ok)^\ast & \quad &
      (S \vdashexternval \EVFUNC~\funcaddr : \ETFUNC~\functype')^\ast \\
      (S \vdashexternval \EVTABLE~\tableaddr : \ETTABLE~\tabletype)^\ast   & \quad &
@@ -619,9 +619,9 @@ To that end, all previous typing judgements :math:`C \vdash \X{prop}` are genera
 :math:`\CATCH_n\{ \instr_0^\ast \} \instr^\ast \END`
 ....................................................
 
-* The instruction sequence :math:`\instr_0^\ast` must be :ref:`valid <valid-instr-seq>` with type of the form :math:`[\EXNREF] \to [t^n]`.
+* The instruction sequence :math:`\instr_0^\ast` must be :ref:`valid <valid-instr-seq>` with a type of the form :math:`[\EXNREF] \to [t^n]`.
 
-* Let :math:`C'` be the same :ref:`context <context>` as :math:`C`, but with the :ref:`result type <syntax-resulttype>` :math:`[\EXNREF]` prepended to the |CLABELS| vector.
+* Let :math:`C'` be the same :ref:`context <context>` as :math:`C`, but with the :ref:`result type <syntax-resulttype>` :math:`[t^n]` prepended to the |CLABELS| vector.
 
 * Under context :math:`C'`,
   the instruction sequence :math:`\instr^\ast` must be :ref:`valid <valid-instr-seq>` with type :math:`[] \to [t^n]`.
@@ -632,7 +632,7 @@ To that end, all previous typing judgements :math:`C \vdash \X{prop}` are genera
    \frac{
      S; C \vdashinstrseq \instr_0^\ast : [\EXNREF] \to [t^n]
      \qquad
-     S; C,\CLABELS\,[\EXNREF] \vdashinstrseq \instr^\ast : [] \to [t^n]
+     S; C,\CLABELS\,[t^n] \vdashinstrseq \instr^\ast : [] \to [t^n]
    }{
      S; C \vdashadmininstr \CATCH_n\{\instr_0^\ast\}~\instr^\ast~\END : [] \to [t^n]
    }

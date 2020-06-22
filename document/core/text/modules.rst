@@ -404,7 +404,6 @@ An event definition can bind a symbolic :ref:`event identifier <text-id>`.
    \end{array}
 
 .. note::
-   The syntax for events just covers the only possible event attribute, that of an exception.
    In future versions of WebAssembly, more events may be added, and the above syntax
    may become an abbreviation.
 

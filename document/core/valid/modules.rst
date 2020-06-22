@@ -110,7 +110,7 @@ Events :math:`\event` are classified by the contents of their :ref:`event types 
 Currently the only allowed events are exceptions, i.e., events with type of the form :math:`\EXCEPTION~[t^\ast]\to[]`.
 
 :math:`\{ \EVATTRIBUTE~\EXCEPTION, \EVTYPE~x \}`
-.................................................
+................................................
 
 * The type :math:`C.\CTYPES[x]` must be defined in the context.
 
@@ -536,7 +536,7 @@ Imports :math:`\import` and import descriptions :math:`\importdesc` are classifi
    \frac{
      \vdasheventtype \EXCEPTION~C.\CTYPES[x] \ok
    }{
-     C \vdashimportdesc \IDEVENT~\{ \EVATTRIBUTE~\EXCEPTION, \EVTYPE~x \}: \ETEVENT~\EXCEPTION~C.\CTYPES[x]
+     C \vdashimportdesc \IDEVENT~\{ \EVATTRIBUTE~\EXCEPTION, \EVTYPE~x \} : \ETEVENT~\EXCEPTION~C.\CTYPES[x]
    }
 
 
@@ -631,7 +631,7 @@ Instead, the context :math:`C` for validation of the module's content is constru
     the definition :math:`\mem_i` must be :ref:`valid <valid-mem>` with a :ref:`memory type <syntax-memtype>` :math:`\X{mt}_i`.
 
   * For each :math:`\event_i` in :math:`\module.\MEVENTS`,
-    the definition :math:`\event_i` must be :ref:`valid <valid-event>` with a :ref:`event type <syntax-eventtype>` :math:`\X{ev}_i`.
+    the definition :math:`\event_i` must be :ref:`valid <valid-event>` with an :ref:`event type <syntax-eventtype>` :math:`\X{ev}_i`.
 
   * For each :math:`\global_i` in :math:`\module.\MGLOBALS`:
 
@@ -663,7 +663,7 @@ Instead, the context :math:`C` for validation of the module's content is constru
 
 * Let :math:`\X{mt}^\ast` be the concatenation of the internal :ref:`memory types <syntax-memtype>` :math:`\X{mt}_i`, in index order.
 
-* Let :math:`\X{ev}^\ast` be the concatenation of the internal :ref:`event types <syntax-eventtype>` :math:`\X{ev}_i`, in index order.
+* Let :math:`\X{evt}^\ast` be the concatenation of the internal :ref:`event types <syntax-eventtype>` :math:`\X{evt}_i`, in index order.
 
 * Let :math:`\X{gt}^\ast` be the concatenation of the internal :ref:`global types <syntax-globaltype>` :math:`\X{gt}_i`, in index order.
 
@@ -686,7 +686,7 @@ Instead, the context :math:`C` for validation of the module's content is constru
      \quad
      (C \vdashmem \mem : \X{mt})^\ast
      \quad
-     (C \vdashevent \event : \X{ev})^\ast
+     (C \vdashevent \event : \X{evt})^\ast
      \\
      (C' \vdashglobal \global : \X{gt})^\ast
      \quad
@@ -712,7 +712,7 @@ Instead, the context :math:`C` for validation of the module's content is constru
      \\
      x^\ast = \freefuncidx(\module \with \MFUNCS = \epsilon \with \MSTART = \epsilon)
      \\
-     C = \{ \CTYPES~\type^\ast, \CFUNCS~\X{ift}^\ast\,\X{ft}^\ast, \CTABLES~\X{itt}^\ast\,\X{tt}^\ast, \CMEMS~\X{imt}^\ast\,\X{mt}^\ast, \CEVENTS~\X{iev}^\ast\,\X{ev}^\ast,\\
+     C = \{ \CTYPES~\type^\ast, \CFUNCS~\X{ift}^\ast\,\X{ft}^\ast, \CTABLES~\X{itt}^\ast\,\X{tt}^\ast, \CMEMS~\X{imt}^\ast\,\X{mt}^\ast, \CEVENTS~\X{iev}^\ast\,\X{evt}^\ast,\\
         \CGLOBALS~\X{igt}^\ast\,\X{gt}^\ast, \CELEMS~\X{rt}^\ast, \CDATAS~{\ok}^n, \CREFS~x^\ast \}
      \\
      C' = \{ \CGLOBALS~\X{igt}^\ast, \CFUNCS~(C.\CFUNCS), \CREFS~(C.\CREFS), \CEVENTS~(C.\CEVENTS) \} \qquad
@@ -727,7 +727,7 @@ Instead, the context :math:`C` for validation of the module's content is constru
          \MFUNCS~\func^\ast,
          \MTABLES~\table^\ast,
          \MMEMS~\mem^\ast,
-	 \MEVENTS~\event^\ast,
+         \MEVENTS~\event^\ast,
          \MGLOBALS~\global^\ast, \\
          \MELEMS~\elem^\ast,
          \MDATAS~\data^n,

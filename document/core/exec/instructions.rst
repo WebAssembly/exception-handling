@@ -1624,7 +1624,7 @@ Control Instructions
 
 2. Let :math:`[t_1^n] \to [t_2^m]` be the :ref:`function type <syntax-functype>` :math:`\expand_F(\blocktype)`.
 
-3. Assert: due to :ref:`validation <valid-if>`, there are at least :math:`n` values on the top of the stack.
+3. Assert: due to :ref:`validation <valid-try>`, there are at least :math:`n` values on the top of the stack.
 
 4. Pop the values :math:`\val^n` from the stack.
 
@@ -1657,7 +1657,7 @@ Control Instructions
 .. math::
    ~\\[-1ex]
    \begin{array}{lclr@{\qquad}l}
-   \THROW~x &\stepto& \THROWADDR~a & (\iff F.\AMODULE.\MIEVENTS[x]=a) \\
+   \THROW~x &\stepto& \THROWADDR~a & (\iff F.\AMODULE.\MIEVENTS[x] = a) \\
    \end{array}
 
 
@@ -1674,7 +1674,7 @@ Control Instructions
 
    a. Trap.
 
-4. Else the :math:`\EXNREF` value is of the form :math:`(\EXNREFADDR~a~\val^\ast)`.
+4. Assert: :math:`\EXNREF` is of the form :math:`(\EXNREFADDR~a~\val^\ast)`.
 
 5. Put the values :math:`\val^\ast` on the stack.
 
@@ -1701,7 +1701,7 @@ Control Instructions
 
    a. Trap.
 
-4. Else the :math:`\EXNREF` value is of the form :math:`(\EXNREFADDR~a~\val^\ast)`.
+4. Assert: :math:`\EXNREF` is of the form :math:`(\EXNREFADDR~a~\val^\ast)`.
 
 5. Let :math:`F` be the :ref:`current <exec-notation-textual>` :ref:`frame <syntax-frame>`.
 

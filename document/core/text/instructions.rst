@@ -574,7 +574,7 @@ Such a folded instruction can appear anywhere a regular instruction can.
        &\hspace{-3ex} \text{(}~\text{then}~~\Tinstr_1^\ast~\text{)}~~\text{(}~\text{else}~~\Tinstr_2^\ast~\text{)}^?~~\text{)}
        \quad\equiv \\ &\qquad
          \Tfoldedinstr^\ast~~\text{if}~~\Tlabel~~\Tblocktype &\hspace{-1ex} \Tinstr_1^\ast~~\text{else}~~(\Tinstr_2^\ast)^?~\text{end} \\ &
-     \text{(}~\text{try}~~\Tlabel~~\Tblocktype~~\Tinstr_1^\ast
+     \text{(}~\text{try}~~\Tlabel~~\Tblocktype~~\text{(}~\text{do}~~\Tinstr_1^\ast~~\text{)}
        &\hspace{-8ex} \text{(}~\text{catch}~~\Tinstr_2^\ast~\text{)}~\text{)} \quad\equiv \\ &\qquad
        \text{try}~~\Tlabel~~\Tblocktype~~\Tinstr_1^\ast & \hspace{-6ex} \text{catch}~~\Tinstr_2^\ast~\text{end} & \\
    \end{array}

@@ -500,8 +500,8 @@ component of a :ref:`module <syntax-module>`.
    \production{event section} & \Beventsec &::=&
      \X{event}^\ast{:}\Bsection_{13}(\Bvec(\Bevent)) &\Rightarrow& \X{event}^\ast \\
    \production{event} & \Bevent &::=&
-     \X{a}{:}\Battribute~~\X{x}{:}\Btypeidx
-       &\Rightarrow& \{ \EVATTRIBUTE~\X{a}, \EVTYPE~\X{x} \} \\
+     \X{attr}{:}\Battribute~~\X{x}{:}\Btypeidx
+       &\Rightarrow& \{ \EVATTRIBUTE~\X{attr}, \EVTYPE~\X{x} \} \\
    \end{array}
 
 

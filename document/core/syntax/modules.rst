@@ -127,10 +127,9 @@ Conventions
 Types
 ~~~~~
 
-The |MTYPES| component of a module defines a vector of :ref:`function types <syntax-functype>`,
-which may also be part of an :ref:`event type <syntax-eventtype>`.
+The |MTYPES| component of a module defines a vector of :ref:`function types <syntax-functype>`.
 
-All function types and all event function types used in a module must be defined in this component.
+All function types used in a module must be defined in this component.
 They are referenced by :ref:`type indices <syntax-typeidx>`.
 
 .. note::
