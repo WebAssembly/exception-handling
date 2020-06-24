@@ -59,9 +59,9 @@ Reference Types
 
 The type |FUNCREF| denotes the infinite union of all references to :ref:`functions <syntax-func>`, regardless of their :ref:`function types <syntax-functype>`.
 
-The type |EXTERNREF| denotes the infinite union of all references to objects owned by the :ref:`embedder <embedder>` and that can be passed into WebAssembly under this type.
+The type |EXNREF| denotes a caught exception :ref:`event <syntax-event>`.
 
-The type |EXNREF| denotes the a caught exception :ref:`event <syntax-event>`.
+The type |EXTERNREF| denotes the infinite union of all references to objects owned by the :ref:`embedder <embedder>` and that can be passed into WebAssembly under this type.
 
 Reference types are *opaque*, meaning that neither their size nor their bit pattern can be observed.
 Values of reference type can be stored in :ref:`tables <syntax-table>`.
@@ -192,27 +192,27 @@ The limits are given in numbers of entries.
    In future versions of WebAssembly, additional element types may be introduced.
 
 
-.. index:: ! event, exception, event type, attribute
+.. index:: ! event, exception, event type, event attribute
    pair: abstract syntax; event
    pair: abstract syntax; exception
    single: event; type
    single: event; attribute
-.. _syntax-attribute:
+.. _syntax-eventattr:
 .. _syntax-eventtype:
 
 Event Types
 ~~~~~~~~~~~
 
 *Event types* classify the signature of :ref:`events <syntax-event>`,
-with an attribute and a function type.
+with an event attribute and a function type.
 
 .. math::
    \begin{array}{llll}
-   \production{event type} &\eventtype &::=& \attribute~~\functype \\
-   \production{attribute} &\attribute &::=& \EXCEPTION \\
+   \production{event type} &\eventtype &::=& \eventattr~~\functype \\
+   \production{event attribute} &\eventattr &::=& \EXCEPTION \\
    \end{array}
 
-The |attribute| |EXCEPTION| specifies that the event is an exception, in which case the result type of its function type |functype| must be void.
+The |eventattr| |EXCEPTION| specifies that the event is an exception, in which case the result type of its function type |functype| must be void.
 The parameters of |functype| define the list of values associated with the exception event.
 
 

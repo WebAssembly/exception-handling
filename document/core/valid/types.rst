@@ -157,7 +157,7 @@ Event Types
 :math:`\EXCEPTION~[t^n] \to []`
 ...............................
 
-* The :ref:`attribute <syntax-attribute>` must be |EXCEPTION|.
+* The :ref:`event attribute <syntax-eventattr>` must be |EXCEPTION|.
 
 * The :ref:`function type <syntax-functype>` :math:`[t^n] \to []` must be :ref:`valid <valid-functype>`.
 

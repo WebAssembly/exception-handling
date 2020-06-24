@@ -109,8 +109,8 @@ Events
 Events :math:`\event` are classified by the contents of their :ref:`event types <syntax-eventtype>`.
 Currently the only allowed events are exceptions, i.e., events with type of the form :math:`\EXCEPTION~[t^\ast]\to[]`.
 
-:math:`\{ \EVATTRIBUTE~\EXCEPTION, \EVTYPE~x \}`
-................................................
+:math:`\{ \EVATTR~\EXCEPTION, \EVTYPE~x \}`
+...........................................
 
 * The type :math:`C.\CTYPES[x]` must be defined in the context.
 
@@ -124,7 +124,7 @@ Currently the only allowed events are exceptions, i.e., events with type of the 
    \frac{
      C.\CTYPES[x] = [t^\ast] \to []
    }{
-     C \vdashevent \{ \EVATTRIBUTE~\EXCEPTION, \EVTYPE~x \} : \EXCEPTION~[t^\ast]\to[]
+     C \vdashevent \{ \EVATTR~\EXCEPTION, \EVTYPE~x \} : \EXCEPTION~[t^\ast]\to[]
    }
 
 
@@ -524,7 +524,7 @@ Imports :math:`\import` and import descriptions :math:`\importdesc` are classifi
 :math:`\IDEVENT~\event`
 .......................
 
-* Let :math:`\{ \EVATTRIBUTE~\EXCEPTION, \EVTYPE~x \}` be the :math:`\event`.
+* Let :math:`\{ \EVATTR~\EXCEPTION, \EVTYPE~x \}` be the :math:`\event`.
 
 * The type :math:`C.\CTYPES[x]` must be defined in the context.
 
@@ -536,7 +536,7 @@ Imports :math:`\import` and import descriptions :math:`\importdesc` are classifi
    \frac{
      \vdasheventtype \EXCEPTION~C.\CTYPES[x] \ok
    }{
-     C \vdashimportdesc \IDEVENT~\{ \EVATTRIBUTE~\EXCEPTION, \EVTYPE~x \} : \ETEVENT~\EXCEPTION~C.\CTYPES[x]
+     C \vdashimportdesc \IDEVENT~\{ \EVATTR~\EXCEPTION, \EVTYPE~x \} : \ETEVENT~\EXCEPTION~C.\CTYPES[x]
    }
 
 
@@ -586,8 +586,8 @@ Instead, the context :math:`C` for validation of the module's content is constru
   * :math:`C.\CMEMS` is :math:`\etmems(\X{it}^\ast)` concatenated with :math:`\X{mt}^\ast`,
     with the import's :ref:`external types <syntax-externtype>` :math:`\X{it}^\ast` and the internal :ref:`memory types <syntax-memtype>` :math:`\X{mt}^\ast` as determined below,
 
-  * :math:`C.\CEVENTS` is :math:`\etevents(\X{it}^\ast)` concatenated with :math:`\X{ev}^\ast`,
-    with the import's :ref:`external types <syntax-externtype>` :math:`\X{it}^\ast` and the internal :ref:`event types <syntax-eventtype>` :math:`\X{ev}^\ast` as determined below,
+  * :math:`C.\CEVENTS` is :math:`\etevents(\X{it}^\ast)` concatenated with :math:`\X{evt}^\ast`,
+    with the import's :ref:`external types <syntax-externtype>` :math:`\X{it}^\ast` and the internal :ref:`event types <syntax-eventtype>` :math:`\X{evt}^\ast` as determined below,
 
   * :math:`C.\CGLOBALS` is :math:`\etglobals(\X{it}^\ast)` concatenated with :math:`\X{gt}^\ast`,
     with the import's :ref:`external types <syntax-externtype>` :math:`\X{it}^\ast` and the internal :ref:`global types <syntax-globaltype>` :math:`\X{gt}^\ast` as determined below,
@@ -631,7 +631,7 @@ Instead, the context :math:`C` for validation of the module's content is constru
     the definition :math:`\mem_i` must be :ref:`valid <valid-mem>` with a :ref:`memory type <syntax-memtype>` :math:`\X{mt}_i`.
 
   * For each :math:`\event_i` in :math:`\module.\MEVENTS`,
-    the definition :math:`\event_i` must be :ref:`valid <valid-event>` with an :ref:`event type <syntax-eventtype>` :math:`\X{ev}_i`.
+    the definition :math:`\event_i` must be :ref:`valid <valid-event>` with an :ref:`event type <syntax-eventtype>` :math:`\X{evt}_i`.
 
   * For each :math:`\global_i` in :math:`\module.\MGLOBALS`:
 

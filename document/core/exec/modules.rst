@@ -78,12 +78,12 @@ The following auxiliary typing rules specify this typing relation relative to a 
 
 * Let :math:`\functype` be the function type :math:`S.\SEVENTS[a].\EVITYPE`.
 
-* Then :math:`\EVEVENT~a` is valid with :ref:`external type <syntax-externtype>` :math:`\ETEVENT~S.\SEVENTS[a].\EVIATTRIBUTE~\functype`.
+* Then :math:`\EVEVENT~a` is valid with :ref:`external type <syntax-externtype>` :math:`\ETEVENT~S.\SEVENTS[a].\EVIATTR~\functype`.
 
 .. math::
    \frac{
    }{
-     S \vdashexternval \EVEVENT~a : \ETEVENT~(S.\SEVENTS[a].\EVIATTRIBUTE)~(S.\SEVENTS[a].\EVITYPE)
+     S \vdashexternval \EVEVENT~a : \ETEVENT~(S.\SEVENTS[a].\EVIATTR)~(S.\SEVENTS[a].\EVITYPE)
    }
 
 
@@ -169,7 +169,7 @@ The following auxiliary typing rules specify this typing relation relative to a 
    }
 
 
-:ref:`Exception References <syntax-exnrefaddr>` :math:`\EXNREFADDR~a~\val^n`
+:ref:`Exception References <syntax-refexnaddr>` :math:`\REFEXNADDR~a~\val^n`
 ............................................................................
 
 * The external value :math:`\EVEVENT~a` must be valid with :ref:`event type <syntax-eventtype>` :math:`\EXCEPTION~[t^n]\to[]`.
@@ -184,7 +184,7 @@ The following auxiliary typing rules specify this typing relation relative to a 
    \qquad
     (S \vdashval \val : t)^n
    }{
-     S \vdashval \EXNREFADDR~a~\val^n : \EXNREF
+     S \vdashval \REFEXNADDR~a~\val^n : \EXNREF
    }
 
 
@@ -328,7 +328,7 @@ New instances of :ref:`functions <syntax-funcinst>`, :ref:`tables <syntax-tablei
 
 3. Let :math:`\functype` be the :ref:`function type <syntax-functype>` :math:`\module.\MTYPES[\event.\EVTYPE]`.
 
-4. Let :math:`\eventinst` be the :ref:`event instance <syntax-eventinst>` :math:`\{ \EVIATTRIBUTE~\event.\EVATTRIBUTE, \EVITYPE~\functype \}`. 
+4. Let :math:`\eventinst` be the :ref:`event instance <syntax-eventinst>` :math:`\{ \EVIATTR~\event.\EVATTR, \EVITYPE~\functype \}`.
 
 5. Append :math:`\eventinst` to the |SEVENTS| of :math:`S`.
 
@@ -339,7 +339,7 @@ New instances of :ref:`functions <syntax-funcinst>`, :ref:`tables <syntax-tablei
    \allocevent(S, \event, \module) &=& S', \eventaddr \\[1ex]
    \mbox{where:} \hfill \\
    \eventaddr &=& |S.\SEVENTS| \\
-   \eventinst &=& \{ \EVIATTRIBUTE~\event.\EVATTRIBUTE, \EVITYPE~\functype \} \\
+   \eventinst &=& \{ \EVIATTR~\event.\EVATTR, \EVITYPE~\functype \} \\
    S' &=& S \compose \{\SEVENTS~\eventinst\} \\
    \end{array}
 

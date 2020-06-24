@@ -203,7 +203,7 @@
 .. |resulttype| mathdef:: \xref{syntax/types}{syntax-resulttype}{\X{resulttype}}
 .. |functype| mathdef:: \xref{syntax/types}{syntax-functype}{\X{functype}}
 .. |eventtype| mathdef:: \xref{syntax/types}{syntax-eventtype}{\X{eventtype}}
-.. |attribute| mathdef:: \xref{syntax/types}{syntax-eventtype}{\X{attribute}}
+.. |eventattr| mathdef:: \xref{syntax/types}{syntax-eventtype}{\X{eventattr}}
 
 .. |globaltype| mathdef:: \xref{syntax/types}{syntax-globaltype}{\X{globaltype}}
 .. |tabletype| mathdef:: \xref{syntax/types}{syntax-tabletype}{\X{tabletype}}
@@ -273,7 +273,7 @@
 
 .. |MTYPE| mathdef:: \xref{syntax/modules}{syntax-mem}{\K{type}}
 
-.. |EVATTRIBUTE| mathdef:: \xref{syntax/modules}{syntax-event}{\K{attribute}}
+.. |EVATTR| mathdef:: \xref{syntax/modules}{syntax-event}{\K{eventattr}}
 .. |EVTYPE| mathdef:: \xref{syntax/modules}{syntax-event}{\K{type}}
 
 .. |GTYPE| mathdef:: \xref{syntax/modules}{syntax-global}{\K{type}}
@@ -528,7 +528,7 @@
 .. |Bmemtype| mathdef:: \xref{binary/types}{binary-memtype}{\B{memtype}}
 .. |Blimits| mathdef:: \xref{binary/types}{binary-limits}{\B{limits}}
 .. |Bmut| mathdef:: \xref{binary/types}{binary-mut}{\B{mut}}
-.. |Battribute| mathdef:: \xref{binary/types}{binary-attribute}{\B{attribute}}
+.. |Beventattr| mathdef:: \xref{binary/types}{binary-eventattr}{\B{eventattr}}
 
 
 .. Indices, non-terminals
@@ -688,7 +688,6 @@
 .. |Trefedtype| mathdef:: \xref{text/types}{text-refedtype}{\T{refedtype}}
 .. |Tvaltype| mathdef:: \xref{text/types}{text-valtype}{\T{valtype}}
 .. |Tfunctype| mathdef:: \xref{text/types}{text-functype}{\T{functype}}
-.. |Teventtype| mathdef:: \xref{text/types}{text-eventtype}{\T{eventtype}}
 
 .. |Tglobaltype| mathdef:: \xref{text/types}{text-globaltype}{\T{globaltype}}
 .. |Ttabletype| mathdef:: \xref{text/types}{text-tabletype}{\T{tabletype}}
@@ -904,7 +903,7 @@
 .. |MITYPE| mathdef:: \xref{exec/runtime}{syntax-meminst}{\K{type}}
 .. |MIDATA| mathdef:: \xref{exec/runtime}{syntax-meminst}{\K{data}}
 
-.. |EVIATTRIBUTE| mathdef:: \xref{exec/runtime}{syntax-eventinst}{\K{attribute}}
+.. |EVIATTR| mathdef:: \xref{exec/runtime}{syntax-eventinst}{\K{eventattr}}
 .. |EVITYPE| mathdef:: \xref{exec/runtime}{syntax-eventinst}{\K{type}}
 
 .. |GITYPE| mathdef:: \xref{exec/runtime}{syntax-globalinst}{\K{type}}
@@ -1002,7 +1001,7 @@
 .. |REFEXTERNADDR| mathdef:: \xref{exec/runtime}{syntax-ref.extern}{\K{ref{.}extern}}
 .. |TRAP| mathdef:: \xref{exec/runtime}{syntax-trap}{\K{trap}}
 .. |INVOKE| mathdef:: \xref{exec/runtime}{syntax-invoke}{\K{invoke}}
-.. |EXNREFADDR| mathdef:: \xref{exec/runtime}{syntax-exnrefaddr}{\K{ref{.}exn}}
+.. |REFEXNADDR| mathdef:: \xref{exec/runtime}{syntax-refexnaddr}{\K{ref{.}exn}}
 .. |THROWADDR| mathdef:: \xref{exec/runtime}{syntax-throwaddr}{\K{throw}}
 .. |CATCHN| mathdef:: \xref{exec/runtime}{syntax-catchn}{\K{catch}}
 

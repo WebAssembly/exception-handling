@@ -174,8 +174,8 @@ The descriptors in imports can bind a symbolic function, table, memory, event, o
        &\Rightarrow& \IDTABLE~\X{tt} \\ &&|&
      \text{(}~\text{memory}~~\Tid^?~~\X{mt}{:}\Tmemtype~\text{)}
        &\Rightarrow& \IDMEM~~\X{mt} \\ &&|&
-     \text{(}~\text{event}~~\Tid^?~~\X{ev}{:}\Tevent~\text{)}
-       &\Rightarrow& \IDEVENT~\X{ev} \\ &&|&
+     \text{(}~\text{event}~~\Tid^?~~\X{evt}{:}\Tevent~\text{)}
+       &\Rightarrow& \IDEVENT~\X{evt} \\ &&|&
      \text{(}~\text{global}~~\Tid^?~~\X{gt}{:}\Tglobaltype~\text{)}
        &\Rightarrow& \IDGLOBAL~\X{gt} \\
    \end{array}
@@ -400,7 +400,7 @@ An event definition can bind a symbolic :ref:`event identifier <text-id>`.
    \begin{array}{llcl}
    \production{event} & \Tevent_I &::=&
      \text{(}~\text{exception}~~\Tid^?~~x,I'{:}\Ttypeuse_I~\text{)} \\ &&& \qquad
-       \Rightarrow\quad \{ \EVATTRIBUTE~\EXCEPTION, \EVTYPE~x \} \\
+       \Rightarrow\quad \{ \EVATTR~\EXCEPTION, \EVTYPE~x \} \\
    \end{array}
 
 .. note::
@@ -423,8 +423,8 @@ Events can be defined as :ref:`imports <text-import>` or :ref:`exports <text-exp
 .. math::
    \begin{array}{llclll}
    \production{module field} &
-     \text{(}~\text{exception}~~\Tid^?~~\text{(}~\text{import}~~\Tname_1~~\Tname_2~\text{)}~~\Teventtype~\text{)} \quad\equiv \\ & \qquad
-       \text{(}~\text{import}~~\Tname_1~~\Tname_2~~\text{(}~\text{exception}~~\Tid^?~~\Teventtype~\text{)}~\text{)}
+     \text{(}~\text{exception}~~\Tid^?~~\text{(}~\text{import}~~\Tname_1~~\Tname_2~\text{)}~~\Ttypeuse~\text{)} \quad\equiv \\ & \qquad
+       \text{(}~\text{import}~~\Tname_1~~\Tname_2~~\text{(}~\text{exception}~~\Tid^?~~\Ttypeuse~\text{)}~\text{)}
        \\[1ex] &
      \text{(}~\text{exception}~~\Tid^?~~\text{(}~\text{export}~~\Tname~\text{)}~~\dots~\text{)} \quad\equiv \\ & \qquad
        \text{(}~\text{export}~~\Tname~~\text{(}~\text{exception}~~\Tid'~\text{)}~\text{)}~~
@@ -702,7 +702,7 @@ The name serves a documentary role only.
      \X{fn}{:}\Tfunc_I &\Rightarrow& \{\MFUNCS~\X{fn}\} \\ |&
      \X{ta}{:}\Ttable_I &\Rightarrow& \{\MTABLES~\X{ta}\} \\ |&
      \X{me}{:}\Tmem_I &\Rightarrow& \{\MMEMS~\X{me}\} \\ |&
-     \X{ev}{:}\Tevent_I &\Rightarrow& \{\MEVENTS~\X{ev}\} \\ |&
+     \X{evt}{:}\Tevent_I &\Rightarrow& \{\MEVENTS~\X{evt}\} \\ |&
      \X{gl}{:}\Tglobal_I &\Rightarrow& \{\MGLOBALS~\X{gl}\} \\ |&
      \X{ex}{:}\Texport_I &\Rightarrow& \{\MEXPORTS~\X{ex}\} \\ |&
      \X{st}{:}\Tstart_I &\Rightarrow& \{\MSTART~\X{st}\} \\ |&

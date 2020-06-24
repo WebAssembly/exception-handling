@@ -39,13 +39,10 @@ or *external references* pointing to an uninterpreted form of :ref:`extern addre
      \REFNULL~t \\&&|&
      \REFFUNCADDR~\funcaddr \\&&|&
      \REFEXTERNADDR~\externaddr \\&&|&
-     \EXNREFADDR~\eventaddr~\val^\ast \\
+     \REFEXNADDR~\eventaddr~\val^\ast \\
    \production{(value)} & \val &::=&
      \num ~|~ \reff \\
    \end{array}
-
-The administrative value |EXNREFADDR| is an exception reference of type |EXNREF|, representing a thrown exception on the stack, identified by the exception's :ref:`event address <syntax-eventaddr>`, and carrying the exception event's arguments.
-If it is uncaught by a |CATCHN| block, then the embedder defines how to handle it. It is an abstract value, and it is an implementation detail how and where its argument values are stored. It is separate from any linear memory.
 
 .. note::
    Future versions of WebAssembly may add additional forms of reference.
@@ -324,12 +321,12 @@ Event Instances
 ~~~~~~~~~~~~~~~
 
 An *event instance* is the runtime representation of an :ref:`event <syntax-event>` definition.
-It records the :ref:`attribute <syntax-attribute>` and :ref:`function type <syntax-functype>` of its :ref:`type <syntax-eventtype>`.
+It records the :ref:`event attribute <syntax-eventattr>` and :ref:`function type <syntax-functype>` of its :ref:`type <syntax-eventtype>`.
 
 .. math::
    \begin{array}{llll}
    \production{(event instance)} & \eventinst &::=&
-     \{ \EVIATTRIBUTE~\EXCEPTION, \EVITYPE~\functype \} \\
+     \{ \EVIATTR~\EXCEPTION, \EVITYPE~\functype \} \\
    \end{array}
 
 Because :ref:`events <syntax-event>` have a :ref:`valid <valid-event>` |eventtype|, it is an invariant of the semantics that the function type :math:`\functype` has void result type.
@@ -337,7 +334,7 @@ Because :ref:`events <syntax-event>` have a :ref:`valid <valid-event>` |eventtyp
 .. note::
    In the current version of WebAssembly, events may only be exceptions. This may change in future versions.
 
-   The event address of an event instance is also called an _exception tag_.
+   The :ref:`event address <syntax-eventaddr>` of an event instance is also called an *exception tag*.
 
 
 .. index:: ! global instance, global, value, mutability, instruction, embedder
@@ -556,7 +553,7 @@ Conventions
 .. _syntax-trap:
 .. _syntax-reffuncaddr:
 .. _syntax-invoke:
-.. _syntax-exnrefaddr:
+.. _syntax-refexnaddr:
 .. _syntax-throwaddr:
 .. _syntax-catchn:
 .. _syntax-instr-admin:
@@ -577,7 +574,7 @@ In order to express the reduction of :ref:`traps <trap>`, :ref:`calls <syntax-ca
      \REFFUNCADDR~\funcaddr \\ &&|&
      \REFEXTERNADDR~\externaddr \\ &&|&
      \INVOKE~\funcaddr \\ &&|&
-     \EXNREFADDR~\eventaddr~\val^\ast \\ &&|&
+     \REFEXNADDR~\eventaddr~\val^\ast \\ &&|&
      \THROWADDR~\eventaddr \\ &&|&
      \LABEL_n\{\instr^\ast\}~\instr^\ast~\END \\ &&|&
      \CATCHN_n\{\instr^\ast\}~\instr^\ast~\END \\ &&|&
@@ -588,12 +585,12 @@ The |TRAP| instruction represents the occurrence of a trap.
 Traps are bubbled up through nested instruction sequences, ultimately reducing the entire program to a single |TRAP| instruction, signalling abrupt termination.
 
 The |REFFUNCADDR| instruction represents :ref:`function reference values <syntax-ref.func>`. Similarly, |REFEXTERNADDR| represents :ref:`external references <syntax-ref.extern>`,
-and |EXNREFADDR| represents :ref:`exception reference values <syntax-exnrefaddr>` of caught exception events.
+and |REFEXNADDR| represents :ref:`exception reference values <syntax-refexnaddr>` of caught exception events.
 
 The |INVOKE| instruction represents the imminent invocation of a :ref:`function instance <syntax-funcinst>`, identified by its :ref:`address <syntax-funcaddr>`.
 It unifies the handling of different forms of calls.
 
-The |THROWADDR| instruction represents the imminent throw of an :ref:`exception reference value <syntax-exnrefaddr>` based on an :ref:`event instance <syntax-eventinst>`, identified by its :ref:`address <syntax-eventaddr>`.
+The |THROWADDR| instruction represents the imminent throw of an :ref:`exception reference value <syntax-refexnaddr>` based on an :ref:`event instance <syntax-eventinst>`, identified by its :ref:`address <syntax-eventaddr>`.
 The values it will consume to create the exception depend on the event's :ref:`event type <syntax-eventtype>`.
 It unifies the throwing of different forms of events.
 
@@ -667,7 +664,7 @@ Throw Contexts
 ..............
 
 In order to specify the reduction of :ref:`try-catch blocks <syntax-try>`
-with the help of the administrative instructions |THROWADDR|, |EXNREFADDR|, and |CATCHN|,
+with the help of the administrative instructions |THROWADDR|, |REFEXNADDR|, and |CATCHN|,
 the following syntax of *throw contexts* is defined, as well as associated structural rules:
 
 .. math::
@@ -679,25 +676,10 @@ the following syntax of *throw contexts* is defined, as well as associated struc
      \FRAME_n\{F\}~\XT~\END \\
    \end{array}
 
-.. math::
-   \begin{array}{rcl}
-   S;~F;~\CATCHN_m\{\instr^\ast\}~\val^m~\END &\stepto& S;~F;~\val^m \\
-   S;~F;~\CATCHN_m\{\instr^\ast\}~\XT[\val^n~[\_]~(\THROWADDR~a)]~\END &\stepto&
-      S;~F;~\LABEL_m\{\}~(\EXNREFADDR~a~\val^n)~{\instr}^\ast~\END \\
-   && \hspace{-12ex} (\iff S.\SEVENTS[a]=\{\EVATTRIBUTE~\EXCEPTION, \EVTYPE~[t^n]\to[]\}) \\
-   \end{array}
-
 Throw contexts allow matching the program context around a throw instruction up to the nearest enclosing :math:`\CATCHN` handler, thereby selecting the exception handler responsible for an exception.
 
 .. note::
    For example, catching a simple :ref:`throw <exec-throw>` in a :ref:`try-catch block <exec-try>` would be as follows.
-
-   Let :math:`x` be the :ref:`event index <syntax-eventidx>` of an event in :math:`F.\AMODULE`, such that
-
-   .. math::
-      F.\AMODULE.\MIEVENTS[x] = \{ \EVIATTRIBUTE~\EXCEPTION, \EVITYPE~[t^n]\to[]\} = S.\SEVENTS[a]
-
-   Let :math:`\expand_F(\X{bt}) = [t^n] \to [\EXNREF]`, and consider arbitrary :ref:`values <syntax-val>` :math:`(val : t)^n`.
 
    .. math::
       \begin{array}{ll}
@@ -709,8 +691,8 @@ Throw contexts allow matching the program context around a throw instruction up 
 
    .. math::
       \begin{array}{lll}
-      \stepto & S;~F;~\LABEL_1~\{\}~(\EXNREFADDR~a~\val^n)~\RETURN~\END & \hspace{9ex}\ \\
-      \stepto & (\EXNREFADDR~a~\val^n) & \\
+      \stepto & S;~F;~\LABEL_1~\{\}~(\REFEXNADDR~a~\val^n)~\RETURN~\END & \hspace{9ex}\ \\
+      \stepto & (\REFEXNADDR~a~\val^n) & \\
       \end{array}
 
    When a throw occurs, execution halts until that throw is the continuation of a throw context in a catching try block.
@@ -719,6 +701,7 @@ Throw contexts allow matching the program context around a throw instruction up 
    :math:`\THROW~x` without a catching try-block.
 
    *(TODO: add administrative values to describe unresolved throws).*
+
 
 .. index:: ! configuration, ! thread, store, frame, instruction, module instruction
 .. _syntax-thread:

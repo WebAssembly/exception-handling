@@ -1630,7 +1630,7 @@ Control Instructions
 
 5. Let :math:`L` be the label whose arity is :math:`m` and whose continuation is the end of the |TRY| instruction.
 
-4. Execute the administrative instruction :math:`\CATCHN_m` by :ref:`entering <exec-instr-seq-enter>` the block :math:`\instr_1^\ast` with label :math:`L`, and reducing the resulting :ref:`throw context <syntax-ctxt-throw>`.
+4. :ref:`Execute <exec-catchn>` the administrative instruction :math:`\CATCHN_m` by :ref:`entering <exec-instr-seq-enter>` the block :math:`\instr_1^\ast` with label :math:`L`.
 
 .. math::
    ~\\[-1ex]
@@ -1652,7 +1652,7 @@ Control Instructions
 
 3. Let :math:`a` be the :ref:`event address <syntax-eventaddr>` :math:`F.\AMODULE.\MIEVENTS[x]`.
 
-4. :ref:`Throw <syntax-throwaddr>` the :ref:`event address <syntax-eventaddr>` :math:`a`.
+4. :ref:`Throw <exec-throwaddr>` the :ref:`event address <syntax-eventaddr>` :math:`a`.
 
 .. math::
    ~\\[-1ex]
@@ -1674,17 +1674,17 @@ Control Instructions
 
    a. Trap.
 
-4. Assert: :math:`\EXNREF` is of the form :math:`(\EXNREFADDR~a~\val^\ast)`.
+4. Assert: :math:`\EXNREF` is of the form :math:`(\REFEXNADDR~a~\val^\ast)`.
 
 5. Put the values :math:`\val^\ast` on the stack.
 
-6. :ref:`Throw <syntax-throwaddr>` the :ref:`event address <syntax-eventaddr>` :math:`a`.
+6. :ref:`Throw <exec-throwaddr>` the :ref:`event address <syntax-eventaddr>` :math:`a`.
 
 .. math::
    ~\\[-1ex]
    \begin{array}{lclr@{\qquad}}
      (\REFNULL~\EXNREF)~\RETHROW &\stepto& \TRAP \\
-     (\EXNREFADDR~a~\val^\ast)~\RETHROW &\stepto& \val^\ast~(\THROWADDR~a) \\
+     (\REFEXNADDR~a~\val^\ast)~\RETHROW &\stepto& \val^\ast~(\THROWADDR~a) \\
    \end{array}
 
 
@@ -1701,7 +1701,7 @@ Control Instructions
 
    a. Trap.
 
-4. Assert: :math:`\EXNREF` is of the form :math:`(\EXNREFADDR~a~\val^\ast)`.
+4. Assert: :math:`\EXNREF` is of the form :math:`(\REFEXNADDR~a~\val^\ast)`.
 
 5. Let :math:`F` be the :ref:`current <exec-notation-textual>` :ref:`frame <syntax-frame>`.
 
@@ -1715,14 +1715,14 @@ Control Instructions
 
 8. Else:
 
-   a. Put the value :math:`(\EXNREFADDR~a~\val^\ast)` back on the stack.
+   a. Put the value :math:`(\REFEXNADDR~a~\val^\ast)` back on the stack.
 
 .. math::
    ~\\[-1ex]
    \begin{array}{lclr@{\qquad}l}
      F; (\REFNULL~\EXNREF)~\BRONEXN~l~x &\stepto& F; \TRAP \\
-     F; (\EXNREFADDR~a~\val^\ast)~\BRONEXN~l~x &\stepto& F; \val^\ast~(\BR~l)     & (\iff F.\AMODULE.\MIEVENTS[x] = a) \\
-     F; (\EXNREFADDR~a~\val^\ast)~\BRONEXN~l~x &\stepto& F; (\EXNREFADDR~a~\val^\ast) & (\iff F.\AMODULE.\MIEVENTS[x] \neq a) \\
+     F; (\REFEXNADDR~a~\val^\ast)~\BRONEXN~l~x &\stepto& F; \val^\ast~(\BR~l)     & (\iff F.\AMODULE.\MIEVENTS[x] = a) \\
+     F; (\REFEXNADDR~a~\val^\ast)~\BRONEXN~l~x &\stepto& F; (\REFEXNADDR~a~\val^\ast) & (\iff F.\AMODULE.\MIEVENTS[x] \neq a) \\
    \end{array}
 
 
@@ -1994,6 +1994,28 @@ When the end of a block is reached without a jump or trap aborting it, then the 
 .. note::
    This semantics also applies to the instruction sequence contained in a |LOOP| instruction.
    Therefore, execution of a loop falls off the end, unless a backwards branch is performed explicitly.
+
+
+.. index:: exception handling, throw context
+   pair: handling; exception
+.. _exec-catchn:
+.. _exec-throwaddr:
+
+Exception Handling
+~~~~~~~~~~~~~~~~~~
+
+The following auxiliary rules define the semantics of handling thrown exceptions
+inside :ref:`throw contexts <syntax-ctxt-throw>`.
+
+*TODO: Add rules prose, which may involve having defined return values for unresolved throws.*
+
+.. math::
+   \begin{array}{rcl}
+   S;~F;~\CATCHN_m\{\instr^\ast\}~\val^m~\END &\stepto& S;~F;~\val^m \\
+   S;~F;~\CATCHN_m\{\instr^\ast\}~\XT[\val^n~[\_]~(\THROWADDR~a)]~\END &\stepto&
+      S;~F;~\LABEL_m\{\}~(\REFEXNADDR~a~\val^n)~{\instr}^\ast~\END \\
+   && \hspace{-12ex} (\iff S.\SEVENTS[a]=\{\EVATTR~\EXCEPTION, \EVTYPE~[t^n]\to[]\}) \\
+   \end{array}
 
 
 .. index:: ! call, function, function instance, label, frame

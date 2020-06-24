@@ -240,10 +240,10 @@ The |MEVENTS| component of a module defines a vector of *events* with the follow
 
 .. math::
    \begin{array}{llll}
-   \production{event} & \event &::=& \{ \EVATTRIBUTE~\EXCEPTION, \EVTYPE~\typeidx \} \\
+   \production{event} & \event &::=& \{ \EVATTR~\EXCEPTION, \EVTYPE~\typeidx \} \\
    \end{array}
 
-The event's :ref:`attribute <syntax-attribute>` may only specify the attribute |EXCEPTION|, meaning that the event is an exception.
+The :ref:`event attribute <syntax-eventattr>` may only specify the attribute |EXCEPTION|, meaning that the event is an exception.
 In this case, the result type of the function signature with type index :math:`\typeidx` must be void.
 
 Events are referenced through :ref:`event indices <syntax-eventidx>`,

@@ -262,8 +262,8 @@ Module instances are classified by *module contexts*, which are regular :ref:`co
 .. index:: event type, event instance, exception tag, function type
 .. _valid-eventinst:
 
-:ref:`Event Instances <syntax-eventinst>` :math:`\{ \EVIATTRIBUTE~\EXCEPTION, \EVITYPE~\functype \}`
-....................................................................................................
+:ref:`Event Instances <syntax-eventinst>` :math:`\{ \EVIATTR~\EXCEPTION, \EVITYPE~\functype \}`
+...............................................................................................
 
 * The :ref:`event type <syntax-eventtype>` :math:`\EXCEPTION~\functype` must be :ref:`valid <valid-eventtype>`.
 
@@ -273,7 +273,7 @@ Module instances are classified by *module contexts*, which are regular :ref:`co
    \frac{
      \vdasheventtype \EXCEPTION~\functype \ok
    }{
-     S \vdasheventinst \{ \EVIATTRIBUTE~\EXCEPTION, \EVITYPE~\functype \} : \EXCEPTION~\functype
+     S \vdasheventinst \{ \EVIATTR~\EXCEPTION, \EVITYPE~\functype \} : \EXCEPTION~\functype
    }
 
 
@@ -579,7 +579,7 @@ To that end, all previous typing judgements :math:`C \vdash \X{prop}` are genera
 
 .. index:: event address, event type, function type, value type, exception attribute, exception tag
 
-:math:`\EXNREFADDR~\eventaddr~\val^\ast`
+:math:`\REFEXNADDR~\eventaddr~\val^\ast`
 ........................................
 
 * The :ref:`external event value <syntax-externval>` :math:`\EVEVENT~\eventaddr` must be :ref:`valid <valid-externval-event>` with :ref:`external event type <syntax-externtype>` :math:`\ETEVENT~\EXCEPTION~[t^\ast]\to[]`.
@@ -594,7 +594,7 @@ To that end, all previous typing judgements :math:`C \vdash \X{prop}` are genera
      \qquad
      (S \vdashval \val : t)^\ast
    }{
-     S; C \vdashadmininstr \EXNREFADDR~\eventaddr~\val^\ast : [] \to [\EXNREF]
+     S; C \vdashadmininstr \REFEXNADDR~\eventaddr~\val^\ast : [] \to [\EXNREF]
    }
 
 

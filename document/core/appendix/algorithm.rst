@@ -212,12 +212,12 @@ Other instructions are checked in a similar manner.
 
        case (try t1*->t2*)
          pop_vals([t1*])
-	 push_ctrl(try, [t1*], [t2*])
+         push_ctrl(try, [t1*], [t2*])
 
        case (catch)
          let frame = pop_ctrl()
-	 error_if(frame.opcode =/= try)
-	 push_ctrl(catch, [exnref], frame.end_types)
+         error_if(frame.opcode =/= try)
+         push_ctrl(catch, [exnref], frame.end_types)
 
        case (br n)
          error_if(ctrls.size() < n)

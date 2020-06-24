@@ -140,21 +140,6 @@ Table Types
    \end{array}
 
 
-.. index:: event type, exception attribute, exception, function type
-   pair: text format; event type
-   pair: text format; exception attribute
-.. _text-eventtype:
-
-Event Types
-~~~~~~~~~~~
-
-.. math::
-   \begin{array}{llclll}
-   \production{event type} & \Teventtype &::=&
-     \text{(}~\text{exception}~~t^\ast{:}\Tvec(\Tparam)~\text{)} &\Rightarrow& \EXCEPTION~~[t^\ast] \to [] \\
-   \end{array}
-
-
 .. index:: global type, mutability, value type
    pair: text format; global type
    pair: text format; mutability

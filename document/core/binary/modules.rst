@@ -175,7 +175,7 @@ It decodes into a vector of :ref:`imports <syntax-import>` that represent the |M
      \hex{01}~~\X{tt}{:}\Btabletype &\Rightarrow& \IDTABLE~\X{tt} \\ &&|&
      \hex{02}~~\X{mt}{:}\Bmemtype &\Rightarrow& \IDMEM~\X{mt} \\ &&|&
      \hex{03}~~\X{gt}{:}\Bglobaltype &\Rightarrow& \IDGLOBAL~\X{gt} \\ &&|&
-     \hex{04}~~\X{ev}{:}\Bevent &\Rightarrow& \IDEVENT~\X{ev} \\
+     \hex{04}~~\X{evt}{:}\Bevent &\Rightarrow& \IDEVENT~\X{evt} \\
    \end{array}
 
 
@@ -482,7 +482,7 @@ It decodes into an optional :ref:`u32 <syntax-uint>` that represents the number 
    instead of deferring validation.
 
 
-.. index:: ! event section, event, event type, attribute, function type index
+.. index:: ! event section, event, event type, event attribute, function type index
    pair: binary format; event
    pair: section; event
 .. _binary-event:
@@ -500,8 +500,8 @@ component of a :ref:`module <syntax-module>`.
    \production{event section} & \Beventsec &::=&
      \X{event}^\ast{:}\Bsection_{13}(\Bvec(\Bevent)) &\Rightarrow& \X{event}^\ast \\
    \production{event} & \Bevent &::=&
-     \X{attr}{:}\Battribute~~\X{x}{:}\Btypeidx
-       &\Rightarrow& \{ \EVATTRIBUTE~\X{attr}, \EVTYPE~\X{x} \} \\
+     \X{eventattr}{:}\Beventattr~~\X{x}{:}\Btypeidx
+       &\Rightarrow& \{ \EVATTR~\X{eventattr}, \EVTYPE~\X{x} \} \\
    \end{array}
 
 
