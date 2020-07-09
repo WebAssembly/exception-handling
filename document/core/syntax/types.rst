@@ -59,7 +59,7 @@ Reference Types
 
 The type |FUNCREF| denotes the infinite union of all references to :ref:`functions <syntax-func>`, regardless of their :ref:`function types <syntax-functype>`.
 
-The type |EXNREF| denotes a caught exception :ref:`event <syntax-event>`.
+The type |EXNREF| denotes a caught :ref:`exception <syntax-exn>`.
 
 The type |EXTERNREF| denotes the infinite union of all references to objects owned by the :ref:`embedder <embedder>` and that can be passed into WebAssembly under this type.
 
@@ -192,31 +192,23 @@ The limits are given in numbers of entries.
    In future versions of WebAssembly, additional element types may be introduced.
 
 
-.. index:: ! event, exception, event type, event attribute
-   pair: abstract syntax; event
+.. index:: ! exception, exception type, function type
    pair: abstract syntax; exception
-   single: event; type
-   single: event; attribute
-.. _syntax-eventattr:
-.. _syntax-eventtype:
+   single: exception; type
+.. _syntax-exntype:
 
-Event Types
-~~~~~~~~~~~
+Exception Types
+~~~~~~~~~~~~~~~
 
-*Event types* classify the signature of :ref:`events <syntax-event>`,
-with an event attribute and a function type.
+*Exception types* classify the signature of :ref:`exceptions <syntax-exn>` with a function type.
 
 .. math::
    \begin{array}{llll}
-   \production{event type} &\eventtype &::=& \eventattr~~\functype \\
-   \production{event attribute} &\eventattr &::=& \EXCEPTION \\
+   \production{exception type} &\exntype &::=& \functype \\
    \end{array}
 
-The |eventattr| |EXCEPTION| specifies that the event is an exception, in which case the result type of its function type |functype| must be void.
-The parameters of |functype| define the list of values associated with the exception event.
-
-
-.. note:: In the current version of WebAssembly, events may only be exceptions. In future versions additional events may be added.
+The result type of an exception's function type |functype| must be void.
+The parameters of |functype| define the list of values associated with the exception.
 
 
 .. index:: ! global type, ! mutability, value type, global, mutability
@@ -242,7 +234,7 @@ Global Types
    \end{array}
 
 
-.. index:: ! external type, function type, table type, memory type, global type, import, external value
+.. index:: ! external type, function type, table type, memory type, exception type, global type, import, external value
    pair: abstract syntax; external type
    pair: external; type
 .. _syntax-externtype:
@@ -258,7 +250,7 @@ External Types
      \ETFUNC~\functype ~|~
      \ETTABLE~\tabletype ~|~
      \ETMEM~\memtype ~|~
-     \ETEVENT~\eventtype ~|~
+     \ETEXN~\exntype ~|~
      \ETGLOBAL~\globaltype \\
    \end{array}
 
@@ -275,6 +267,6 @@ It filters out entries of a specific kind in an order-preserving fashion:
 
 * :math:`\etmems(\externtype^\ast) = [\memtype ~|~ (\ETMEM~\memtype) \in \externtype^\ast]`
 
-* :math:`\etevents(\externtype^\ast) = [\eventtype ~|~ (\ETEVENT~\eventtype) \in \externtype^\ast]`
+* :math:`\etexns(\externtype^\ast) = [\exntype ~|~ (\ETEXN~\exntype) \in \externtype^\ast]`
 
 * :math:`\etglobals(\externtype^\ast) = [\globaltype ~|~ (\ETGLOBAL~\globaltype) \in \externtype^\ast]`

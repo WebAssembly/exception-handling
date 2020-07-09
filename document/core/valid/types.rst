@@ -2,7 +2,7 @@ Types
 -----
 
 Most :ref:`types <syntax-type>` are universally valid.
-However, restrictions apply to :ref:`event types <syntax-eventtype>` and to :ref:`limits <syntax-limits>`, which must be checked during validation.
+However, restrictions apply to :ref:`exception types <syntax-exntype>` and to :ref:`limits <syntax-limits>`, which must be checked during validation.
 Moreover, :ref:`block types <syntax-blocktype>` are converted to plain :ref:`function types <syntax-functype>` for ease of processing.
 
 
@@ -146,28 +146,26 @@ Memory Types
    }
 
 
-.. index:: event type, exception attribute, result type
-   pair: validation; event type
-   single: abstract syntax; event type
-.. _valid-eventtype:
+.. index:: exception type, function type
+   pair: validation; exception type
+   single: abstract syntax; exception type
+.. _valid-exntype:
 
-Event Types
-~~~~~~~~~~~
+Exception Types
+~~~~~~~~~~~~~~~
 
-:math:`\EXCEPTION~[t^n] \to []`
-...............................
-
-* The :ref:`event attribute <syntax-eventattr>` must be |EXCEPTION|.
+:math:`[t^n] \to []`
+....................
 
 * The :ref:`function type <syntax-functype>` :math:`[t^n] \to []` must be :ref:`valid <valid-functype>`.
 
-* Then the event type is valid.
+* Then the exception type is valid.
 
 .. math::
    \frac{
      \vdashfunctype [t^n] \to [] \ok
    }{
-     \vdasheventtype \EXCEPTION~[t^n] \to [] \ok
+     \vdashexntype [t^n] \to [] \ok
    }
 
 
@@ -241,18 +239,18 @@ External Types
      \vdashexterntype \ETMEM~\memtype \ok
    }
 
-:math:`\ETEVENT~\eventtype`
-...........................
+:math:`\ETEXN~\exntype`
+.......................
 
-* The :ref:`event type <syntax-eventtype>` :math:`\eventtype` must be :ref:`valid <valid-eventtype>`.
+* The :ref:`exception type <syntax-exntype>` :math:`\exntype` must be :ref:`valid <valid-exntype>`.
 
 * Then the external type is valid.
 
 .. math::
    \frac{
-     \vdasheventtype \eventtype \ok
+     \vdashexntype \exntype \ok
    }{
-     \vdashexterntype \ETEVENT~\eventtype \ok
+     \vdashexterntype \ETEXN~\exntype \ok
    }
 
 :math:`\ETGLOBAL~\globaltype`
@@ -377,20 +375,20 @@ An :ref:`external type <syntax-externtype>` :math:`\ETMEM~\limits_1` matches :ma
    }
 
 
-.. index:: event type, value type
-.. _match-eventtype:
+.. index:: exception type, value type
+.. _match-exntype:
 
-Events
-......
+Exceptions
+..........
 
-An :ref:`external type <syntax-externtype>` :math:`\ETEVENT~\eventtype_1` matches :math:`\ETEVENT~\eventtype_2`  if and only if:
+An :ref:`external type <syntax-externtype>` :math:`\ETEXN~\exntype_1` matches :math:`\ETEXN~\exntype_2`  if and only if:
 
-* Both :math:`\ETEVENT~\eventtype_1` and :math:`\ETEVENT~\eventtype_2` are the same.
+* Both :math:`\ETEXN~\exntype_1` and :math:`\ETEXN~\exntype_2` are the same.
 
 .. math::
    \frac{
    }{
-     \vdashexterntypematch \ETEVENT~\eventtype \matchesexterntype \ETEVENT~\eventtype
+     \vdashexterntypematch \ETEXN~\exntype \matchesexterntype \ETEXN~\exntype
    }
 
 

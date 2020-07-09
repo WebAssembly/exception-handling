@@ -1630,7 +1630,9 @@ Control Instructions
 
 5. Let :math:`L` be the label whose arity is :math:`m` and whose continuation is the end of the |TRY| instruction.
 
-4. :ref:`Execute <exec-catchn>` the administrative instruction :math:`\CATCHN_m` by :ref:`entering <exec-instr-seq-enter>` the block :math:`\instr_1^\ast` with label :math:`L`.
+6. Let :math:`H` be the exception handler whose arity is :math:`m` and whose continuation is the beginning of :math:`\instr_2^\ast`.
+
+7. :ref:`Install <exec-install-handler>` the exception handler `H` for the block :math:`\val^n~\instr_1^\ast` with label :math:`L`.
 
 .. math::
    ~\\[-1ex]
@@ -1648,16 +1650,16 @@ Control Instructions
 
 1. Let :math:`F` be the :ref:`current <exec-notation-textual>` :ref:`frame <syntax-frame>`.
 
-2. Assert: due to :ref:`validation <valid-throw>`, :math:`F.\AMODULE.\MIEVENTS[x]` exists.
+2. Assert: due to :ref:`validation <valid-throw>`, :math:`F.\AMODULE.\MIEXNS[x]` exists.
 
-3. Let :math:`a` be the :ref:`event address <syntax-eventaddr>` :math:`F.\AMODULE.\MIEVENTS[x]`.
+3. Let :math:`a` be the :ref:`exception address <syntax-exnaddr>` :math:`F.\AMODULE.\MIEXNS[x]`.
 
-4. :ref:`Throw <exec-throwaddr>` the :ref:`event address <syntax-eventaddr>` :math:`a`.
+4. :ref:`Search <exec-search-handler>` for an exception handler for the :ref:`exception address <syntax-exnaddr>` :math:`a`.
 
 .. math::
    ~\\[-1ex]
    \begin{array}{lclr@{\qquad}l}
-   \THROW~x &\stepto& \THROWADDR~a & (\iff F.\AMODULE.\MIEVENTS[x] = a) \\
+   \THROW~x &\stepto& \THROWADDR~a & (\iff F.\AMODULE.\MIEXNS[x] = a) \\
    \end{array}
 
 
@@ -1678,7 +1680,7 @@ Control Instructions
 
 5. Put the values :math:`\val^\ast` on the stack.
 
-6. :ref:`Throw <exec-throwaddr>` the :ref:`event address <syntax-eventaddr>` :math:`a`.
+6. :ref:`Search <exec-search-handler>`  for an exception handler for the :ref:`exception address <syntax-exnaddr>` :math:`a`.
 
 .. math::
    ~\\[-1ex]
@@ -1705,9 +1707,9 @@ Control Instructions
 
 5. Let :math:`F` be the :ref:`current <exec-notation-textual>` :ref:`frame <syntax-frame>`.
 
-6. Assert: due to :ref:`validation <valid-br_on_exn>`, :math:`F.\AMODULE.\MIEVENTS[x]` exists.
+6. Assert: due to :ref:`validation <valid-br_on_exn>`, :math:`F.\AMODULE.\MIEXNS[x]` exists.
 
-7. If :math:`F.\AMODULE.\MIEVENTS[x]=a`, then:
+7. If :math:`F.\AMODULE.\MIEXNS[x]=a`, then:
 
    a. Put the values :math:`\val^\ast` on the stack.
 
@@ -1721,8 +1723,8 @@ Control Instructions
    ~\\[-1ex]
    \begin{array}{lclr@{\qquad}l}
      F; (\REFNULL~\EXNREF)~\BRONEXN~l~x &\stepto& F; \TRAP \\
-     F; (\REFEXNADDR~a~\val^\ast)~\BRONEXN~l~x &\stepto& F; \val^\ast~(\BR~l)     & (\iff F.\AMODULE.\MIEVENTS[x] = a) \\
-     F; (\REFEXNADDR~a~\val^\ast)~\BRONEXN~l~x &\stepto& F; (\REFEXNADDR~a~\val^\ast) & (\iff F.\AMODULE.\MIEVENTS[x] \neq a) \\
+     F; (\REFEXNADDR~a~\val^\ast)~\BRONEXN~l~x &\stepto& F; \val^\ast~(\BR~l)     & (\iff F.\AMODULE.\MIEXNS[x] = a) \\
+     F; (\REFEXNADDR~a~\val^\ast)~\BRONEXN~l~x &\stepto& F; (\REFEXNADDR~a~\val^\ast) & (\iff F.\AMODULE.\MIEXNS[x] \neq a) \\
    \end{array}
 
 
@@ -1998,23 +2000,105 @@ When the end of a block is reached without a jump or trap aborting it, then the 
 
 .. index:: exception handling, throw context
    pair: handling; exception
+
 .. _exec-catchn:
-.. _exec-throwaddr:
+.. _exec-exn-handling:
 
 Exception Handling
 ~~~~~~~~~~~~~~~~~~
 
 The following auxiliary rules define the semantics of handling thrown exceptions
-inside :ref:`throw contexts <syntax-ctxt-throw>`.
+inside :ref:`throw contexts <syntax-ctxt-throw>`, such as installing, searching for,
+and exiting an :ref:`exception handler <syntax-handler>` :math:`\CATCHN_n`.
 
-*TODO: Add rules prose, which may involve having defined return values for unresolved throws.*
+.. _exec-install-handler:
+
+Installing an exception handler :math:`H` for a block :math:`\instr^\ast` with label :math:`L`
+..............................................................................................
+
+1. Let :math:`H` be the exception handler :math:`\CATCHN_m{\instr'^\ast}`.
+
+2. Push :math:`H` on the stack.
+
+3. :ref:`Enter <exec-instr-seq-enter>` the block :math:`\instr^\ast` with label :math:`L`.
+
+.. note::
+   No formal reduction rule is needed for installing an exception handler
+   because it is an :ref:`administrative instruction <syntax-instr-admin>`
+   which exception throwing instructions will search for.
+
+
+Exiting an exception handler with arity :math:`m` from a block with label :math:`L`
+...................................................................................
+
+When the block is exited without a throw :ref:`triggering <exec-handle-exn>`
+the exception handler, then the following steps are performed.
+
+1. Assert: due to validation, there are :math:`m` values on the top of the stack.
+
+2. Pop the values :math:`\val^m` from the stack.
+
+3. Assert: due to :ref:`validation <valid-instr-seq>`, the exception handler :math:`H` is now on the top of the stack.
+
+4. Pop the exception handler from the stack.
+
+5. Push :math:`\val^m` back to the stack.
+
+6. Jump to the position after the |END| of the originating |TRY| instruction associated with the label :math:`L`.
+
+.. math::
+   ~\\[-1ex]
+   \begin{array}{lcl@{\qquad}l}
+   \CATCHN_m\{instr^\ast\}~\val^m~\END &\stepto& \val^m
+   \end{array}
+
+
+.. _exec-search-handler:
+.. _exec-throwaddr:
+
+Searching for an exception handler for the :ref:`exception address <syntax-exnaddr>` :math:`a`
+..............................................................................................
+
+When a throw or a rethrow occurs, labels and call frames are popped if necessary,
+until an exception handler is found on the top of the stack.
+
+1. Assert: due to validation, :math:`S.\SEXNS[a]` exists.
+
+2. Let :math:`[t^n] \to []` be the type of the exception instance :math:`S.\SEXNS[a]`.
+
+3. Assert: due to validation, there are :math:`n` values on the top of the stack.
+
+4. Pop the :math:`n` values :math:`\val^n` from the stack.
+
+5. While the stack is not empty and the top of the stack is not an exception handler, do:
+
+   a. Pop the top element from the stack.
+
+6. The stack is now either empty or there is an exception handler on the top.
+
+.. _exec-handle-exn:
+
+7. If there is an exception handler :math:`\CATCHN_m\{\instr^\ast\}` on the top of the stack, then:
+
+   a. Assert: the last element popped from the stack was the label :math:`L` whose continuation is the end of the originating |TRY| instruction.
+
+   b. Pop the exception handler from the stack.
+
+   c. Put the label :math:`L` back on the stack.
+
+   d. Enter the block :math:`(\REFEXNADDR~a~\val^n) \instr^\ast` with label :math:`L`.
+
+8. Else the stack is empty.
+
+9. *TODO: return TBA administrative instruction for the unresolved throw.*
+
 
 .. math::
    \begin{array}{rcl}
-   S;~F;~\CATCHN_m\{\instr^\ast\}~\val^m~\END &\stepto& S;~F;~\val^m \\
-   S;~F;~\CATCHN_m\{\instr^\ast\}~\XT[\val^n~[\_]~(\THROWADDR~a)]~\END &\stepto&
+   S;~F;~\CATCHN_m\{\instr^\ast\}~\XT[\val^n~(\THROWADDR~a)]~\END &\stepto&
       S;~F;~\LABEL_m\{\}~(\REFEXNADDR~a~\val^n)~{\instr}^\ast~\END \\
-   && \hspace{-12ex} (\iff S.\SEVENTS[a]=\{\EVATTR~\EXCEPTION, \EVTYPE~[t^n]\to[]\}) \\
+   && \hspace{-12ex} (\iff S.\SEXNS[a]=\{\EXNTYPE~[t^n]\to[]\}) \\
+   %   S;\val^n~(\THROWADDR~a) & \stepto & TBA \\
    \end{array}
 
 

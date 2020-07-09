@@ -43,7 +43,7 @@ The following grammar handles the corresponding update to the :ref:`identifier c
    mirroring the fact that control instructions are indexed relatively not absolutely.
 
 
-.. index:: control instructions, structured control, label, block, branch, result type, label index, function index, type index, vector, polymorphism, event index, exception instructions
+.. index:: control instructions, structured control, label, block, branch, result type, label index, function index, type index, vector, polymorphism, exception index, exception instructions
    pair: text format; instruction
 .. _text-blockinstr:
 .. _text-plaininstr:
@@ -115,9 +115,9 @@ All other control instruction are represented verbatim.
    \production{plain instruction} & \Tplaininstr_I &::=&
      \text{unreachable} &\Rightarrow& \UNREACHABLE \\ &&|&
      \text{nop} &\Rightarrow& \NOP \\ &&|&
-     \text{throw}~~x{:}\Teventidx_I &\Rightarrow& \THROW~x \\ &&|&
+     \text{throw}~~\text{(}\text{exception}~x{:}\Texnidx_I\text{)} &\Rightarrow& \THROW~x \\ &&|&
      \text{rethrow} &\Rightarrow& \RETHROW \\ &&|&
-     \text{br\_on\_exn}~~l{:}\Tlabelidx_I~~x{:}\Teventidx_I &\Rightarrow& \BRONEXN~l~x \\ &&|&
+     \text{br\_on\_exn}~~l{:}\Tlabelidx_I~~\text{(}\text{exception}~x{:}\Texnidx_I~\text{)} &\Rightarrow& \BRONEXN~l~x \\ &&|&
      \text{br}~~l{:}\Tlabelidx_I &\Rightarrow& \BR~l \\ &&|&
      \text{br\_if}~~l{:}\Tlabelidx_I &\Rightarrow& \BRIF~l \\ &&|&
      \text{br\_table}~~l^\ast{:}\Tvec(\Tlabelidx_I)~~l_N{:}\Tlabelidx_I

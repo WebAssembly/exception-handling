@@ -746,7 +746,7 @@ Memory Instructions
    }
 
 
-.. index:: control instructions, structured control, label, block, branch, block type, label index, function index, type index, event index, vector, polymorphism, context
+.. index:: control instructions, structured control, label, block, branch, block type, label index, function index, type index, exception index, vector, polymorphism, context
    pair: validation; instruction
    single: abstract syntax; instruction
 .. _valid-label:
@@ -912,15 +912,15 @@ Control Instructions
 :math:`\THROW~x`
 ................
 
-* The event :math:`C.\CEVENTS[x]` must be defined in the context.
+* The exception :math:`C.\CEXNS[x]` must be defined in the context.
 
-* Let :math:`\EXCEPTION [t^\ast] \to []` be its :ref:`event type <syntax-eventtype>`.
+* Let :math:`[t^\ast] \to []` be its :ref:`exception type <syntax-exntype>`.
 
 * Then the instruction is valid with type :math:`[t_1^\ast t^\ast] \to [t_2^\ast]`, for any sequences of  :ref:`value types <syntax-valtype>` :math:`t_1^\ast` and :math:`t_2^\ast`.
 
 .. math::
    \frac{
-     C.\CEVENTS[x] = \EXCEPTION [t^\ast] \to []
+     C.\CEXNS[x] = [t^\ast] \to []
    }{
      C \vdashinstr \THROW~x : [t_1^\ast t^\ast] \to [t_2^\ast]
    }
@@ -955,11 +955,11 @@ Control Instructions
 
 * The label :math:`C.\CLABELS[l]` must be defined in the context.
 
-* The event :math:`C.\CEVENTS[x]` must be defined in the context.
+* The exception :math:`C.\CEXNS[x]` must be defined in the context.
 
 * Let :math:`[t^\ast]` be the :ref:`result type <syntax-resulttype>` :math:`C.\CLABELS[l]`.
 
-* The event :math:`C.\CEVENTS[x]` must be :math:`\EXCEPTION~[t^\ast]\to[]`.
+* The exception :math:`C.\CEXNS[x]` must be :math:`[t^\ast]\to[]`.
 
 * Then the instruction is valid with type :math:`[\EXNREF]\to[\EXNREF]`
 
@@ -967,7 +967,7 @@ Control Instructions
    \frac{
      C.\CLABELS[l]=[t^\ast]
    \qquad
-     C.\CEVENTS[x]=\EXCEPTION~[t^\ast]\to[]
+     C.\CEXNS[x]=[t^\ast]\to[]
    }{
      C \vdashinstr \BRONEXN~l~x : [\EXNREF]\to[\EXNREF]
    }

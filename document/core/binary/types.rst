@@ -171,26 +171,22 @@ Global Types
    \end{array}
 
 
-.. index:: event type, exception attribute, function type
-   pair: binary format; event type
-   pair: binary format; event attribute
-.. _binary-eventattr:
-.. _binary-eventtype:
+.. index:: exception type, function type
+   pair: binary format; exception type
+.. _binary-exntype:
 
-Event Types
-~~~~~~~~~~~
+Exception Types
+~~~~~~~~~~~~~~~
 
-:ref:`Event types <syntax-eventtype>` are encoded as function types with a preceding flag indicating their :ref:`attribute <syntax-eventattr>`.
+:ref:`Exception types <syntax-exntype>` are encoded as function types with a preceding flag, reserving a bit for future extensions.
 
 .. math::
    \begin{array}{llclll}
-   \production{event type} & \Beventtype &::=&
-     a{:}\Beventattr~~ft{:}\Bfunctype &\Rightarrow& a~ft \\
-   \production{eventattr} & \Beventattr &::=&
-     \hex{00} &\Rightarrow& \EXCEPTION \\
+   \production{exception type} & \Bexntype &::=&
+     ft{:}\Bfunctype &\Rightarrow& \hex{00}~ft \\
    \end{array}
 
-|EXCEPTION| is the |eventattr| of an exception, whose function type must have void result.
+The |Bfunctype| of an exception must have void result.
 
 .. note::
-   Currently events can only be exceptions.
+   In future versions of WebAssembly the preceeding flag could take more values, generalising exceptions to events.

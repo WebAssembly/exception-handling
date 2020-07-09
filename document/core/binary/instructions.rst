@@ -13,7 +13,7 @@ The only exception are :ref:`structured control instructions <binary-instr-contr
    Gaps in the byte code ranges for encoding instructions are reserved for future extensions.
 
 
-.. index:: control instructions, structured control, label, block, branch, result type, value type, block type, label index, function index, event index, type index, vector, polymorphism, LEB128
+.. index:: control instructions, structured control, label, block, branch, result type, value type, block type, label index, function index, exception index, type index, vector, polymorphism, LEB128
    pair: binary format; instruction
    pair: binary format; block type
 .. _binary-instr-control:
@@ -63,9 +63,9 @@ Control Instructions
      \hex{06}~~\X{bt}{:}\Bblocktype~~(\X{in}_1{:}\Binstr)^\ast~~
        \hex{07}~~(\X{in}_2{:}\Binstr)^\ast~~\hex{0B}
        &\Rightarrow& \TRY~\X{bt}~\X{in}_1^\ast~\CATCH~\X{in}_2^\ast~\END \\ &&|&
-     \hex{08}~~ev{:}\Beventidx &\Rightarrow& \THROW~ev \\ &&|&
+     \hex{08}~~x{:}\Bexnidx &\Rightarrow& \THROW~x \\ &&|&
      \hex{09} &\Rightarrow& \RETHROW \\ &&|&
-     \hex{0A}~~l{:}\Blabelidx~~ev{:}\Beventidx &\Rightarrow& \BRONEXN~l~ev \\ &&|&
+     \hex{0A}~~l{:}\Blabelidx~~x{:}\Bexnidx &\Rightarrow& \BRONEXN~l~x \\ &&|&
      \hex{0C}~~l{:}\Blabelidx &\Rightarrow& \BR~l \\ &&|&
      \hex{0D}~~l{:}\Blabelidx &\Rightarrow& \BRIF~l \\ &&|&
      \hex{0E}~~l^\ast{:}\Bvec(\Blabelidx)~~l_N{:}\Blabelidx

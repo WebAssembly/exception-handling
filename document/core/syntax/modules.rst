@@ -1,4 +1,4 @@
-.. index:: ! module, type definition, function type, event type, function, table, memory, event, global, element, data, start function, import, export
+.. index:: ! module, type definition, function type, exception type, function, table, memory, exception, global, element, data, start function, import, export
    pair: abstract syntax; module
 .. _syntax-module:
 
@@ -7,7 +7,7 @@ Modules
 
 WebAssembly programs are organized into *modules*,
 which are the unit of deployment, loading, and compilation.
-A module collects definitions for :ref:`types <syntax-type>`, :ref:`functions <syntax-func>`, :ref:`tables <syntax-table>`, :ref:`memories <syntax-mem>`, :ref:`events <syntax-event>`, and :ref:`globals <syntax-global>`.
+A module collects definitions for :ref:`types <syntax-type>`, :ref:`functions <syntax-func>`, :ref:`tables <syntax-table>`, :ref:`memories <syntax-mem>`, :ref:`exceptions <syntax-exn>`, and :ref:`globals <syntax-global>`.
 In addition, it can declare :ref:`imports <syntax-import>` and :ref:`exports <syntax-export>`
 and provide initialization in the form of :ref:`data <syntax-data>` and :ref:`element <syntax-elem>` segments, or a :ref:`start function <syntax-start>`.
 
@@ -18,7 +18,7 @@ and provide initialization in the form of :ref:`data <syntax-data>` and :ref:`el
      \MFUNCS~\vec(\func), \\&&&&
      \MTABLES~\vec(\table), \\&&&&
      \MMEMS~\vec(\mem), \\&&&&
-     \MEVENTS~\vec(\event), \\&&&&
+     \MEXNS~\vec(\exn), \\&&&&
      \MGLOBALS~\vec(\global), \\&&&&
      \MELEMS~\vec(\elem), \\&&&&
      \MDATAS~\vec(\data), \\&&&&
@@ -30,12 +30,12 @@ and provide initialization in the form of :ref:`data <syntax-data>` and :ref:`el
 Each of the vectors -- and thus the entire module -- may be empty.
 
 
-.. index:: ! index, ! index space, ! type index, ! function index, ! table index, ! memory index, ! event index, ! global index, ! local index, ! label index, ! element index, ! data index, function, global, table, memory, event, element, data, local, parameter, import
+.. index:: ! index, ! index space, ! type index, ! function index, ! table index, ! memory index, ! exception index, ! global index, ! local index, ! label index, ! element index, ! data index, function, global, table, memory, exception, element, data, local, parameter, import
    pair: abstract syntax; type index
    pair: abstract syntax; function index
    pair: abstract syntax; table index
    pair: abstract syntax; memory index
-   pair: abstract syntax; event index
+   pair: abstract syntax; exception index
    pair: abstract syntax; global index
    pair: abstract syntax; element index
    pair: abstract syntax; data index
@@ -45,7 +45,7 @@ Each of the vectors -- and thus the entire module -- may be empty.
    pair: function; index
    pair: table; index
    pair: memory; index
-   pair: event; index
+   pair: exception; index
    pair: global; index
    pair: element; index
    pair: data; index
@@ -55,7 +55,7 @@ Each of the vectors -- and thus the entire module -- may be empty.
 .. _syntax-funcidx:
 .. _syntax-tableidx:
 .. _syntax-memidx:
-.. _syntax-eventidx:
+.. _syntax-exnidx:
 .. _syntax-globalidx:
 .. _syntax-elemidx:
 .. _syntax-dataidx:
@@ -75,7 +75,7 @@ Each class of definition has its own *index space*, as distinguished by the foll
    \production{function index} & \funcidx &::=& \u32 \\
    \production{table index} & \tableidx &::=& \u32 \\
    \production{memory index} & \memidx &::=& \u32 \\
-   \production{event index} & \eventidx &::=& \u32 \\
+   \production{exception index} & \exnidx &::=& \u32 \\
    \production{global index} & \globalidx &::=& \u32 \\
    \production{element index} & \elemidx &::=& \u32 \\
    \production{data index} & \dataidx &::=& \u32 \\
@@ -83,10 +83,8 @@ Each class of definition has its own *index space*, as distinguished by the foll
    \production{label index} & \labelidx &::=& \u32 \\
    \end{array}
 
-The index space for :ref:`functions <syntax-func>`, :ref:`tables <syntax-table>`, :ref:`memories <syntax-mem>`, :ref:`events <syntax-event>`, and :ref:`globals <syntax-global>` includes respective :ref:`imports <syntax-import>` declared in the same module.
+The index space for :ref:`functions <syntax-func>`, :ref:`tables <syntax-table>`, :ref:`memories <syntax-mem>`, :ref:`exceptions <syntax-exn>`, and :ref:`globals <syntax-global>` includes respective :ref:`imports <syntax-import>` declared in the same module.
 The indices of these imports precede the indices of other definitions in the same index space.
-
-Event indices are at the moment only indices for exception :ref:`events <syntax-event>`.
 
 Element indices reference :ref:`element segments <syntax-elem>` and data indices reference :ref:`data segments <syntax-data>`.
 
@@ -99,7 +97,7 @@ Label indices reference :ref:`structured control instructions <syntax-instr-cont
 .. _free-funcidx:
 .. _free-tableidx:
 .. _free-memidx:
-.. _free-eventidx:
+.. _free-exnidx:
 .. _free-globalidx:
 .. _free-elemidx:
 .. _free-dataidx:
@@ -120,7 +118,7 @@ Conventions
    For example, if :math:`\instr^\ast` is :math:`(\DATADROP~x) (\MEMORYINIT~y)`, then :math:`\freedataidx(\instr^\ast) = \{x, y\}`, or equivalently, the vector :math:`x~y`.
 
 
-.. index:: ! type definition, type index, function type, event type
+.. index:: ! type definition, type index, function type
    pair: abstract syntax; type definition
 .. _syntax-typedef:
 
@@ -228,29 +226,24 @@ Most constructs implicitly reference memory index :math:`0`.
 
 
 
-.. index:: ! event, exception, table index, function index, event type
-   pair: abstract syntax; event
+.. index:: ! exception, table index, function index, exception type
    pair: abstract syntax; exception
-.. _syntax-event:
+.. _syntax-exn:
 
-Events
-~~~~~~
+Exceptions
+~~~~~~~~~~
 
-The |MEVENTS| component of a module defines a vector of *events* with the following structure.
+The |MEXNS| component of a module defines a vector of *exceptions* with the following structure.
 
 .. math::
    \begin{array}{llll}
-   \production{event} & \event &::=& \{ \EVATTR~\EXCEPTION, \EVTYPE~\typeidx \} \\
+   \production{exception} & \exn &::=& \{ \EXNTYPE~\typeidx \} \\
    \end{array}
 
-The :ref:`event attribute <syntax-eventattr>` may only specify the attribute |EXCEPTION|, meaning that the event is an exception.
-In this case, the result type of the function signature with type index :math:`\typeidx` must be void.
+The result type of the function signature with type index :math:`\typeidx` must be void.
 
-Events are referenced through :ref:`event indices <syntax-eventidx>`,
-starting with the smallest index not referencing an event :ref:`import <syntax-import>`.
-
-.. note::
-   In the current version of WebAssembly, events may only be exceptions. In future versions additional events may be added.
+Exceptions are referenced through :ref:`exception indices <syntax-exnidx>`,
+starting with the smallest index not referencing an exception :ref:`import <syntax-import>`.
 
 
 .. index:: ! global, global index, global type, mutability, expression, constant, value, import
@@ -371,7 +364,7 @@ The |MSTART| component of a module declares the :ref:`function index <syntax-fun
    The module and its exports are not accessible before this initialization has completed.
 
 
-.. index:: ! export, name, index, function index, table index, memory index, event index, global index, function, table, memory, event, global, instantiation
+.. index:: ! export, name, index, function index, table index, memory index, exception index, global index, function, table, memory, exception, global, instantiation
    pair: abstract syntax; export
    single: function; export
    single: table; export
@@ -393,12 +386,12 @@ The |MEXPORTS| component of a module defines a set of *exports* that become acce
      \EDFUNC~\funcidx \\&&|&
      \EDTABLE~\tableidx \\&&|&
      \EDMEM~\memidx \\&&|&
-     \EDEVENT~\eventidx \\&&|&
+     \EDEXN~\exnidx \\&&|&
      \EDGLOBAL~\globalidx \\
    \end{array}
 
 Each export is labeled by a unique :ref:`name <syntax-name>`.
-Exportable definitions are :ref:`functions <syntax-func>`, :ref:`tables <syntax-table>`, :ref:`memories <syntax-mem>`, :ref:`events <syntax-event>`, and :ref:`globals <syntax-global>`,
+Exportable definitions are :ref:`functions <syntax-func>`, :ref:`tables <syntax-table>`, :ref:`memories <syntax-mem>`, :ref:`exceptions <syntax-exn>`, and :ref:`globals <syntax-global>`,
 which are referenced through a respective descriptor.
 
 
@@ -413,18 +406,18 @@ The following auxiliary notation is defined for sequences of exports, filtering 
 
 * :math:`\edmems(\export^\ast) = [\memidx ~|~ \EDMEM~\memidx \in (\export.\EDESC)^\ast]`
 
-* :math:`\edevents(\export^\ast) = [\eventidx ~|~ \EDEVENT~\eventidx \in (\export.\EDESC)^\ast]`
+* :math:`\edexns(\export^\ast) = [\exnidx ~|~ \EDEXN~\exnidx \in (\export.\EDESC)^\ast]`
 
 * :math:`\edglobals(\export^\ast) = [\globalidx ~|~ \EDGLOBAL~\globalidx \in (\export.\EDESC)^\ast]`
 
 
-.. index:: ! import, name, function type, table type, memory type, global type, event, index, index space, type index, function index, table index, memory index, global index, event index, function, table, memory, event, global, instantiation
+.. index:: ! import, name, function type, table type, memory type, global type, exception type, index space, type index, function index, table index, memory index, global index, exception index, function, table, memory, exception, global, instantiation
    pair: abstract syntax; import
    single: function; import
    single: table; import
    single: memory; import
    single: global; import
-   single: event; import
+   single: exception; import
 .. _syntax-importdesc:
 .. _syntax-import:
 
@@ -441,12 +434,12 @@ The |MIMPORTS| component of a module defines a set of *imports* that are require
      \IDFUNC~\typeidx \\&&|&
      \IDTABLE~\tabletype \\&&|&
      \IDMEM~\memtype \\&&|&
-     \IDEVENT~\event \\&&|&
+     \IDEXN~\exntype \\&&|&
      \IDGLOBAL~\globaltype \\
    \end{array}
 
 Each import is labeled by a two-level :ref:`name <syntax-name>` space, consisting of a |IMODULE| name and a |INAME| for an entity within that module.
-Importable definitions are :ref:`functions <syntax-func>`, :ref:`tables <syntax-table>`, :ref:`memories <syntax-mem>`, :ref:`events <syntax-event>`, and :ref:`globals <syntax-global>`.
+Importable definitions are :ref:`functions <syntax-func>`, :ref:`tables <syntax-table>`, :ref:`memories <syntax-mem>`, :ref:`exceptions <syntax-exn>`, and :ref:`globals <syntax-global>`.
 Each import is specified by a descriptor with a respective type that a definition provided during instantiation is required to match.
 
 Every import defines an index in the respective :ref:`index space <syntax-index>`.

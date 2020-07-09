@@ -22,6 +22,6 @@ Category                                  Constructor                           
 :ref:`Result type <syntax-resulttype>`    :math:`[\epsilon]`                             :math:`\hex{40}` (-64 as |Bs7|)
 :ref:`Table type <syntax-tabletype>`      :math:`\limits~\reftype`                     (none)
 :ref:`Memory type <syntax-memtype>`       :math:`\limits`                              (none)
-:ref:`Event type <syntax-eventtype>`      :math:`\EXCEPTION~\functype`                 (none)
+:ref:`Exception type <syntax-exntype>`    :math:`\functype`                            (none)
 :ref:`Global type <syntax-globaltype>`    :math:`\mut~\valtype`                        (none)
 ========================================  ===========================================  ===============================================================================
