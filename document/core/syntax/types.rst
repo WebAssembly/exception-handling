@@ -207,7 +207,8 @@ Exception Types
    \production{exception type} &\exntype &::=& \functype \\
    \end{array}
 
-The result type of an exception's function type |functype| must be void.
+Because :ref:`exceptions <syntax-exn>` have a :ref:`valid <valid-exn>` |exntype|,
+it is an invariant of the semantics that the function type :math:`\functype` has empty result type.
 The parameters of |functype| define the list of values associated with the exception.
 
 

@@ -262,8 +262,8 @@ Module instances are classified by *module contexts*, which are regular :ref:`co
 .. index:: exception type, exception instance, exception tag, function type
 .. _valid-exninst:
 
-:ref:`Exception Instances <syntax-exninst>` :math:`\{ \EXNITYPE~\functype \}`
-.............................................................................
+:ref:`Exception Instances <syntax-exninst>` :math:`\{ \EITYPE~\functype \}`
+...........................................................................
 
 * The :ref:`exception type <syntax-exntype>` :math:`\functype` must be :ref:`valid <valid-exntype>`.
 
@@ -273,7 +273,7 @@ Module instances are classified by *module contexts*, which are regular :ref:`co
    \frac{
      \vdashexntype \functype \ok
    }{
-     S \vdashexninst \{ \EXNITYPE~\functype \} : \functype
+     S \vdashexninst \{ \EITYPE~\functype \} : \functype
    }
 
 
@@ -315,7 +315,7 @@ Module instances are classified by *module contexts*, which are regular :ref:`co
    \frac{
      (S \vdash \reff : t)^\ast
    }{
-     S \vdasheleminst \{ \EITYPE~t, \EIELEM~\reff^\ast \} \ok
+     S \vdasheleminst \{ \EIELEMTYPE~t, \EIELEM~\reff^\ast \} \ok
    }
 
 

@@ -186,7 +186,7 @@ Exception Types
      \hex{00}~~ft{:}\Bfunctype &\Rightarrow& ft \\
    \end{array}
 
-The |Bfunctype| of an exception must have void result.
+The |Bfunctype| of an exception must have empty result.
 
 .. note::
    In future versions of WebAssembly,

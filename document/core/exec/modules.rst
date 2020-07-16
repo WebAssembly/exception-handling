@@ -76,14 +76,14 @@ The following auxiliary typing rules specify this typing relation relative to a 
 
 * The store entry :math:`S.\SEXNS[a]` must exist.
 
-* Let :math:`\functype` be the function type :math:`S.\SEXNS[a].\EXNITYPE`.
+* Let :math:`\functype` be the function type :math:`S.\SEXNS[a].\EITYPE`.
 
 * Then :math:`\EVEXN~a` is valid with :ref:`external type <syntax-externtype>` :math:`\ETEXN~\functype`.
 
 .. math::
    \frac{
    }{
-     S \vdashexternval \EVEXN~a : \ETEXN~(S.\SEXNS[a].\EXNITYPE)
+     S \vdashexternval \EVEXN~a : \ETEXN~(S.\SEXNS[a].\EITYPE)
    }
 
 
@@ -326,9 +326,9 @@ New instances of :ref:`functions <syntax-funcinst>`, :ref:`tables <syntax-tablei
 
 2. Let :math:`a` be the first free :ref:`exception address <syntax-exnaddr>` in :math:`S`.
 
-3. Let :math:`\functype` be the :ref:`function type <syntax-functype>` :math:`\module.\MTYPES[\exn.\EXNTYPE]`.
+3. Let :math:`\functype` be the :ref:`function type <syntax-functype>` :math:`\module.\MTYPES[\exn.\ETYPE]`.
 
-4. Let :math:`\exninst` be the :ref:`exception instance <syntax-exninst>` :math:`\{ \EXNITYPE~\functype \}`.
+4. Let :math:`\exninst` be the :ref:`exception instance <syntax-exninst>` :math:`\{ \EITYPE~\functype \}`.
 
 5. Append :math:`\exninst` to the |SEXNS| of :math:`S`.
 
@@ -339,7 +339,7 @@ New instances of :ref:`functions <syntax-funcinst>`, :ref:`tables <syntax-tablei
    \allocexn(S, \exn, \module) &=& S', \exnaddr \\[1ex]
    \mbox{where:} \hfill \\
    \exnaddr &=& |S.\SEXNS| \\
-   \exninst &=& \{ \EXNITYPE~\functype \} \\
+   \exninst &=& \{ \EITYPE~\functype \} \\
    S' &=& S \compose \{\SEXNS~\exninst\} \\
    \end{array}
 
@@ -380,7 +380,7 @@ New instances of :ref:`functions <syntax-funcinst>`, :ref:`tables <syntax-tablei
 
 2. Let :math:`a` be the first free :ref:`element address <syntax-elemaddr>` in :math:`S`.
 
-3. Let :math:`\eleminst` be the :ref:`element instance <syntax-eleminst>` :math:`\{ \EITYPE~t, \EIELEM~\reff^\ast \}`.
+3. Let :math:`\eleminst` be the :ref:`element instance <syntax-eleminst>` :math:`\{ \EIELEMTYPE~t, \EIELEM~\reff^\ast \}`.
 
 4. Append :math:`\eleminst` to the |SELEMS| of :math:`S`.
 
@@ -391,7 +391,7 @@ New instances of :ref:`functions <syntax-funcinst>`, :ref:`tables <syntax-tablei
   \allocelem(S, \reftype, \reff^\ast) &=& S', \elemaddr \\[1ex]
   \mbox{where:} \hfill \\
   \elemaddr &=& |S.\SELEMS| \\
-  \eleminst &=& \{ \EITYPE~\reftype, \EIELEM~\reff^\ast \} \\
+  \eleminst &=& \{ \EIELEMTYPE~\reftype, \EIELEM~\reff^\ast \} \\
   S' &=& S \compose \{\SELEMS~\eleminst\} \\
   \end{array}
 
@@ -533,7 +533,7 @@ and list of :ref:`reference <syntax-ref>` vectors for the module's :ref:`element
 
 7. For each :ref:`element segment <syntax-elem>` :math:`\elem_i` in :math:`\module.\MELEMS`, do:
 
-   a. Let :math:`\elemaddr_i` be the :ref:`element address <syntax-elemaddr>` resulting from :ref:`allocating <alloc-elem>` a :ref:`element instance <syntax-eleminst>` of :ref:`reference type <syntax-reftype>` :math:`\elem_i.\ETYPE` with contents :math:`(\reff^\ast)^\ast[i]`.
+   a. Let :math:`\elemaddr_i` be the :ref:`element address <syntax-elemaddr>` resulting from :ref:`allocating <alloc-elem>` a :ref:`element instance <syntax-eleminst>` of :ref:`reference type <syntax-reftype>` :math:`\elem_i.\EELEMTYPE` with contents :math:`(\reff^\ast)^\ast[i]`.
 
 8. For each :ref:`data segment <syntax-data>` :math:`\data_i` in :math:`\module.\MDATAS`, do:
 
@@ -616,7 +616,7 @@ where:
      \qquad\quad~ (\where \exn^\ast = \module.\MEXNS) \\
    S_5, \globaladdr^\ast &=& \allocglobal^\ast(S_4, (\global.\GTYPE)^\ast, \val^\ast)
      \qquad\quad~ (\where \global^\ast = \module.\MGLOBALS) \\
-   S_6, \elemaddr^\ast &=& \allocelem^\ast(S_5, (\elem.\ETYPE)^\ast, (\reff^\ast)^\ast) \\
+   S_6, \elemaddr^\ast &=& \allocelem^\ast(S_5, (\elem.\EELEMTYPE)^\ast, (\reff^\ast)^\ast) \\
      \qquad\quad~ (\where \elem^\ast = \module.\MELEMS) \\
    S', \dataaddr^\ast &=& \allocdata^\ast(S_6, (\data.\DINIT)^\ast)
      \qquad\qquad\qquad~ (\where \data^\ast = \module.\MDATAS) \\
@@ -813,10 +813,10 @@ where:
 
 .. math::
    \begin{array}{@{}l}
-   \F{runelem}_i(\{\ETYPE~\X{et}, \EINIT~\reff^n, \EMODE~\EPASSIVE\}) \quad=\quad \epsilon \\
-   \F{runelem}_i(\{\ETYPE~\X{et}, \EINIT~\reff^n, \EMODE~\EACTIVE \{\ETABLE~0, \EOFFSET~\instr^\ast~\END\}\}) \quad=\\ \qquad
+   \F{runelem}_i(\{\EELEMTYPE~\X{et}, \EINIT~\reff^n, \EMODE~\EPASSIVE\}) \quad=\quad \epsilon \\
+   \F{runelem}_i(\{\EELEMTYPE~\X{et}, \EINIT~\reff^n, \EMODE~\EACTIVE \{\ETABLE~0, \EOFFSET~\instr^\ast~\END\}\}) \quad=\\ \qquad
      \instr^\ast~(\I32.\CONST~0)~(\I32.\CONST~n)~(\TABLEINIT~i)~(\ELEMDROP~i) \\
-   \F{runelem}_i(\{\ETYPE~\X{et}, \EINIT~\reff^n, \EMODE~\EDECLARATIVE\}) \quad=\\ \qquad
+   \F{runelem}_i(\{\EELEMTYPE~\X{et}, \EINIT~\reff^n, \EMODE~\EDECLARATIVE\}) \quad=\\ \qquad
      (\ELEMDROP~i) \\[1ex]
    \F{rundata}_i(\{\DINIT~b^n, DMODE~\DPASSIVE\}) \quad=\quad \epsilon \\
    \F{rundata}_i(\{\DINIT~b^n, DMODE~\DACTIVE \{\DMEM~0, \DOFFSET~\instr^\ast~\END\}\}) \quad=\\ \qquad

@@ -237,10 +237,10 @@ The |MEXNS| component of a module defines a vector of *exceptions* with the foll
 
 .. math::
    \begin{array}{llll}
-   \production{exception} & \exn &::=& \{ \EXNTYPE~\typeidx \} \\
+   \production{exception} & \exn &::=& \{ \ETYPE~\typeidx \} \\
    \end{array}
 
-The result type of the function signature with type index :math:`\typeidx` must be void.
+The result type of the function signature with type index :math:`\typeidx` must be empty.
 
 Exceptions are referenced through :ref:`exception indices <syntax-exnidx>`,
 starting with the smallest index not referencing an exception :ref:`import <syntax-import>`.
@@ -294,7 +294,7 @@ A declarative element segment is not available at runtime but merely serves to f
 .. math::
    \begin{array}{llll}
    \production{element segment} & \elem &::=&
-     \{ \ETYPE~\reftype, \EINIT~\vec(\expr), \EMODE~\elemmode \} \\
+     \{ \EELEMTYPE~\reftype, \EINIT~\vec(\expr), \EMODE~\elemmode \} \\
    \production{element segment mode} & \elemmode &::=&
      \EPASSIVE \\&&|&
      \EACTIVE~\{ \ETABLE~\tableidx, \EOFFSET~\expr \} \\&&|&

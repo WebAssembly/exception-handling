@@ -400,7 +400,7 @@ An exception definition can bind a symbolic :ref:`exception identifier <text-id>
    \begin{array}{llcl}
    \production{exception} & \Texn_I &::=&
      \text{(}~\text{exception}~~\Tid^?~~x,I'{:}\Ttypeuse_I~\text{)} \\ &&& \qquad
-       \Rightarrow\quad \{ \EXNTYPE~x \} \\
+       \Rightarrow\quad \{ \ETYPE~x \} \\
    \end{array}
 
 
@@ -551,13 +551,13 @@ Element segments allow for an optional :ref:`table index <text-tableidx>` to ide
    \begin{array}{llclll}
    \production{element segment} & \Telem_I &::=&
      \text{(}~\text{elem}~~\Tid^?~~(et, y^\ast){:}\Telemlist~\text{)} \\ &&& \qquad
-       \Rightarrow\quad \{ \ETYPE~et, \EINIT~y^\ast, \EMODE~\EPASSIVE \} \\ &&|&
+       \Rightarrow\quad \{ \EELEMTYPE~et, \EINIT~y^\ast, \EMODE~\EPASSIVE \} \\ &&|&
      \text{(}~\text{elem}~~\Tid^?~~x{:}\Ttableuse_I~~\text{(}~\text{offset}~~e{:}\Texpr_I~\text{)}~~(et, y^\ast){:}\Telemlist~\text{)} \\ &&& \qquad
-       \Rightarrow\quad \{ \ETYPE~et, \EINIT~y^\ast, \EMODE~\EACTIVE~\{ \ETABLE~x, \EOFFSET~e \} \} \\ &&&
+       \Rightarrow\quad \{ \EELEMTYPE~et, \EINIT~y^\ast, \EMODE~\EACTIVE~\{ \ETABLE~x, \EOFFSET~e \} \} \\ &&&
      \text{(}~\text{elem}~~\Tid^?~~\text{declare}~~(et, y^\ast){:}\Telemlist~\text{)} \\ &&& \qquad
-       \Rightarrow\quad \{ \ETYPE~et, \EINIT~y^\ast, \EMODE~\EDECLARATIVE \} \\
+       \Rightarrow\quad \{ \EELEMTYPE~et, \EINIT~y^\ast, \EMODE~\EDECLARATIVE \} \\
    \production{element list} & \Telemlist &::=&
-     t{:}\Treftype~~y^\ast{:}\Tvec(\Telemexpr_I) \qquad\Rightarrow\quad ( \ETYPE~t, \EINIT~y^\ast ) \\
+     t{:}\Treftype~~y^\ast{:}\Tvec(\Telemexpr_I) \qquad\Rightarrow\quad ( \EELEMTYPE~t, \EINIT~y^\ast ) \\
    \production{element expression} & \Telemexpr &::=&
      \text{(}~\text{item}~~e{:}\Texpr~\text{)}
        \quad\Rightarrow\quad e \\

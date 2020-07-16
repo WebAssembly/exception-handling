@@ -959,14 +959,16 @@ Control Instructions
 
 * Let :math:`[t^\ast]` be the :ref:`result type <syntax-resulttype>` :math:`C.\CLABELS[l]`.
 
-* The exception :math:`C.\CEXNS[x]` must be :math:`[t^\ast]\to[]`.
+* Assert: the exception :math:`C.\CEXNS[x]` is :math:`[t'^\ast]\to[]`.
+
+* The type sequence :math:`t'^\ast` must be the same as the type sequence :math:`t^\ast`.
 
 * Then the instruction is valid with type :math:`[\EXNREF]\to[\EXNREF]`
 
 .. math::
    \frac{
      C.\CLABELS[l]=[t^\ast]
-   \qquad
+     \qquad
      C.\CEXNS[x]=[t^\ast]\to[]
    }{
      C \vdashinstr \BRONEXN~l~x : [\EXNREF]\to[\EXNREF]

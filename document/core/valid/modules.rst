@@ -107,10 +107,10 @@ Exceptions
 ~~~~~~~~~~
 
 Exceptions :math:`\exn` are classified by their :ref:`exception type <syntax-exntype>`,
-which contains an index to a :ref:`function type <syntax-functype>` with void result.
+which contains an index to a :ref:`function type <syntax-functype>` with empty result.
 
-:math:`\{ \EXNTYPE~x \}`
-........................
+:math:`\{ \ETYPE~x \}`
+......................
 
 * The type :math:`C.\CTYPES[x]` must be defined in the context.
 
@@ -124,7 +124,7 @@ which contains an index to a :ref:`function type <syntax-functype>` with void re
    \frac{
      C.\CTYPES[x] = [t^\ast] \to []
    }{
-     C \vdashexn \{ \EXNTYPE~x \} : [t^\ast]\to[]
+     C \vdashexn \{ \ETYPE~x \} : [t^\ast]\to[]
    }
 
 
@@ -174,8 +174,8 @@ Element Segments
 
 Element segments :math:`\elem` are classified by the :ref:`reference type <syntax-reftype>` of their elements.
 
-:math:`\{ \ETYPE~t, \EINIT~e^\ast, \EMODE~\elemmode \}`
-.......................................................
+:math:`\{ \EELEMTYPE~t, \EINIT~e^\ast, \EMODE~\elemmode \}`
+...........................................................
 
 * For each :math:`e_i` in :math:`e^\ast`,
 
@@ -196,7 +196,7 @@ Element segments :math:`\elem` are classified by the :ref:`reference type <synta
      \qquad
      C \vdashelemmode \elemmode : t
    }{
-     C \vdashelem \{ \ETYPE~t, \EINIT~e^\ast, \EMODE~\elemmode \} : t
+     C \vdashelem \{ \EELEMTYPE~t, \EINIT~e^\ast, \EMODE~\elemmode \} : t
    }
 
 
@@ -524,7 +524,7 @@ Imports :math:`\import` and import descriptions :math:`\importdesc` are classifi
 :math:`\IDEXN~\exn`
 ...................
 
-* Let :math:`\{ \EXNTYPE~x \}` be the exception :math:`\exn`.
+* Let :math:`\{ \ETYPE~x \}` be the exception :math:`\exn`.
 
 * The type :math:`C.\CTYPES[x]` must be defined in the context.
 
@@ -536,7 +536,7 @@ Imports :math:`\import` and import descriptions :math:`\importdesc` are classifi
    \frac{
      \vdashexntype C.\CTYPES[x] \ok
    }{
-     C \vdashimportdesc \IDEXN~\{ \EXNTYPE~x \} : \ETEXN~C.\CTYPES[x]
+     C \vdashimportdesc \IDEXN~\{ \ETYPE~x \} : \ETEXN~C.\CTYPES[x]
    }
 
 

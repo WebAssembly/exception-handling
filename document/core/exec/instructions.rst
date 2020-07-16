@@ -1656,7 +1656,7 @@ Control Instructions
 
 3. Let :math:`a` be the :ref:`exception address <syntax-exnaddr>` :math:`F.\AMODULE.\MIEXNS[x]`.
 
-4. :ref:`Search <exec-search-handler>` for an exception handler for the :ref:`exception address <syntax-exnaddr>` :math:`a`.
+4. :ref:`Throw <exec-throwaddr>` an exception with :ref:`exception address <syntax-exnaddr>` :math:`a`.
 
 .. math::
    ~\\[-1ex]
@@ -1682,7 +1682,7 @@ Control Instructions
 
 5. Put the values :math:`\val^\ast` on the stack.
 
-6. :ref:`Search <exec-search-handler>`  for an exception handler for the :ref:`exception address <syntax-exnaddr>` :math:`a`.
+6. :ref:`Throw <exec-throwaddr>`  an exception with :ref:`exception address <syntax-exnaddr>` :math:`a`.
 
 .. math::
    ~\\[-1ex]
@@ -2008,9 +2008,7 @@ When the end of a block is reached without a jump or trap aborting it, then the 
 Exception Handling
 ~~~~~~~~~~~~~~~~~~
 
-The following auxiliary rules define the semantics of handling thrown exceptions
-inside :ref:`throw contexts <syntax-ctxt-throw>`, such as installing, searching for,
-and exiting an :ref:`exception handler <syntax-handler>` :math:`\CATCHN_n`.
+The following auxiliary rules define the semantics of entering and exiting exception handlers through :ref:`try <syntax-try>` instructions and handling thrown exceptions.
 
 .. _exec-handler-enter:
 
@@ -2018,6 +2016,7 @@ Entering an exception handler :math:`H`
 .......................................
 
 1. Push :math:`H` onto the stack.
+
 .. note::
    No formal reduction rule is needed for installing an exception handler
    because it is an :ref:`administrative instruction <syntax-instr-admin>`
@@ -2093,7 +2092,7 @@ until an exception handler is found on the top of the stack.
    \begin{array}{rcl}
    S;~F;~\CATCHN_m\{\instr^\ast\}~\XT[\val^n~(\THROWADDR~a)]~\END &\stepto&
       S;~F;~\LABEL_m\{\}~(\REFEXNADDR~a~\val^n)~{\instr}^\ast~\END \\
-   && \hspace{-12ex} (\iff S.\SEXNS[a]=\{\EXNTYPE~[t^n]\to[]\}) \\
+   && \hspace{-12ex} (\iff S.\SEXNS[a]=\{\ETYPE~[t^n]\to[]\}) \\
    %   S;\val^n~(\THROWADDR~a) & \stepto & TBA \\
    \end{array}
 

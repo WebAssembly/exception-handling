@@ -326,10 +326,8 @@ It records type :ref:`type <syntax-exntype>` of the exception.
 .. math::
    \begin{array}{llll}
    \production{(exception instance)} & \exninst &::=&
-     \{ \EXNITYPE~\exntype \} \\
+     \{ \EITYPE~\exntype \} \\
    \end{array}
-
-Because :ref:`exceptions <syntax-exn>` have a :ref:`valid <valid-exn>` |exntype|, it is an invariant of the semantics that the function type :math:`\functype` has void result type.
 
 .. note::
    The :ref:`exception address <syntax-exnaddr>` of an exception instance is also called an *exception tag*.
@@ -371,7 +369,7 @@ It holds a vector of references and their common :ref:`type <syntax-reftype>`.
 .. math::
   \begin{array}{llll}
   \production{(element instance)} & \eleminst &::=&
-    \{ \EITYPE~\reftype, \EIELEM~\vec(\reff) \} \\
+    \{ \EIELEMTYPE~\reftype, \EIELEM~\vec(\reff) \} \\
   \end{array}
 
 
@@ -582,7 +580,7 @@ Administrative Instructions
 .. note::
    This section is only relevant for the :ref:`formal notation <exec-notation>`.
 
-In order to express the reduction of :ref:`traps <trap>`, :ref:`calls <syntax-call>`, :ref:`exception handling <exec-exn-handling>`, and :ref:`control instructions <syntax-instr-control>`, the syntax of instructions is extended to include the following *administrative instructions*:
+In order to express the reduction of :ref:`traps <trap>`, :ref:`calls <syntax-call>`, :ref:`exception handling <exec-catchn>`, and :ref:`control instructions <syntax-instr-control>`, the syntax of instructions is extended to include the following *administrative instructions*:
 
 .. math::
    \begin{array}{llcl}
@@ -705,7 +703,7 @@ Throw contexts allow matching the program context around a throw instruction up 
       \stepto & S;~F;~\CATCHN_1\{\RETURN\}~(\LABEL_1 \{\}~\val^n~\THROWADDR~a~\END)~\END \\
       \end{array}
 
-   :ref:`Handling <exec-handler-throwaddr>` the thrown exception address :math:`a` in the throw context
+   :ref:`Handling <exec-throwaddr>` the thrown exception address :math:`a` in the throw context
    :math:`T=\LABEL_1 \{\}[\_]~\END`, with the exception handler :math:`\CATCHN_1\{\RETURN\}` gives:
 
    .. math::

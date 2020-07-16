@@ -271,12 +271,12 @@
 
 .. |MTYPE| mathdef:: \xref{syntax/modules}{syntax-mem}{\K{type}}
 
-.. |EXNTYPE| mathdef:: \xref{syntax/modules}{syntax-exn}{\K{type}}
+.. |ETYPE| mathdef:: \xref{syntax/modules}{syntax-exn}{\K{type}}
 
 .. |GTYPE| mathdef:: \xref{syntax/modules}{syntax-global}{\K{type}}
 .. |GINIT| mathdef:: \xref{syntax/modules}{syntax-global}{\K{init}}
 
-.. |ETYPE| mathdef:: \xref{syntax/modules}{syntax-elem}{\K{type}}
+.. |EELEMTYPE| mathdef:: \xref{syntax/modules}{syntax-elem}{\K{type}}
 .. |EINIT| mathdef:: \xref{syntax/modules}{syntax-elem}{\K{init}}
 .. |EMODE| mathdef:: \xref{syntax/modules}{syntax-elem}{\K{mode}}
 .. |EPASSIVE| mathdef:: \xref{syntax/modules}{syntax-elemmode}{\K{passive}}
@@ -899,12 +899,12 @@
 .. |MITYPE| mathdef:: \xref{exec/runtime}{syntax-meminst}{\K{type}}
 .. |MIDATA| mathdef:: \xref{exec/runtime}{syntax-meminst}{\K{data}}
 
-.. |EXNITYPE| mathdef:: \xref{exec/runtime}{syntax-exninst}{\K{type}}
+.. |EITYPE| mathdef:: \xref{exec/runtime}{syntax-exninst}{\K{type}}
 
 .. |GITYPE| mathdef:: \xref{exec/runtime}{syntax-globalinst}{\K{type}}
 .. |GIVALUE| mathdef:: \xref{exec/runtime}{syntax-globalinst}{\K{value}}
 
-.. |EITYPE| mathdef:: \xref{exec/runtime}{syntax-eleminst}{\K{type}}
+.. |EIELEMTYPE| mathdef:: \xref{exec/runtime}{syntax-eleminst}{\K{type}}
 .. |EIELEM| mathdef:: \xref{exec/runtime}{syntax-eleminst}{\K{elem}}
 
 .. |DIDATA| mathdef:: \xref{exec/runtime}{syntax-datainst}{\K{data}}
