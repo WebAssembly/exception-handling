@@ -178,15 +178,16 @@ Global Types
 Exception Types
 ~~~~~~~~~~~~~~~
 
-:ref:`Exception types <syntax-exntype>` are encoded as function types with a preceding flag, reserving a bit for future extensions.
+:ref:`Exception types <syntax-exntype>` are encoded by their function type.
 
 .. math::
    \begin{array}{llclll}
    \production{exception type} & \Bexntype &::=&
-     ft{:}\Bfunctype &\Rightarrow& \hex{00}~ft \\
+     \hex{00}~~ft{:}\Bfunctype &\Rightarrow& ft \\
    \end{array}
 
 The |Bfunctype| of an exception must have void result.
 
 .. note::
-   In future versions of WebAssembly the preceeding flag could take more values, generalising exceptions to events.
+   In future versions of WebAssembly,
+   the preceding zero byte may encode additional flags.

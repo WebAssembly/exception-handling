@@ -706,13 +706,13 @@ Instead, the context :math:`C` for validation of the module's content is constru
      \qquad
      \X{imt}^\ast = \etmems(\X{it}^\ast)
      \\
-     \X{iexnt}^\ast = \etexns(\X{it}^\ast)
+     \X{iet}^\ast = \etexns(\X{it}^\ast)
      \qquad
      \X{igt}^\ast = \etglobals(\X{it}^\ast)
      \\
      x^\ast = \freefuncidx(\module \with \MFUNCS = \epsilon \with \MSTART = \epsilon)
      \\
-     C = \{ \CTYPES~\type^\ast, \CFUNCS~\X{ift}^\ast\,\X{ft}^\ast, \CTABLES~\X{itt}^\ast\,\X{tt}^\ast, \CMEMS~\X{imt}^\ast\,\X{mt}^\ast, \CEXNS~\X{iexnt}^\ast\,\X{exnt}^\ast,\\
+     C = \{ \CTYPES~\type^\ast, \CFUNCS~\X{ift}^\ast\,\X{ft}^\ast, \CTABLES~\X{itt}^\ast\,\X{tt}^\ast, \CMEMS~\X{imt}^\ast\,\X{mt}^\ast, \CEXNS~\X{iet}^\ast\,\X{exnt}^\ast,\\
         \CGLOBALS~\X{igt}^\ast\,\X{gt}^\ast, \CELEMS~\X{rt}^\ast, \CDATAS~{\ok}^n, \CREFS~x^\ast \}
      \\
      C' = \{ \CGLOBALS~\X{igt}^\ast, \CFUNCS~(C.\CFUNCS), \CREFS~(C.\CREFS), \CEXNS~(C.\CEXNS) \} \qquad

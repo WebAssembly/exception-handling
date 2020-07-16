@@ -1632,7 +1632,9 @@ Control Instructions
 
 6. Let :math:`H` be the exception handler whose arity is :math:`m` and whose continuation is the beginning of :math:`\instr_2^\ast`.
 
-7. :ref:`Install <exec-install-handler>` the exception handler `H` for the block :math:`\val^n~\instr_1^\ast` with label :math:`L`.
+7. :ref:`Enter <exec-handler-enter>` the exception handler `H`.
+
+8. :ref:`Enter <exec-instr-seq-enter>` the block :math:`\val^n~\instr_1^\ast` with label :math:`L`.
 
 .. math::
    ~\\[-1ex]
@@ -2002,7 +2004,6 @@ When the end of a block is reached without a jump or trap aborting it, then the 
    pair: handling; exception
 
 .. _exec-catchn:
-.. _exec-exn-handling:
 
 Exception Handling
 ~~~~~~~~~~~~~~~~~~
@@ -2011,40 +2012,36 @@ The following auxiliary rules define the semantics of handling thrown exceptions
 inside :ref:`throw contexts <syntax-ctxt-throw>`, such as installing, searching for,
 and exiting an :ref:`exception handler <syntax-handler>` :math:`\CATCHN_n`.
 
-.. _exec-install-handler:
+.. _exec-handler-enter:
 
-Installing an exception handler :math:`H` for a block :math:`\instr^\ast` with label :math:`L`
-..............................................................................................
+Entering an exception handler :math:`H`
+.......................................
 
-1. Let :math:`H` be the exception handler :math:`\CATCHN_m{\instr'^\ast}`.
-
-2. Push :math:`H` on the stack.
-
-3. :ref:`Enter <exec-instr-seq-enter>` the block :math:`\instr^\ast` with label :math:`L`.
-
+1. Push :math:`H` onto the stack.
 .. note::
    No formal reduction rule is needed for installing an exception handler
    because it is an :ref:`administrative instruction <syntax-instr-admin>`
-   which exception throwing instructions will search for.
+   that the :ref:`try <syntax-try>` instruction reduced to directly.
 
+.. _exec-handler-exit:
 
-Exiting an exception handler with arity :math:`m` from a block with label :math:`L`
-...................................................................................
+Exiting an exception handler
+............................
 
-When the block is exited without a throw :ref:`triggering <exec-handle-exn>`
+When the end of a :ref:`try <syntax-try>` instruction is reached without a jump, exception or trap, then the following steps are performed.
 the exception handler, then the following steps are performed.
 
-1. Assert: due to validation, there are :math:`m` values on the top of the stack.
+1. Let :math:`m` be the number of values on the top of the stack.
 
 2. Pop the values :math:`\val^m` from the stack.
 
-3. Assert: due to :ref:`validation <valid-instr-seq>`, the exception handler :math:`H` is now on the top of the stack.
+3. Assert: due to :ref:`validation <valid-instr-seq>`, the handler :math:`H` is now on the top of the stack.
 
-4. Pop the exception handler from the stack.
+4. Pop the handler from the stack.
 
 5. Push :math:`\val^m` back to the stack.
 
-6. Jump to the position after the |END| of the originating |TRY| instruction associated with the label :math:`L`.
+6. Jump to the position after the |END| of the originating |TRY| instruction associated with the handler :math:`H`.
 
 .. math::
    ~\\[-1ex]
@@ -2053,20 +2050,19 @@ the exception handler, then the following steps are performed.
    \end{array}
 
 
-.. _exec-search-handler:
 .. _exec-throwaddr:
 
-Searching for an exception handler for the :ref:`exception address <syntax-exnaddr>` :math:`a`
-..............................................................................................
+Throwing an exception with :ref:`exception address <syntax-exnaddr>` :math:`a`
+..............................................................................
 
 When a throw or a rethrow occurs, labels and call frames are popped if necessary,
 until an exception handler is found on the top of the stack.
 
 1. Assert: due to validation, :math:`S.\SEXNS[a]` exists.
 
-2. Let :math:`[t^n] \to []` be the type of the exception instance :math:`S.\SEXNS[a]`.
+2. Let :math:`[t^n] \to [t'^m]` be the :ref:`exception type <syntax-exntype>` :math:`S.\SEXNS[a].\EITYPE`.
 
-3. Assert: due to validation, there are :math:`n` values on the top of the stack.
+3. Assert: due to :ref:`validation <valid-try>`, there are :math:`n` values on the top of the stack.
 
 4. Pop the :math:`n` values :math:`\val^n` from the stack.
 
@@ -2074,20 +2070,20 @@ until an exception handler is found on the top of the stack.
 
    a. Pop the top element from the stack.
 
-6. The stack is now either empty or there is an exception handler on the top.
+6. Assert: The stack is now either empty or there is an exception handler on the top.
 
-.. _exec-handle-exn:
 
 7. If there is an exception handler :math:`\CATCHN_m\{\instr^\ast\}` on the top of the stack, then:
 
-   a. Assert: the last element popped from the stack was the label :math:`L` whose continuation is the end of the originating |TRY| instruction.
+   a. Pop the exception handler from the stack.
 
-   b. Pop the exception handler from the stack.
+   b. Let :math:`L` be the label whose arity is :math:`m` and whose continuation is the end of the |TRY| instruction associated with the handler.
 
-   c. Put the label :math:`L` back on the stack.
+   c. Push the label :math:`L` on the stack.
 
-   d. Enter the block :math:`(\REFEXNADDR~a~\val^n) \instr^\ast` with label :math:`L`.
+   d. Enter the block :math:`\instr^\ast` with label :math:`L`.
 
+   e. Push the :ref:`exception reference <syntax-refexnaddr>` :math:`(\REFEXNADDR~a~\val^n)` to the stack.
 8. Else the stack is empty.
 
 9. *TODO: return TBA administrative instruction for the unresolved throw.*

@@ -117,7 +117,7 @@ Each event has an `attribute` and a `type`. Currently, the attribute can only
 specify that the event is an exception. In the future, additional attribute
 values may be added when other events are added to WebAssembly.
 
-To allow for such a future extension possibility, we reserve a bit in the binary
+To allow for such a future extension possibility, we reserve a byte in the binary
 format of an exception definition, set to 0 to denote an exception attribute,
 but for the moment we won't use the term event in the formal spec.
 
@@ -128,7 +128,7 @@ are defined in the `exception` and import sections of a module.
 
 The type of an exception is denoted by an index to a function signature defined in
 the `type` section. The parameters of the function signature define the list of
-values associated with the exception. The result type must be 'void'.
+values associated with the exception. The result type must be empty.
 
 An `exception tag` is a value to distinguish different exceptions, while an `exception
 index` is a numeric name to refer to an (imported or defined) exception tag within a

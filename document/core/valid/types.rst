@@ -154,8 +154,8 @@ Memory Types
 Exception Types
 ~~~~~~~~~~~~~~~
 
-:math:`[t^n] \to []`
-....................
+:math:`[t_1^n] \to [t_2^m]`
+...........................
 
 * The :ref:`function type <syntax-functype>` :math:`[t^n] \to []` must be :ref:`valid <valid-functype>`.
 
