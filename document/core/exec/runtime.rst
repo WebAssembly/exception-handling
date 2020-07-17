@@ -321,7 +321,7 @@ Exception Instances
 ~~~~~~~~~~~~~~~~~~~
 
 An *exception instance* is the runtime representation of an :ref:`exception <syntax-exn>` definition.
-It records type :ref:`type <syntax-exntype>` of the exception.
+It records the :ref:`type <syntax-exntype>` of the exception.
 
 .. math::
    \begin{array}{llll}
@@ -580,7 +580,7 @@ Administrative Instructions
 .. note::
    This section is only relevant for the :ref:`formal notation <exec-notation>`.
 
-In order to express the reduction of :ref:`traps <trap>`, :ref:`calls <syntax-call>`, :ref:`exception handling <exec-catchn>`, and :ref:`control instructions <syntax-instr-control>`, the syntax of instructions is extended to include the following *administrative instructions*:
+In order to express the reduction of :ref:`traps <trap>`, :ref:`calls <syntax-call>`, :ref:`exception handling <exec-catch>`, and :ref:`control instructions <syntax-instr-control>`, the syntax of instructions is extended to include the following *administrative instructions*:
 
 .. math::
    \begin{array}{llcl}
@@ -679,7 +679,7 @@ This definition allows to index active labels surrounding a :ref:`branch <syntax
 Throw Contexts
 ..............
 
-In order to specify the reduction of :ref:`try-catch blocks <syntax-try>`
+In order to specify the reduction of |TRY| blocks
 with the help of the administrative instructions |THROWADDR|, |REFEXNADDR|, and |CATCHN|,
 the following syntax of *throw contexts* is defined, as well as associated structural rules:
 
@@ -695,7 +695,7 @@ the following syntax of *throw contexts* is defined, as well as associated struc
 Throw contexts allow matching the program context around a throw instruction up to the nearest enclosing :math:`\CATCHN` handler, thereby selecting the exception handler responsible for an exception.
 
 .. note::
-   For example, catching a simple :ref:`throw <exec-throw>` in a :ref:`try-catch block <exec-try>` would be as follows.
+   For example, catching a simple :ref:`throw <exec-throw>` in a :ref:`try block <exec-try>` would be as follows.
 
    .. math::
       \begin{array}{ll}
@@ -715,7 +715,7 @@ Throw contexts allow matching the program context around a throw instruction up 
    When a throw occurs, execution halts until that throw is the continuation of a throw context in a catching try block.
 
    In this particular case, the exception reference is returned normally, as opposed to being thrown as the result of a plain
-   :math:`\THROW~x` without a catching try-block.
+   :math:`\THROW~x` without a catching try block.
 
    *(TODO: add administrative values to describe unresolved throws).*
 

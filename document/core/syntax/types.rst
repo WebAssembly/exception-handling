@@ -207,9 +207,11 @@ Exception Types
    \production{exception type} &\exntype &::=& \functype \\
    \end{array}
 
-Because :ref:`exceptions <syntax-exn>` have a :ref:`valid <valid-exn>` |exntype|,
-it is an invariant of the semantics that the function type :math:`\functype` has empty result type.
 The parameters of |functype| define the list of values associated with the exception.
+Furthermore, it is an invariant of the semantics that every |functype| in a :ref:`valid <valid-exntype>` exception type has an empty result type.
+
+.. note::
+   Future versions of WebAssembly may allow non-empty result types in exceptions.
 
 
 .. index:: ! global type, ! mutability, value type, global, mutability

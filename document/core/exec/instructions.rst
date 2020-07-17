@@ -1975,7 +1975,7 @@ Entering :math:`\instr^\ast` with label :math:`L`
 Exiting :math:`\instr^\ast` with label :math:`L`
 ................................................
 
-When the end of a block is reached without a jump or trap aborting it, then the following steps are performed.
+When the end of a block is reached without a jump, exception, or trap aborting it, then the following steps are performed.
 
 1. Let :math:`m` be the number of values on the top of the stack.
 
@@ -2003,7 +2003,7 @@ When the end of a block is reached without a jump or trap aborting it, then the 
 .. index:: exception handling, throw context
    pair: handling; exception
 
-.. _exec-catchn:
+.. _exec-catch:
 
 Exception Handling
 ~~~~~~~~~~~~~~~~~~
@@ -2027,7 +2027,7 @@ Entering an exception handler :math:`H`
 Exiting an exception handler
 ............................
 
-When the end of a :ref:`try <syntax-try>` instruction is reached without a jump, exception or trap, then the following steps are performed.
+When the end of a :ref:`try <syntax-try>` instruction is reached without a jump, exception, or trap, then the following steps are performed.
 the exception handler, then the following steps are performed.
 
 1. Let :math:`m` be the number of values on the top of the stack.
@@ -2157,7 +2157,7 @@ Invocation of :ref:`function address <syntax-funcaddr>` :math:`a`
 Returning from a function
 .........................
 
-When the end of a function is reached without a jump (i.e., |RETURN|) or trap aborting it, then the following steps are performed.
+When the end of a function is reached without a jump (i.e., |RETURN|), exception, or trap aborting it, then the following steps are performed.
 
 1. Let :math:`F` be the :ref:`current <exec-notation-textual>` :ref:`frame <syntax-frame>`.
 
