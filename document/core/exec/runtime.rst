@@ -536,7 +536,7 @@ Exception handlers
 ..................
 
 Like labels, exception handlers carry the return arity :math:`n` of the
-respective try block, and their associated branch *target*, which is
+respective |TRY| block, and their associated branch *target*, which is
 expressed syntactically as an :ref:`instruction <syntax-instr>` sequence:
 
 .. math::
