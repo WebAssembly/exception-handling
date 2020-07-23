@@ -715,7 +715,7 @@ Throw contexts allow matching the program context around a throw instruction up 
    When a throw occurs, execution halts until that throw is the continuation of a throw context in a catching try block.
 
    In this particular case, the exception reference is returned normally, as opposed to being thrown as the result of a plain
-   :math:`\THROW~x` without a catching try block.
+   :math:`\THROW~x` without a catching |TRY| block.
 
    *(TODO: add administrative values to describe unresolved throws).*
 

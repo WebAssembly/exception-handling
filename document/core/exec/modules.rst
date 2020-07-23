@@ -76,9 +76,9 @@ The following auxiliary typing rules specify this typing relation relative to a 
 
 * The store entry :math:`S.\SEXNS[a]` must exist.
 
-* Let :math:`\functype` be the function type :math:`S.\SEXNS[a].\EITYPE`.
+* Let :math:`\exntype` be the function type :math:`S.\SEXNS[a].\EITYPE`.
 
-* Then :math:`\EVEXN~a` is valid with :ref:`external type <syntax-externtype>` :math:`\ETEXN~\functype`.
+* Then :math:`\EVEXN~a` is valid with :ref:`external type <syntax-externtype>` :math:`\ETEXN~\exntype`.
 
 .. math::
    \frac{
@@ -339,7 +339,7 @@ New instances of :ref:`functions <syntax-funcinst>`, :ref:`tables <syntax-tablei
    \allocexn(S, \exn, \module) &=& S', \exnaddr \\[1ex]
    \mbox{where:} \hfill \\
    \exnaddr &=& |S.\SEXNS| \\
-   \exninst &=& \{ \EITYPE~\functype \} \\
+   \exninst &=& \{ \EITYPE~\module.\MTYPES[\exn.\ETYPE] \} \\
    S' &=& S \compose \{\SEXNS~\exninst\} \\
    \end{array}
 
