@@ -316,30 +316,28 @@ New instances of :ref:`functions <syntax-funcinst>`, :ref:`tables <syntax-tablei
    \end{array}
 
 
-.. index:: exception, exception instance, exception address, exception type, function type
+.. index:: exception, exception instance, exception address, exception type
 .. _alloc-exn:
 
 :ref:`Exceptions <syntax-exninst>`
 ..................................
 
-1. Let :math:`\exn` be the :ref:`exception <syntax-exn>` to allocate for the module :math:`\module`.
+1. Let :math:`\exntype` be the :ref:`exception type <syntax-exntype>` to allocate.
 
 2. Let :math:`a` be the first free :ref:`exception address <syntax-exnaddr>` in :math:`S`.
 
-3. Let :math:`\functype` be the :ref:`function type <syntax-functype>` :math:`\module.\MTYPES[\exn.\ETYPE]`.
+3. Let :math:`\exninst` be the :ref:`exception instance <syntax-exninst>` :math:`\{ \EITYPE~\exntype \}`.
 
-4. Let :math:`\exninst` be the :ref:`exception instance <syntax-exninst>` :math:`\{ \EITYPE~\functype \}`.
-
-5. Append :math:`\exninst` to the |SEXNS| of :math:`S`.
+4. Append :math:`\exninst` to the |SEXNS| of :math:`S`.
 
 5. Return :math:`a`.
 
 .. math::
    \begin{array}{rlll}
-   \allocexn(S, \exn, \module) &=& S', \exnaddr \\[1ex]
+   \allocexn(S, \exntype) &=& S', \exnaddr \\[1ex]
    \mbox{where:} \hfill \\
    \exnaddr &=& |S.\SEXNS| \\
-   \exninst &=& \{ \EITYPE~\module.\MTYPES[\exn.\ETYPE] \} \\
+   \exninst &=& \{ \EITYPE~\exntype \} \\
    S' &=& S \compose \{\SEXNS~\exninst\} \\
    \end{array}
 
@@ -525,7 +523,9 @@ and list of :ref:`reference <syntax-ref>` vectors for the module's :ref:`element
 
 5. For each :ref:`exception <syntax-exn>` :math:`\exn_i` in :math:`\module.\MEXNS`, do:
 
-   a. Let :math:`\exnaddr_i` be the :ref:`exception address <syntax-exnaddr>` resulting from :ref:`allocating <alloc-exn>` :math:`\exn_i` for the module :math:`\module`.
+   a. Let :math:`\exntype` be the :ref:`exception type <syntax-exntype>` :math:`\module.\MTYPES[\exn_i.ETYPE]`.
+
+   b. Let :math:`\exnaddr_i` be the :ref:`exception address <syntax-exnaddr>` resulting from :ref:`allocating <alloc-exn>` :math:`\exntype`.
 
 6. For each :ref:`global <syntax-global>` :math:`\global_i` in :math:`\module.\MGLOBALS`, do:
 

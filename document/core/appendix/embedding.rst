@@ -539,7 +539,7 @@ Memories
    \end{array}
 
 
-.. index: exception, exception address, store, exception instance, exception type, function type
+.. index:: exception, exception address, store, exception instance, exception type, function type
 .. _embed-exn:
 
 Exceptions
