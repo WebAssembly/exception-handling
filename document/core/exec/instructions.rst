@@ -2028,7 +2028,6 @@ Exiting an exception handler
 ............................
 
 When the end of a :ref:`try <syntax-try>` instruction is reached without a jump, exception, or trap, then the following steps are performed.
-If an exception is thrown before the end of the |TRY| instruction, then we are in the case of :ref:`throwing <exec-throwaddr>` an exception.
 
 1. Let :math:`m` be the number of values on the top of the stack.
 
