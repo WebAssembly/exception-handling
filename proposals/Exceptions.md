@@ -12,13 +12,11 @@ of events.
 
 This proposal requires the following proposals as prerequisites.
 
-- The [reference types
-- proposal](https://github.com/WebAssembly/reference-types/blob/master/proposals/reference-types/Overview.md),
+- The [reference types proposal](https://github.com/WebAssembly/reference-types/blob/master/proposals/reference-types/Overview.md),
   since the [`exnref`](#the-exception-reference-data-type) type should be
   represented as a subtype of `anyref`.
 
-- The [multi-value
-- proposal](https://github.com/WebAssembly/multi-value/blob/master/proposals/multi-value/Overview.md),
+- The [multi-value proposal](https://github.com/WebAssembly/multi-value/blob/master/proposals/multi-value/Overview.md),
   since otherwise the [`br_on_exn`](#exception-data-extraction) instruction
   would only work with exceptions that contain one value. Moreover, by using
   [multi-value](https://github.com/WebAssembly/multi-value/blob/master/proposals/multi-value/Overview.md),
