@@ -7,7 +7,7 @@ holds a
 [proposal](https://github.com/WebAssembly/exception-handling/blob/master/proposals/Exceptions.md) for
 adding exception handling to WebAssembly.
 
-* See the [proposal overview](proposals/Exceptions.md) for a summary of the proposal.
+* See the [proposal overview](/proposals/exception-handling/Exceptions.md) for a summary of the proposal.
 
 The repository is now based on the [reference types proposal](proposals/reference-types/Overview.md) and includes all respective changes.
 
