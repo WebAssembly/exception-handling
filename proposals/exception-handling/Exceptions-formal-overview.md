@@ -38,11 +38,11 @@ mod ::= module ... exn*
 
 ## Validation (Typing)
 
-To verify that a `try...delegate l` instruction refers to a label introduced by a try block (I'll call this a try-label), introduce a type attribute to labels in the validation context, which type attribute is set to `try` when the label is a try-label. The original notation `label [t*]` will then be a shortcut for `label {result [t*], type ε}`.
-
 To verify that the `rethrow l` instruction refers to a surrounding catch block, we introduce a stack `caught` to validation contexts, which gets an exception index or the keywork `all` prepended whenever we enter instructions inside a `catch exnidx` or `catch_all` block, respectively. This addition is reflected in the execution rules, by the administrative instruction `caught` which models the stack of caught exceptions on the wasm stack.
 
+
 ### Instructions
+
 
 
 ```
@@ -57,7 +57,7 @@ C |- rethrow l : [t1*] -> [t2*]
 
 
 bt = [t1*] -> [t2*]
-C, label {result [t2*], type try} |- instr* : [t1*] -> [t2*]
+C, label [t2*] |- instr* : [t1*] -> [t2*]
 (C_exn(x_i) = [t'_i*] -> [])^n
 (C, label [t2*], caught x_i |- instr_i* : [t'_i*] -> [t2*])^n
 (C, label [t2*], caught all |- instr'* : [] -> [t2*])?
@@ -66,16 +66,16 @@ try bt instr* (catch x_i instr_i*)^n (catch_all instr'*)? end : bt
 
 
 bt = [t1*] -> [t2*]
-C, label {result [t2*], type try} |- instr* : [t1*] -> [t2*]
-C_label(l).type = try
-------------------------------------------------------------
+C, label [t2*] |- instr* : [t1*] -> [t2*]
+C_label(l) =/= ε
+-----------------------------------------
 try bt instr* delegate l : bt
 
 
 bt = [t1*] -> [t2*]
-C, label {result [t2*], type try} |- instr_1* : [t1*] -> [t2*]
+C, label [t2*] |- instr_1* : [t1*] -> [t2*]
 C, label [t2*], caught all |- instr_2* : [] -> [t2*]
---------------------------------------------------------------
+----------------------------------------------------
 try bt instr_1* unwind instr_2* : bt
 ```
 
@@ -158,8 +158,8 @@ S; F; catch_m{a_i instr_i*}* T[val^n (throw a)] end
 val^n (try bt instr* delegate l) --> delegate{l} (label_m{} val^n instr* end) end
   (iff bt = [t^n] -> [t^m])
 
-catch_m{a_i instr_i*}*{instr*}? (label_m{} B^l[ delegate{l} (T[val^n (throw a)]) end ] end) end
-  --> catch_m{a_i instr_i*}*{instr*}? label_m{} val^n (throw a) end end
+B^l[ delegate{l} (T[val^n (throw a)]) end ] end
+  --> val^n (throw a)
 
 
 try bt instr* unwind instr'* end --> try bt instr* catch_all instr'* rethrow 0 end
