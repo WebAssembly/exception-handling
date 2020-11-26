@@ -16,8 +16,7 @@ exntype ::= [t*] -> []
 
 ```
 instr ::= ... | throw x | rethrow l
-        | try bt instr* (catch x instr*)+ end
-        | try bt instr* (catch x instr*)* catch_all instr* end
+        | try bt instr* (catch x instr*)* (catch_all instr*)? end
         | try bt instr* delegate l
         | try bt instr* unwind instr* end
 ```
@@ -105,7 +104,7 @@ m ::= {..., (exn a)*}
 Administrative Instructions
 
 ```
-instr ::= ... | throw a | catch_n{a instr*}*{instr*} instr* end
+instr ::= ... | throw a | catch_n{a instr*}*{instr*}? instr* end
         | delegate{l} instr* end | caught_m{a val^n} instr* end
 ```
 
@@ -134,34 +133,33 @@ caught_m{a val^n} C^l[rethrow l] end
 caught_m{a val^n} val^m end  -->  val^m
 ```
 
-The requirements below involving `k` are to distinguish between a missing `catch_all` and an existing `catch_all` with no instructions (`nop` is added to the empty instruction set of an existing `catch_all`).
+A keyword `all` is introduced to simplify the requirements for the `try` execution step below.
 
 ```
-F; val^n (try bt instr* (catch x_i instr_i*)* (catch_all instr'*)^k end)
-  -->  F; catch_m{a_i instr_i*}*{instr''*} (label_m{} val^n instr* end) end
-  (iff bt = [t1^n] -> [t2^m] and (F_exn(x_i) = a_i)* and
-  (if k=1 and instr'*=ε then instr''* = nop)
-  and (if k=1 and inst'*=/=ε then instr''* = instr'*) and (if k=0 then instr''*=ε).
+F; val^n (try bt instr* (catch x_i instr_i*)* (catch_all instr'*)? end)
+  -->  F; catch_m{a_i instr_i*}*{all instr'*}? (label_m{} val^n instr* end) end
+  (iff bt = [t1^n] -> [t2^m] and (F_exn(x_i) = a_i)*)
 
-catch_m{a_i instr_i*}*{instr'*} val^m end --> val^m
+catch_m{a_i instr_i*}*{all instr'*}? val^m end --> val^m
 
-S; F; catch_m{a_i instr_i*}*{instr'*} T[val^n (throw a)] end
+S; F; catch_m{a_i instr_i*}*{all instr'*}? T[val^n (throw a)] end
   -->  S; F; caught_m{a val^n} val^n instr_i* end
-  (iff S_exn(a) = {type [t^n]->[]} and a_i = a)
+  (iff S_exn(a) = {type [t^n]->[]} and i is the least such that a_i = a)
 
-S; F; catch_m{a_i instr_i*}*{instr*} T[val^n (throw a)] end
+S; F; catch_m{a_i instr_i*}*{all instr*} T[val^n (throw a)] end
   -->  S; F; caught_m{a val^n} instr* end
-  (iff S_exn(a) = {type [t^n]->[]} and instr =/= ε and for every i, a_i =/= a)
+  (iff S_exn(a) = {type [t^n]->[]} and for every i, a_i =/= a)
 
-S; F; catch_m{a_i instr_i*}*{ε} T[val^n (throw a)] end
+S; F; catch_m{a_i instr_i*}* T[val^n (throw a)] end
   -->  S; F; val^n (throw a)
   (iff for every i, a_i =/= a)
+
 
 val^n (try bt instr* delegate l) --> delegate{l} (label_m{} val^n instr* end) end
   (iff bt = [t^n] -> [t^m])
 
-catch_m{a_i instr_i*}*{instr*} (label_m{} B^l[ delegate{l} (T[val^n (throw a)]) end ] end) end
-  --> catch_m{a_i instr_i*}*{instr*} label_m{} val^n (throw a) end end
+catch_m{a_i instr_i*}*{instr*}? (label_m{} B^l[ delegate{l} (T[val^n (throw a)]) end ] end) end
+  --> catch_m{a_i instr_i*}*{instr*}? label_m{} val^n (throw a) end end
 
 
 try bt instr* unwind instr'* end --> try bt instr* catch_all instr'* rethrow 0 end
