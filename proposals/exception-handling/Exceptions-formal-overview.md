@@ -16,7 +16,8 @@ exntype ::= [t*] -> []
 
 ```
 instr ::= ... | throw x | rethrow l
-        | try bt instr* (catch x instr*)* (catch_all instr*)? end
+        | try bt instr* (catch x instr*)+ end
+        | try bt instr* (catch x instr*)* catch_all instr* end
         | try bt instr* delegate l
         | try bt instr* unwind instr* end
 ```
@@ -60,9 +61,10 @@ bt = [t1*] -> [t2*]
 C, label [t2*] |- instr* : [t1*] -> [t2*]
 (C_exn(x_i) = [t'_i*] -> [])^n
 (C, label [t2*], caught x_i |- instr_i* : [t'_i*] -> [t2*])^n
-(C, label [t2*], caught all |- instr'* : [] -> [t2*])?
+(C, label [t2*], caught all |- instr'* : [] -> [t2*])^k
+(k=0 and n>0) or (k=1 and n≥0)
 ------------------------------------------------------------------
-try bt instr* (catch x_i instr_i*)^n (catch_all instr'*)? end : bt
+try bt instr* (catch x_i instr_i*)^n (catch_all instr'*)^k end : bt
 
 
 bt = [t1*] -> [t2*]
