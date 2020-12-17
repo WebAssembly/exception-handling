@@ -302,7 +302,9 @@ end
 If `call $foo` throws, searching for a catching block first finds `delegate`,
 and because it delegates exception handling to catching instructions associated
 with `$label0`, it will be next checked by the outer `catch` and then
-`catch_all` instructions.
+`catch_all` instructions. When the specified label within a `delegate`
+instruction does not correspond to a `try` instruction, it is a validation
+failure.
 
 ### JS API
 
