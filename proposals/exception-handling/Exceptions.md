@@ -162,16 +162,11 @@ end
 
 The `unwind` block is meant to contain cleanup instructions, such as
 destructors, in case any instruction in the corresponding try block throws.
-Currently the `unwind` instruction has the same semantics as the `catch_all`
-instruction that it catches all exceptions. In case an exception is caught by
-the `unwind` block, it becomes the catching block.
+In case an exception is caught by the `unwind` block, it becomes the catching
+block.
 
 The `end` instruction at the end of `unwind` block is special that it
 automatically rethrows the current exception.
-
-The current plan is, try-unwind blocks will have a different semantics from
-that of try-catch blocks when we introduce two-phase unwinding as a follow-on
-proposal in the future.
 
 ### Throwing an exception
 
@@ -232,8 +227,9 @@ Note that a caught exception can be rethrown using the `rethrow` instruction.
 
 ### Rethrowing an exception
 
-The `rethrow` instruction can only appear in the body of a catch/unwind block.
-It always re-throws the exception caught by an enclosing catch block.
+The `rethrow` instruction can only appear in the body of a catch/catch_all block
+but not within the body of an unwind block. It always re-throws the exception
+caught by an enclosing catch block.
 
 Associated with the `rethrow` instruction is a _label_. The label is used to
 disambiguate which exception is to be rethrown, when inside nested catch blocks.
