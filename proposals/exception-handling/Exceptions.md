@@ -239,21 +239,21 @@ the catching block appears.
 For example consider the following:
 
 ```
-try
+try $l1
   ...
 catch 1
   ...
   block
     ...
-    try
+    try $l2
       ...
     catch 2
       ...
-      try
+      try $l3
         ...
       catch 3
         ...
-        rethrow N
+        rethrow N (or label)
       end
     end
   end
@@ -265,10 +265,26 @@ In this example, `N` is used to disambiguate which caught exception is being
 rethrown. It could rethrow any of the three caught expceptions. Hence,
 `rethrow 0` corresponds to the exception caught by `catch 3`, `rethrow 1`
 corresponds to the exception caught by `catch 2`, and `rethrow 3` corresponds
-to the exception caught by `catch 1`.
+to the exception caught by `catch 1`. In wat format, the argument for the
+`rethrow` instructions can also be written as a label, like branches. So
+`rethrow 0` in the example above can also be written as `rethrow $l3`.
 
 Note that `rethrow 2` is not allowed because it does not reference a `try`
-instruction. Rather, it references a `block` instruction.
+instruction. Rather, it references a `block` instruction, so it will result in a
+validation failure.
+
+Note that the example below is a validation failure:
+```
+try $l1
+  try $l2
+    rethrow $l2 (= rethrow 0)
+  catch
+  end
+catch
+end
+```
+The `rethrow` here references `try $l2`, but the `rethrow` is not within its
+`catch` block.
 
 ### Try-delegate blocks
 
@@ -288,11 +304,11 @@ exception handling to a catch/unwind block specified by the label. For example,
 consider this code:
 
 ```
-try $label0
+try $l1
   try
     call $foo
-  delegate $label0
-catch $tag
+  delegate $l1 (= delegate 0)
+catch
   ...
 catch_all
   ...
@@ -302,9 +318,25 @@ end
 If `call $foo` throws, searching for a catching block first finds `delegate`,
 and because it delegates exception handling to catching instructions associated
 with `$label0`, it will be next checked by the outer `catch` and then
-`catch_all` instructions. When the specified label within a `delegate`
+`catch_all` instructions.
+When the specified label within a `delegate`
 instruction does not correspond to a `try` instruction, it is a validation
 failure.
+
+Note that the example below is a validation failure:
+```
+try $l1
+catch 1
+  try
+    call $foo
+  delegate $l1 (= delegate 0)
+catch_all
+  ...
+end
+```
+Here `delegate` is trying to delegate to `catch 1`, which exists before the
+`delegate`. The `delegate` instruction can only delegate to `catch`/`catch_all`
+blocks in a `try` or to another `delegate` below the `delegate` itself.
 
 ### JS API
 
