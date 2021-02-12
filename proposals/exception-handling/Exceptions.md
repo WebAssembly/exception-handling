@@ -506,9 +506,9 @@ throws, and rethrows as follows:
 | ---- | ---- | ---- | ---- |
 | `try` | `0x06` | sig : `blocktype` | begins a block which can handle thrown exceptions |
 | `catch` | `0x07` | index : `varint32` | begins the catch block of the try block |
-| `catch_all` | `0x05` | | begins the catch_all block of the try block |
+| `catch_all` | `0x19` | | begins the catch_all block of the try block |
 | `unwind` | `0x0a` | | begins the unwind block of the try block |
-| `delegate` | `0x??` | relative_depth : `varuint32` | begins the delegate block of the try block |
+| `delegate` | `0x18` | relative_depth : `varuint32` | begins the delegate block of the try block |
 | `throw` | `0x08` | index : `varint32` | Creates an exception defined by the exception `index`and then throws it |
 | `rethrow` | `0x09` | relative_depth : `varuint32` | Pops the `exnref` on top of the stack and throws it |
 
