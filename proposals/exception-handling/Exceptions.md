@@ -59,8 +59,8 @@ may send values back to the suspended instruction, allowing the originating code
 to resume.
 
 Exceptions are a special case of an event in that they never resume. Similarly,
-a throw instruction is the suspending event of an exception. The catch or unwind
-block associated with a try block defines how to handle the throw.
+a `throw` instruction is the suspending event of an exception. The catch or
+unwind block associated with a try block defines how to handle the throw.
 
 WebAssembly events (i.e. exceptions) are defined by a new `event` section of a
 WebAssembly module. The event section is a list of declared events associated
@@ -93,8 +93,8 @@ Exception indices are used by:
 1. The `throw` instruction which creates a WebAssembly exception with the
    corresponding exception tag, and then throws it.
 
-2. The `catch` instruction uses the tag to identify if the thrown exception is
-   one it can catch. If true it pushes the corresponding argument values of the
+2. The `catch` clause uses the tag to identify if the thrown exception is one it
+   can catch. If true it pushes the corresponding argument values of the
    exception onto the stack.
 
 ### Try-catch blocks
@@ -161,8 +161,8 @@ end
 ```
 
 The `unwind` block is meant to contain cleanup instructions, such as
-destructors, in case any instruction in the corresponding try block throws.
-In case an exception is caught by the `unwind` block, it becomes the catching
+destructors, in case any instruction in the corresponding try block throws. In
+case an exception is caught by the `unwind` block, it becomes the catching
 block.
 
 The `end` instruction at the end of `unwind` block is special that it
@@ -197,19 +197,20 @@ try block of the catch/unwind block, since instructions in the body of the
 catch/unwind block are not in the body of the try block.
 
 Once a catching try block is found for the thrown exception, the operand stack
-is popped back to the size the operand stack had when the try block was entered after possible block parameters were popped.
+is popped back to the size the operand stack had when the try block was entered
+after possible block parameters were popped.
 
-Then in case of a try-catch block, tagged catch blocks are tried in the
-order they appear in the catching try block, until one matches. If a matched
-tagged catch block is found, control is transferred to the body of the catch
-block, and the data fields of the exception are pushed back onto the stack.
+Then in case of a try-catch block, tagged catch blocks are tried in the order
+they appear in the catching try block, until one matches. If a matched tagged
+catch block is found, control is transferred to the body of the catch block, and
+the data fields of the exception are pushed back onto the stack.
 
 Otherwise, control is transferred to the body of the `catch_all` block, if any.
 However, unlike tagged catch blocks, the constructor arguments are not copied
 back onto the operand stack.
 
-If no tagged catch blocks were matched, and the
-catching try block doesn't have a `catch_all` block, the exception is rethrown.
+If no tagged catch blocks were matched, and the catching try block doesn't have
+a `catch_all` block, the exception is rethrown.
 
 If control is transferred to the body of a catch block, and the last instruction
 in the body is executed, control then exits the try block.
@@ -263,12 +264,12 @@ end
 ```
 
 In this example, `N` is used to disambiguate which caught exception is being
-rethrown. It could rethrow any of the three caught expceptions. Hence,
-`rethrow 0` corresponds to the exception caught by `catch 3`, `rethrow 1`
-corresponds to the exception caught by `catch 2`, and `rethrow 3` corresponds
-to the exception caught by `catch 1`. In wat format, the argument for the
-`rethrow` instructions can also be written as a label, like branches. So
-`rethrow 0` in the example above can also be written as `rethrow $l3`.
+rethrown. It could rethrow any of the three caught expceptions. Hence, `rethrow
+0` corresponds to the exception caught by `catch 3`, `rethrow 1` corresponds to
+the exception caught by `catch 2`, and `rethrow 3` corresponds to the exception
+caught by `catch 1`. In wat format, the argument for the `rethrow` instructions
+can also be written as a label, like branches. So `rethrow 0` in the example
+above can also be written as `rethrow $l3`.
 
 Note that `rethrow 2` is not allowed because it does not reference a catch
 block. Rather, it references a `block` instruction, so it will result in a
@@ -298,11 +299,11 @@ try blocktype
 delegate label
 ```
 
-The `delegate` clause does not have an associated body, so try-delegate
-blocks don't have an `end` instruction at the end. The `delegate` instruction
-takes a label defined by a construct in which they are enclosed, and delegates
-exception handling to a catch/unwind block specified by the label. For example,
-consider this code:
+The `delegate` clause does not have an associated body, so try-delegate blocks
+don't have an `end` instruction at the end. The `delegate` instruction takes a
+label defined by a construct in which they are enclosed, and delegates exception
+handling to a catch/unwind block specified by the label. For example, consider
+this code:
 
 ```
 try $l1
@@ -318,11 +319,9 @@ end
 
 If `call $foo` throws, searching for a catching block first finds `delegate`,
 and because it delegates exception handling to catching instructions associated
-with `$l1`, it will be next checked by the outer `catch` and then
-`catch_all` instructions.
-When the specified label within a `delegate`
-instruction does not correspond to a `try` instruction, it is a validation
-failure.
+with `$l1`, it will be next checked by the outer `catch` and then `catch_all`
+instructions. When the specified label within a `delegate` instruction does not
+correspond to a `try` instruction, it is a validation failure.
 
 Note that the example below is a validation failure:
 ```
