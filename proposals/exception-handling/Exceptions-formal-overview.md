@@ -39,7 +39,7 @@ mod ::= module ... exn*
 
 ## Validation (Typing)
 
-To verify that the `rethrow l` instruction refers to a surrounding catch block, we introduce a stack `caught` to validation contexts, which gets an exception index or the keywork `all` prepended whenever we enter instructions inside a `catch exnidx` or `catch_all` block, respectively. This addition is reflected in the execution rules, by the administrative instruction `caught` which models the stack of caught exceptions on the wasm stack.
+To verify that the `rethrow l` instruction refers to a surrounding catch block, we introduce a stack `caught` to validation contexts, which gets an exception index or the keyword `all` prepended whenever we enter instructions inside a `catch exnidx` or `catch_all` block, respectively. This addition is reflected in the execution rules, by the administrative instruction `caught` which models the stack of caught exceptions on the wasm stack.
 
 
 ### Instructions
@@ -76,9 +76,9 @@ try bt instr* delegate l : bt
 
 bt = [t1*] -> [t2*]
 C, label [t2*] |- instr_1* : [t1*] -> [t2*]
-C, label [t2*], caught all |- instr_2* : [] -> [t2*]
+C, label [t2*] |- instr_2* : [] -> []
 ----------------------------------------------------
-try bt instr_1* unwind instr_2* : bt
+try bt instr_1* unwind instr_2* end : bt
 ```
 
 ## Execution (Reduction)
