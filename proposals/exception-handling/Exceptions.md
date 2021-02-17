@@ -547,8 +547,3 @@ throws, and rethrows as follows:
 
 The *sig* fields of `block`, `if`, and `try` operators are block signatures
 which describe their use of the operand stack.
-
-Note that the textual `catch_all` instruction is implemented using the
-`else` operator. Since the `else` operator is always unambiguous in the binary
-format, there is no need to tie up a separate opcode for the `catch_all`
-instruction.
