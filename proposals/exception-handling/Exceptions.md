@@ -214,11 +214,12 @@ catching try block doesn't have a `catch_all` block, the exception is rethrown.
 If control is transferred to the body of a catch block, and the last instruction
 in the body is executed, control then exits the try block.
 
-In case of a try-unwind block, the control is transfered to the body of the
-`unwind` block. After executing instructions within the `unwind` block, the
-exception is automatically rethrown when the control reaches the `end`
-instruction. As in the case of the `catch_all` block, the exception arguments
-are not copied onto the operand stack.
+In case of a try-unwind block, if an exception is thrown within the try block,
+the program control is transfered to the body of `unwind` block. After executing
+instructions within the `unwind` block, the exception is automatically rethrown
+when the control reaches the `end` instruction. As in the case of the
+`catch_all` block, the exception arguments are not copied onto the operand
+stack.
 
 If the selected catch/unwind block does not throw an exception, it must yield
 the value(s) expected by the corresponding catching try block.
