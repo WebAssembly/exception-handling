@@ -382,7 +382,7 @@ document](https://github.com/WebAssembly/spec/blob/master/document/core/text/ins
 The following rules are added to *instructions*:
 
 ```
-  try blocktype instruction* (catch instruction*)+ (catch_all instruction*)+ end |
+  try blocktype instruction* (catch instruction*)+ (catch instruction*)* (catch_all instruction*)? end |
   try blocktype instruction* unwind instruction* end |
   try blocktype instruction* delegate label |
   throw (exception except_index) |
