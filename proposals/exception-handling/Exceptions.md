@@ -141,6 +141,10 @@ _default_ catch block. The default catch block has no exception type, and is
 used to catch all exceptions not caught by any of the tagged catch blocks. The
 term 'catch block' refers to both `catch` and `catch_all` blocks.
 
+When the program runs `br` within `catch` or `catch_all` blocks, the rest of
+the catching blocks will not run and the program control will branch to the
+destination, as in normal blocks.
+
 Try blocks, like control-flow blocks, have a _block type_. The block type of a
 try block defines the values yielded by evaluating the try block when either no
 exception is thrown, or the exception is successfully caught by the catch block.
@@ -167,6 +171,11 @@ block.
 
 The `end` instruction at the end of `unwind` block is special that it
 automatically rethrows the current exception.
+
+When the program runs `br` within `unwind` block, the rest of the `unwind` block
+will not run and the program control will branch to the destination, as in
+normal blocks. Because we don't reach `end` of `unwind` block, rethrowing does
+not happen.
 
 ### Throwing an exception
 
