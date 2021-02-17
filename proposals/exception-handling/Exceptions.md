@@ -119,9 +119,9 @@ end
 ```
 
 A try-catch block contains zero or more `catch` blocks and zero or one
-`catch_all` block. All `catch` blocks should precede the `catch_all` block, if
+`catch_all` block. All `catch` blocks must precede the `catch_all` block, if
 any. The `catch`/`catch_all` instructions (within the try construct) are called
-the _catching_ instructions. There should be at least `catch` or `catch_all`
+the _catching_ instructions. There should be at least one `catch` or `catch_all`
 block within a try-catch block.
 
 The _body_ of the try block is the list of instructions before the first
@@ -197,7 +197,7 @@ try block of the catch/unwind block, since instructions in the body of the
 catch/unwind block are not in the body of the try block.
 
 Once a catching try block is found for the thrown exception, the operand stack
-is popped back to the size the operand stack had when the try block was entered.
+is popped back to the size the operand stack had when the try block was entered after possible block parameters were popped.
 
 Then in case of a try-catch block, tagged catch blocks are tried in the
 order they appear in the catching try block, until one matches. If a matched
@@ -206,9 +206,10 @@ block, and the data fields of the exception are pushed back onto the stack.
 
 Otherwise, control is transferred to the body of the `catch_all` block, if any.
 However, unlike tagged catch blocks, the constructor arguments are not copied
-back onto the operand stack. If no tagged catch blocks were matched, and the
-catching try block doesn't have a `catch_all` block, the exception is rethrown
-to the next enclosing try block.
+back onto the operand stack.
+
+If no tagged catch blocks were matched, and the
+catching try block doesn't have a `catch_all` block, the exception is rethrown.
 
 If control is transferred to the body of a catch block, and the last instruction
 in the body is executed, control then exits the try block.
@@ -220,8 +221,7 @@ instruction. As in the case of the `catch_all` block, the exception arguments
 are not copied onto the operand stack.
 
 If the selected catch/unwind block does not throw an exception, it must yield
-the value(s) expected by the corresponding catching try block. This includes
-popping the caught exception.
+the value(s) expected by the corresponding catching try block.
 
 Note that a caught exception can be rethrown using the `rethrow` instruction.
 
@@ -241,19 +241,19 @@ For example consider the following:
 ```
 try $l1
   ...
-catch 1
+catch  ;; $l1
   ...
   block
     ...
     try $l2
       ...
-    catch 2
+    catch  ;; $l2
       ...
       try $l3
         ...
-      catch 3
+      catch  ;; $l3
         ...
-        rethrow N (or label)
+        rethrow N  ;; (or label)
       end
     end
   end
@@ -269,15 +269,15 @@ to the exception caught by `catch 1`. In wat format, the argument for the
 `rethrow` instructions can also be written as a label, like branches. So
 `rethrow 0` in the example above can also be written as `rethrow $l3`.
 
-Note that `rethrow 2` is not allowed because it does not reference a `try`
-instruction. Rather, it references a `block` instruction, so it will result in a
+Note that `rethrow 2` is not allowed because it does not reference a catch
+block. Rather, it references a `block` instruction, so it will result in a
 validation failure.
 
 Note that the example below is a validation failure:
 ```
 try $l1
   try $l2
-    rethrow $l2 (= rethrow 0)
+    rethrow $l2  ;; (= rethrow 0)
   catch
   end
 catch
@@ -289,7 +289,7 @@ The `rethrow` here references `try $l2`, but the `rethrow` is not within its
 ### Try-delegate blocks
 
 Try blocks can also be used with the `delegate` instruction. A try-delegate
-block contains an `delegate` instruction with the following form:
+block contains a `delegate` instruction with the following form:
 
 ```
 try blocktype
@@ -297,7 +297,7 @@ try blocktype
 delegate label
 ```
 
-The `delegate` instruction does not have an associated body, so try-delegate
+The `delegate` clause does not have an associated body, so try-delegate
 blocks don't have an `end` instruction at the end. The `delegate` instruction
 takes a label defined by a construct in which they are enclosed, and delegates
 exception handling to a catch/unwind block specified by the label. For example,
@@ -307,7 +307,7 @@ consider this code:
 try $l1
   try
     call $foo
-  delegate $l1 (= delegate 0)
+  delegate $l1  ;; (= delegate 0)
 catch
   ...
 catch_all
@@ -317,7 +317,7 @@ end
 
 If `call $foo` throws, searching for a catching block first finds `delegate`,
 and because it delegates exception handling to catching instructions associated
-with `$label0`, it will be next checked by the outer `catch` and then
+with `$l1`, it will be next checked by the outer `catch` and then
 `catch_all` instructions.
 When the specified label within a `delegate`
 instruction does not correspond to a `try` instruction, it is a validation
@@ -329,7 +329,7 @@ try $l1
 catch 1
   try
     call $foo
-  delegate $l1 (= delegate 0)
+  delegate $l1  ;; (= delegate 0)
 catch_all
   ...
 end
@@ -345,7 +345,7 @@ blocks in a `try` or to another `delegate` below the `delegate` itself.
 When an exception is thrown, the runtime will pop the stack across function
 calls until a corresponding, enclosing try block is found. Some runtimes,
 especially web VMs may also associate a stack trace that can be used to report
-uncaught exceptions. However, the details of this is left to the embedder.
+uncaught exceptions. However, the details of this are left to the embedder.
 
 #### Traps
 
