@@ -73,6 +73,9 @@ Let `F'` be the frame `{locals i32.const 27, module m}`, and let `B^1 = label_0{
 Let `T' = label_0{} (caught{a_x} B^1 [_] end) end`.
 
 ```
+↪ F'; catch_1{a_x local.get 0} (label_1{}
+       (delegate{0} T'[throw a_x] end) end) end
+
 ↪ F'; catch_1{a_x local.get 0} (label_1{} throw a_x end) end
 
 ↪ F'; caught_1{a_x} (label_1{} local.get 0 end) end
@@ -99,7 +102,7 @@ catch x
 end
 ```
 
-Reduces to
+Assuming `instr1*` and `instr2*` don't throw another exception, this example reduces to
 
 ```
 caught_0{a_x} (label_0 {} (caught_0{a_x} (label_0 {} instr2* throw a_x end) end) end) end
