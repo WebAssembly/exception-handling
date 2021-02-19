@@ -390,12 +390,13 @@ document](https://github.com/WebAssembly/spec/blob/master/document/core/text/ins
 The following rules are added to *instructions*:
 
 ```
-  try blocktype instruction* (catch instruction*)+ (catch instruction*)* (catch_all instruction*)? end |
+  try blocktype instruction* (catch instruction*)* (catch_all instruction*)? end |
   try blocktype instruction* unwind instruction* end |
   try blocktype instruction* delegate label |
   throw (exception except_index) |
   rethrow label |
 ```
+(In the first rule, there should be at least one `catch` or `catch_all` block.)
 
 Like the `block`, `loop`, and `if` instructions, the `try` instruction is
 *structured* control flow instruction, and can be labeled. This allows branch
