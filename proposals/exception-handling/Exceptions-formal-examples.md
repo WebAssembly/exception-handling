@@ -16,7 +16,7 @@ If `x` is an exception index, then `a_x` denotes its exception tag, i.e., `F_exn
 
 ## example 0
 
-The only example with an almost full reduction trace, and all new instructions (`rethrow` is hidden in `unwind`'s reduct). The first 3 steps, reducing the several `try`s to their respective administrative instructions, are not shown.
+The only example with an almost full reduction trace, and all new instructions (`rethrow` and `catch_all` are hidden in `unwind`'s reduct). The first 3 steps, reducing the several `try`s to their respective administrative instructions, are not shown.
 
 ```
 (func (result i32) (local i32)
@@ -39,7 +39,7 @@ Take the frame `F = (locals i32.const 0, module m)`. We have:
 ```
 ↪ ↪ ↪ F; catch_1{a_x local.get 0} (label_1{}
            (delegate{0} (label_0{}
-             (catch_0{all i32.const 27 local.set 0 rethrow 0} (label_0{}     ;; the try-unwind
+             (catch_0{i32.const 27 local.set 0 rethrow 0} (label_0{}     ;; the try-unwind
                throw a_x end) end) end) end) end) end
 
 ```
@@ -49,7 +49,7 @@ For the throw context `T = label_0{}[_]end` the above is the same as
 ```
 F; catch_1{a_x local.get 0} (label_1{}
      (delegate{0} (label_0{}
-       (catch_0{all i32.const 27 local.set 0 rethrow 0}
+       (catch_0{i32.const 27 local.set 0 rethrow 0}
          T[throw a_x] end) end) end) end) end
 
 ↪ F; catch_1{a_x local.get 0} (label_1{}
@@ -105,7 +105,9 @@ end
 Assuming `instr1*` and `instr2*` don't throw another exception, this example reduces to
 
 ```
-caught_0{a_x} (label_0 {} (caught_0{a_x} (label_0 {} instr2* throw a_x end) end) end) end
+caught_0{a_x} (label_0 {}
+  (caught_0{a_x} (label_0 {}
+    instr2* throw a_x end) end) end) end
 ```
 
 which in turn reduces to `throw a_x`.
@@ -135,7 +137,7 @@ This is a validation error (no catch block at given rethrow depth).
 
 ### example 3
 
-`delegate` inside a catch is a validation error.
+`delegate` targetting a catch is a validation error.
 
 ```
 try $label0

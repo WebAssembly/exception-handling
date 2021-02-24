@@ -44,7 +44,7 @@ To verify that a `try...delegate l` instruction refers to a label surrounding th
 
 Similarly, to verify that the `rethrow l` instruction refers to a label surrounding the instructions of a catch block (call this a catch-label), we allow the `kind` attribute of labels in the validation context to be set to `catch` when the label is a catch-label. This addition is reflected in the execution rules, by the administrative instruction `caught` which introduces a label around the catching try-block.
 
-The original notation `label [t*]` is now a shortcut for `label {result [t*], kind ε}`.
+The original notation `label [t*]` is now an abbreviation for `label {result [t*], kind ε}`.
 
 
 ### Instructions
@@ -56,7 +56,6 @@ C_exn(x) = [t*] -> []
 C ⊢ throw x : [t1* t*] -> [t2*]
 
 
-C_label(l) =/= ε
 C_label(l).kind = catch
 -------------------------------
 C ⊢ rethrow l : [t1*] -> [t2*]
@@ -64,17 +63,15 @@ C ⊢ rethrow l : [t1*] -> [t2*]
 
 bt = [t1*] -> [t2*]
 C, label {result [t2*], kind try} ⊢ instr* : [t1*] -> [t2*]
-(C_exn(x_i) = [t'_i*] -> [])^n
-(C, label { result [t2*], kind catch } ⊢ instr_i* : [t'_i*] -> [t2*])^n
-(C, label { result [t2*], kind catch } ⊢ instr'* : [] -> [t2*])^k
-(k=0 and n>0) or (k=1 and n≥0)
-------------------------------------------------------------------
-C ⊢ try bt instr* (catch x_i instr_i*)^n (catch_all instr'*)^k end : bt
+(C_exn(x) = [t*] -> [])*
+(C, label { result [t2*], kind catch } ⊢ instr* : [t1*] -> [t2*])*
+(C, label { result [t2*], kind catch } ⊢ instr'* : [] -> [t2*])?
+-----------------------------------------------------------------------
+C ⊢ try bt instr* (catch x instr'*)* (catch_all instr''*)? end : bt
 
 
 bt = [t1*] -> [t2*]
 C, label {result [t2*], kind try} ⊢ instr* : [t1*] -> [t2*]
-C_label(l) =/= ε
 C_label(l).kind = try
 ------------------------------------------------------------
 C ⊢ try bt instr* delegate l : bt
@@ -112,14 +109,15 @@ m ::= {..., exn a*}
 Administrative Instructions
 
 ```
-instr ::= ... | throw a | catch_n{a instr*}*{instr*}? instr* end
+instr ::= ... | throw a | catch_n{a? instr*}* instr* end
         | delegate{l} instr* end | caught_m{a val^n} instr* end
 ```
 
 Throw Contexts
 
 ```
-T ::= val* [_] instr* | label_n{instr*} T end | caught_m{a val^n} T end | frame_n{F} T end
+T ::= val* [_] instr* | label_n{instr*} T end | caught_m{a val^n} T end
+   | frame_n{F} T end
 ```
 
 ### Instructions
@@ -134,33 +132,37 @@ caught_m{a val^n} B^{l+1}[rethrow l] end
 caught_m{a val^n} val^m end  ↪  val^m
 ```
 
-A keyword `all` is introduced to simplify the requirements for the `try` execution step below.
+A missing exception address in a `catch_m` clause (i.e., `a? = ε`) represents a `catch_all`.
 
 ```
-F; val^n (try bt instr* (catch x_i instr_i*)* (catch_all instr'*)? end)
-  ↪  F; catch_m{a_i instr_i*}*{all instr'*}? (label_m{} val^n instr* end) end
-  (iff bt = [t1^n] -> [t2^m] and (F_exn(x_i) = a_i)*)
+F; val^n (try bt instr* (catch x instr'*)* (catch_all instr''*)? end)
+  ↪  F; catch_m{a instr'*}*{instr''*}? (label_m{} val^n instr* end) end
+  (iff bt = [t1^n] -> [t2^m] ∧ (F_exn(x) = a)*)
 
 catch_m{a? instr*}* val^m end ↪ val^m
 
 S; F; catch_m{a1? instr*}{a'? instr'*}* T[val^n (throw a)] end
   ↪  S; F; caught_m{a val^n} (label_m{} val^n instr* end) end
-  (iff (a1? = eps \/ a1? = a) /\ S_exn(a) = {type [t^n]->[]})
+  (iff (a1? = ε ∨ a1? = a) ∧ S_exn(a) = {type [t^n]->[]})
 
 S; F; catch_m{a1? instr*}{a'? instr'*}* T[val^n (throw a)] end
   ↪  S; F; catch_m{a'? instr'*}* T[val^n (throw a)] end
-  (iff a1? =/= eps /\ a1? =/= a)
+  (iff a1? ≠ ε ∧ a1? ≠ a)
 
 S; F; catch_m T[val^n (throw a)] end
   ↪  S; F; val^n (throw a)
 
 
-val^n (try bt instr* delegate l) ↪ delegate{l} (label_m{} val^n instr* end) end
+val^n (try bt instr* delegate l)
+  ↪ delegate{l} (label_m{} val^n instr* end) end
   (iff bt = [t^n] -> [t^m])
+
+delegate{l} val^n end ↪ val^n
 
 B^l[ delegate{l} (T[val^n (throw a)]) end ] end
   ↪ val^n (throw a)
 
 
-try bt instr* unwind instr'* end ↪ try bt instr* catch_all instr'* rethrow 0 end
+try bt instr* unwind instr'* end
+  ↪ try bt instr* catch_all instr'* rethrow 0 end
 ```
