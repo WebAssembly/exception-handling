@@ -238,9 +238,9 @@ Note that a caught exception can be rethrown using the `rethrow` instruction.
 
 ### Rethrowing an exception
 
-The `rethrow` instruction can only appear in the body of a catch/catch_all block
-but not within the body of an unwind block. It always re-throws the exception
-caught by an enclosing catch block.
+The `rethrow` instruction can only appear in the body of a
+catch/catch_all/unwind block. It always re-throws the exception caught by an
+enclosing catch block.
 
 Associated with the `rethrow` instruction is a _label_. The label is used to
 disambiguate which exception is to be rethrown, when inside nested catch blocks.
@@ -296,6 +296,21 @@ end
 ```
 The `rethrow` here references `try $l2`, but the `rethrow` is not within its
 `catch` block.
+
+Also, the `rethrow` instruction cannot rethrow an exception caught
+by an unwind block. For example:
+```
+try $l1
+unwind
+  try $l2
+  catch
+    try $l3
+    unwind
+      rethrow label ;; only $l2 is valid
+    end
+  end
+end
+```
 
 ### Try-delegate blocks
 
