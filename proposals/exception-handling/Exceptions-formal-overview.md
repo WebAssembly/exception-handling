@@ -141,7 +141,7 @@ F; val^n (try bt instr* (catch x_i instr_i*)* (catch_all instr'*)? end)
   ↪  F; catch_m{a_i instr_i*}*{all instr'*}? (label_m{} val^n instr* end) end
   (iff bt = [t1^n] -> [t2^m] and (F_exn(x_i) = a_i)*)
 
-catch_m{a_i instr_i*}*{all instr'*}? val^m end ↪ val^m
+catch_m{a? instr*}* val^m end ↪ val^m
 
 S; F; catch_m{a1? instr*}{a'? instr'*}* T[val^n (throw a)] end
   ↪  S; F; caught_m{a val^n} (label_m{} val^n instr* end) end
