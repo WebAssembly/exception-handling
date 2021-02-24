@@ -106,7 +106,7 @@ exninst ::= {type exntype}
 Module Instances
 
 ```
-m ::= {..., (exn a)*}
+m ::= {..., exn a*}
 ```
 
 Administrative Instructions
@@ -143,17 +143,16 @@ F; val^n (try bt instr* (catch x_i instr_i*)* (catch_all instr'*)? end)
 
 catch_m{a_i instr_i*}*{all instr'*}? val^m end ↪ val^m
 
-S; F; catch_m{a_i instr_i*}*{all instr'*}? T[val^n (throw a)] end
-  ↪  S; F; caught_m{a val^n} (label_m{} val^n instr_i* end) end
-  (iff S_exn(a) = {type [t^n]->[]} and i is the least such that a_i = a)
+S; F; catch_m{a1? instr*}{a'? instr'*}* T[val^n (throw a)] end
+  ↪  S; F; caught_m{a val^n} (label_m{} val^n instr* end) end
+  (iff (a1? = eps \/ a1? = a) /\ S_exn(a) = {type [t^n]->[]})
 
-S; F; catch_m{a_i instr_i*}*{all instr*} T[val^n (throw a)] end
-  ↪  S; F; caught_m{a val^n} (label_m instr* end) end
-  (iff S_exn(a) = {type [t^n]->[]} and for every i, a_i =/= a)
+S; F; catch_m{a1? instr*}{a'? instr'*}* T[val^n (throw a)] end
+  ↪  S; F; catch_m{a'? instr'*}* T[val^n (throw a)] end
+  (iff a1? =/= eps /\ a1? =/= a)
 
-S; F; catch_m{a_i instr_i*}* T[val^n (throw a)] end
+S; F; catch_m T[val^n (throw a)] end
   ↪  S; F; val^n (throw a)
-  (iff for every i, a_i =/= a)
 
 
 val^n (try bt instr* delegate l) ↪ delegate{l} (label_m{} val^n instr* end) end
