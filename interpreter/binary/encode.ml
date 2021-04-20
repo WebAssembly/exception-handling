@@ -426,6 +426,7 @@ let encode m =
       | TableImport t -> u8 0x01; table_type t
       | MemoryImport t -> u8 0x02; memory_type t
       | GlobalImport t -> u8 0x03; global_type t
+      | EventImport x -> u8 0x04; vu32 0x00l; var x
 
     let import im =
       let {module_name; item_name; idesc} = im.it in
@@ -456,6 +457,12 @@ let encode m =
     let memory_section mems =
       section 5 (vec memory) mems (mems <> [])
 
+    (* Event section *)
+    let event e = vu32 0x00l; var e
+
+    let event_section es =
+      section 13 (vec event) es (es <> [])
+
     (* Global section *)
     let global g =
       let {gtype; ginit} = g.it in
@@ -471,6 +478,7 @@ let encode m =
       | TableExport x -> u8 1; var x
       | MemoryExport x -> u8 2; var x
       | GlobalExport x -> u8 3; var x
+      | EventExport x -> u8 4; var x
 
     let export ex =
       let {name = n; edesc} = ex.it in
@@ -579,6 +587,7 @@ let encode m =
       func_section m.it.funcs;
       table_section m.it.tables;
       memory_section m.it.memories;
+      event_section m.it.events;
       global_section m.it.globals;
       export_section m.it.exports;
       start_section m.it.start;
