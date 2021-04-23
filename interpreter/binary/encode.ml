@@ -90,6 +90,9 @@ let encode m =
     (* Types *)
 
     open Types
+    open Source
+
+    let var x = vu32 x.it
 
     let num_type = function
       | I32Type -> vs7 (-0x01)
@@ -118,6 +121,8 @@ let encode m =
     let memory_type = function
       | MemoryType lim -> limits vu32 lim
 
+    let event_type x = vu32 0x00l; var x
+
     let mutability = function
       | Immutable -> u8 0
       | Mutable -> u8 1
@@ -127,7 +132,6 @@ let encode m =
 
     (* Expressions *)
 
-    open Source
     open Ast
     open Values
 
@@ -135,8 +139,6 @@ let encode m =
     let end_ () = op 0x0b
 
     let memop {align; offset; _} = vu32 (Int32.of_int align); vu32 offset
-
-    let var x = vu32 x.it
 
     let block_type = function
       | VarBlockType x -> vs33 x.it
@@ -426,7 +428,7 @@ let encode m =
       | TableImport t -> u8 0x01; table_type t
       | MemoryImport t -> u8 0x02; memory_type t
       | GlobalImport t -> u8 0x03; global_type t
-      | EventImport x -> u8 0x04; vu32 0x00l; var x
+      | EventImport x -> u8 0x04; event_type x
 
     let import im =
       let {module_name; item_name; idesc} = im.it in

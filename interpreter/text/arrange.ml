@@ -361,10 +361,13 @@ let data i seg =
 
 (* Events *)
 
-let event off i e =
-  Node ("event",
+let event_with_name name e =
+  Node ("event" ^ name,
     [Node ("type " ^ var e, [])]
   )
+
+let event_with_index off i e =
+  event_with_name (" $" ^ nat (off + i)) e
 
 
 (* Modules *)
@@ -426,7 +429,7 @@ let module_with_var_opt x_opt m =
     imports @
     listi (table !tx) m.it.tables @
     listi (memory !mx) m.it.memories @
-    listi (event !ex) m.it.events @
+    listi (event_with_index !ex) m.it.events @
     listi (global !gx) m.it.globals @
     listi (func_with_index !fx) m.it.funcs @
     list export m.it.exports @

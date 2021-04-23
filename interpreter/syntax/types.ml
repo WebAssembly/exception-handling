@@ -10,13 +10,13 @@ type 'a limits = {min : 'a; max : 'a option}
 type mutability = Immutable | Mutable
 type table_type = TableType of Int32.t limits * ref_type
 type memory_type = MemoryType of Int32.t limits
-type event_type = func_type
+type event_type = EventType of int32
 type global_type = GlobalType of value_type * mutability
 type extern_type =
   | ExternFuncType of func_type
   | ExternTableType of table_type
   | ExternMemoryType of memory_type
-  | ExternEventType of event_type
+  | ExternEventType of func_type
   | ExternGlobalType of global_type
 
 type pack_size = Pack8 | Pack16 | Pack32
@@ -51,10 +51,10 @@ let tables =
   Lib.List.map_filter (function ExternTableType t -> Some t | _ -> None)
 let memories =
   Lib.List.map_filter (function ExternMemoryType t -> Some t | _ -> None)
-let events =
-  Lib.List.map_filter (function ExternEventType t -> Some t | _ -> None)
 let globals =
   Lib.List.map_filter (function ExternGlobalType t -> Some t | _ -> None)
+let events =
+  Lib.List.map_filter (function ExternEventType t -> Some t | _ -> None)
 
 
 (* Subtyping *)
@@ -137,5 +137,5 @@ let string_of_extern_type = function
   | ExternFuncType ft -> "func " ^ string_of_func_type ft
   | ExternTableType tt -> "table " ^ string_of_table_type tt
   | ExternMemoryType mt -> "memory " ^ string_of_memory_type mt
-  | ExternEventType et -> "event " ^ string_of_func_type et
   | ExternGlobalType gt -> "global " ^ string_of_global_type gt
+  | ExternEventType ft -> "event " ^ string_of_func_type ft

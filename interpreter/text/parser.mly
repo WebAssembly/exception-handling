@@ -851,11 +851,11 @@ event :
       fun c -> let x = $3 c anon_event bind_event @@ at in fun () -> $4 c x at }
 
 event_fields :
-  | type_use event_types
+  | type_use func_type
     { fun c x at ->
       let y = inline_type_explicit c ($1 c type_) $2 at in
       [y], [], [] }
-  | event_types  /* Sugar */
+  | func_type  /* Sugar */
     { fun c x at ->
       let y = inline_type c $1 at in
       [y], [], [] }
@@ -873,7 +873,7 @@ event_fields :
          idesc = EventImport y @@ at } @@ at ], [] }
   | inline_export event_fields  /* Sugar */
     { fun c x at ->
-      let fns, ims, exs = $2 c x at in fns, ims, $1 (EventExport x) c :: exs }
+      let evs, ims, exs = $2 c x at in evs, ims, $1 (EventExport x) c :: exs }
 
 event_fields_import :  /* Sugar */
   | event_fields_import_result { $1 }
@@ -886,19 +886,6 @@ event_fields_import_result :  /* Sugar */
   | /* empty */ { FuncType ([], []) }
   | LPAR RESULT value_type_list RPAR event_fields_import_result
     { let FuncType (ins, out) = $5 in FuncType (ins, $3 @ out) }
-
-event_types :
-  | event_result_types { $1 }
-  | LPAR PARAM value_type_list RPAR event_types
-    { let FuncType (ins, out) = $5 in FuncType ($3 @ ins, out) }
-  | LPAR PARAM bind_var value_type RPAR event_types  /* Sugar */
-    { let FuncType (ins, out) = $6 in FuncType ($4 :: ins, out) }
-
-event_result_types :
-  | /* empty */ { FuncType ([], []) }
-  | LPAR RESULT value_type_list RPAR event_result_types
-    { let FuncType (ins, out) = $5 in
-      FuncType (ins, $3 @ out) }
 
 global :
   | LPAR GLOBAL bind_var_opt global_fields RPAR

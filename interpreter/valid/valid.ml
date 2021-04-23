@@ -575,7 +575,7 @@ let check_import (im : import) (c : context) : context =
     check_global_type gt idesc.at;
     {c with globals = gt :: c.globals}
   | EventImport x ->
-    {c with events = type_ c x :: c.events}
+    {c with events = EventType x.it :: c.events}
 
 module NameSet = Set.Make(struct type t = Ast.name let compare = compare end)
 
@@ -608,7 +608,7 @@ let check_module (m : module_) =
       funcs = c0.funcs @ List.map (fun f -> type_ c0 f.it.ftype) funcs;
       tables = c0.tables @ List.map (fun tab -> tab.it.ttype) tables;
       memories = c0.memories @ List.map (fun mem -> mem.it.mtype) memories;
-      events = c0.events @ List.map (fun event -> type_ c0 event) events;
+      events = c0.events @ List.map (fun event -> EventType event.it) events;
       elems = List.map (fun elem -> elem.it.etype) elems;
       datas = List.map (fun _data -> ()) datas;
     }

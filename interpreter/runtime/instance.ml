@@ -16,7 +16,7 @@ type module_inst =
 and func_inst = module_inst ref Func.t
 and table_inst = Table.t
 and memory_inst = Memory.t
-and event_inst = func_type
+and event_inst = Event.t
 and global_inst = Global.t
 and export_inst = Ast.name * extern
 and elem_inst = Values.ref_ list ref
@@ -58,7 +58,7 @@ let extern_type_of = function
   | ExternTable tab -> ExternTableType (Table.type_of tab)
   | ExternMemory mem -> ExternMemoryType (Memory.type_of mem)
   | ExternGlobal glob -> ExternGlobalType (Global.type_of glob)
-  | ExternEvent event -> ExternEventType event
+  | ExternEvent event -> ExternEventType (Event.type_of event)
 
 let export inst name =
   try Some (List.assoc name inst.exports) with Not_found -> None

@@ -135,6 +135,9 @@ let sized f s =
 
 open Types
 
+let zero s = expect 0x00 s "zero byte expected"
+let var s = vu32 s
+
 let num_type s =
   match vs7 s with
   | -0x01 -> I32Type
@@ -189,17 +192,17 @@ let global_type s =
   let mut = mutability s in
   GlobalType (t, mut)
 
+let event_type s =
+  zero s; var s
+
 
 (* Decode instructions *)
 
 open Ast
 open Operators
 
-let var s = vu32 s
-
 let op s = u8 s
 let end_ s = expect 0x0b s "END opcode expected"
-let zero s = expect 0x00 s "zero byte expected"
 
 let memop s =
   let align = vu32 s in
@@ -556,7 +559,7 @@ let import_desc s =
   | 0x01 -> TableImport (table_type s)
   | 0x02 -> MemoryImport (memory_type s)
   | 0x03 -> GlobalImport (global_type s)
-  | 0x04 -> ignore (vu32 s); EventImport (at var s)
+  | 0x04 -> EventImport (at event_type s)
   | _ -> error s (pos s - 1) "malformed import kind"
 
 let import s =
@@ -596,11 +599,8 @@ let memory_section s =
 
 (* Event section *)
 
-let event s =
-  ignore (vu32 s); var s
-
 let event_section s =
-  section `EventSection (vec (at event)) [] s
+  section `EventSection (vec (at event_type)) [] s
 
 (* Global section *)
 
