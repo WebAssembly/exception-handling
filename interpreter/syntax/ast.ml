@@ -150,7 +150,12 @@ and memory' =
   mtype : memory_type;
 }
 
-type event = int32 Source.phrase
+type event = event' Source.phrase
+and event' =
+{
+  etype : var;
+}
+
 
 type segment_mode = segment_mode' Source.phrase
 and segment_mode' =
@@ -277,7 +282,7 @@ let export_type (m : module_) (ex : export) : extern_type =
     ExternGlobalType (nth gts x.it)
   | EventExport x ->
     let ets =
-      events its @ List.map (fun e -> func_type_for m e) m.it.events
+      events its @ List.map (fun (e : event) -> func_type_for m e.it.etype) m.it.events
     in ExternEventType (nth ets x.it)
 
 let string_of_name n =

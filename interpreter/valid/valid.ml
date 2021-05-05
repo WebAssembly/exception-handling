@@ -490,7 +490,7 @@ let check_func (c : context) (f : func) =
   check_block c' body (FuncType ([], ts2)) f.at
 
 let check_event (c : context) (e : event) =
-  match type_ c e with
+  match type_ c (e.it.etype) with
   | FuncType (_, []) -> ()
   | FuncType _ -> error e.at "non-empty event result type"
 
@@ -608,8 +608,8 @@ let check_module (m : module_) =
       funcs = c0.funcs @ List.map (fun f -> type_ c0 f.it.ftype) funcs;
       tables = c0.tables @ List.map (fun tab -> tab.it.ttype) tables;
       memories = c0.memories @ List.map (fun mem -> mem.it.mtype) memories;
-      events = c0.events @ List.map (fun event -> EventType event.it) events;
-      elems = List.map (fun elem -> elem.it.etype) elems;
+      events = c0.events @ List.map (fun (ev : event) -> EventType ev.it.etype.it) events;
+      elems = List.map (fun (elem : elem_segment) -> elem.it.etype) elems;
       datas = List.map (fun _data -> ()) datas;
     }
   in

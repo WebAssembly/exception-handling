@@ -428,7 +428,7 @@ let encode m =
       | TableImport t -> u8 0x01; table_type t
       | MemoryImport t -> u8 0x02; memory_type t
       | GlobalImport t -> u8 0x03; global_type t
-      | EventImport x -> u8 0x04; event_type x
+      | EventImport t -> u8 0x04; event_type t
 
     let import im =
       let {module_name; item_name; idesc} = im.it in
@@ -460,7 +460,7 @@ let encode m =
       section 5 (vec memory) mems (mems <> [])
 
     (* Event section *)
-    let event e = vu32 0x00l; var e
+    let event (e : event) = u8 0x00; var e.it.etype
 
     let event_section es =
       section 13 (vec event) es (es <> [])

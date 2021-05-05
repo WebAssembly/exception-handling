@@ -8,8 +8,8 @@ type func_type = FuncType of stack_type * stack_type
 
 type 'a limits = {min : 'a; max : 'a option}
 type mutability = Immutable | Mutable
-type table_type = TableType of Int32.t limits * ref_type
-type memory_type = MemoryType of Int32.t limits
+type table_type = TableType of int32 limits * ref_type
+type memory_type = MemoryType of int32 limits
 type event_type = EventType of int32
 type global_type = GlobalType of value_type * mutability
 type extern_type =

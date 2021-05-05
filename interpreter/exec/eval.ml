@@ -582,7 +582,7 @@ let create_memory (inst : module_inst) (mem : memory) : memory_inst =
   Memory.alloc mtype
 
 let create_event (inst : module_inst) (e : event) : event_inst =
-  Event.alloc (type_ inst e)
+  Event.alloc (type_ inst e.it.etype)
 
 let create_global (inst : module_inst) (glob : global) : global_inst =
   let {gtype; ginit} = glob.it in

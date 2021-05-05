@@ -853,12 +853,12 @@ event :
 event_fields :
   | type_use func_type
     { fun c x at ->
-      let y = inline_type_explicit c ($1 c type_) $2 at in
-      [y], [], [] }
+      let etype = inline_type_explicit c ($1 c type_) $2 at in
+      [{etype} @@ at], [], [] }
   | func_type  /* Sugar */
     { fun c x at ->
-      let y = inline_type c $1 at in
-      [y], [], [] }
+      let etype = inline_type c $1 at in
+      [{etype} @@ at], [], [] }
   | inline_import type_use event_fields_import  /* Sugar */
     { fun c x at ->
       let y = inline_type_explicit c ($2 c type_) $3 at in

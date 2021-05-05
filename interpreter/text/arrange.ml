@@ -361,9 +361,9 @@ let data i seg =
 
 (* Events *)
 
-let event_with_name name e =
+let event_with_name name (e : event) =
   Node ("event" ^ name,
-    [Node ("type " ^ var e, [])]
+    [Node ("type " ^ var (e.it.etype), [])]
   )
 
 let event_with_index off i e =

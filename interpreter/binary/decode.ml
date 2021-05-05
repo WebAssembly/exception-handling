@@ -193,7 +193,7 @@ let global_type s =
   GlobalType (t, mut)
 
 let event_type s =
-  zero s; var s
+  zero s; at var s
 
 
 (* Decode instructions *)
@@ -559,7 +559,7 @@ let import_desc s =
   | 0x01 -> TableImport (table_type s)
   | 0x02 -> MemoryImport (memory_type s)
   | 0x03 -> GlobalImport (global_type s)
-  | 0x04 -> EventImport (at event_type s)
+  | 0x04 -> EventImport (event_type s)
   | _ -> error s (pos s - 1) "malformed import kind"
 
 let import s =
@@ -599,8 +599,12 @@ let memory_section s =
 
 (* Event section *)
 
+let event s =
+  let etype = event_type s in
+  {etype}
+
 let event_section s =
-  section `EventSection (vec (at event_type)) [] s
+  section `EventSection (vec (at event)) [] s
 
 (* Global section *)
 
