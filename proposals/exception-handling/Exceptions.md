@@ -395,6 +395,36 @@ specially mark non-catchable exceptions.
 be intercepted in JS, and types of exceptions generated from stack overflow and
 out of memory are implementation-defined.)
 
+#### API additions
+
+The following additional classes are added to the JS API in order to allow JavaScript to interact with WebAssembly exceptions:
+
+  * `WebAssembly.Exception`
+  * `WebAssembly.RuntimeException`.
+
+The `WebAssembly.Exception` class represents an exception defined in the event section and exported from a WebAssembly module. It allows querying the type of an exception following the [JS type reflection proposal](https://github.com/WebAssembly/js-types/blob/master/proposals/js-types/Overview.md). Constructing an instance of `Exception` creates a fresh exception tag, and the new exception can be passed to a WebAssembly module as an import.
+
+The `WebAssembly.RuntimeException` class represents an exception thrown from WebAssembly, or an exception that is constructed in JavaScript and is to be thrown to a WebAssembly exception handler. The `RuntimeException` constructor accepts an `Exception` argument and a sequence of arguments for the exception's data fields. The `Exception` argument determines the exception tag to use. The data field arguments must match the types specified by the `Exception`'s type. The `is` method can be used to query if the `RuntimeException` matches a given `Exception`'s exception tag. The `getArg` method allows access to the data fields of a `RuntimeException` if an `Exception` is passed with a matching exception tag. This last check ensures that without access to a WebAssembly module's exported exception, the associated data fields cannot be read.
+
+More formally, the added interfaces look like the following:
+
+```
+[LegacyNamespace=WebAssembly, Exposed=(Window,Worker,Worklet)]
+interface Exception {
+  constructor(ExceptionType type);
+  ExceptionType type();
+};
+
+[LegacyNamespace=WebAssembly, Exposed=(Window,Worker,Worklet)]
+interface RuntimeException {
+  constructor(Exception exceptionType, sequence<any> payload);
+  any getArg(Exception exceptionType, unsigned long index);
+  boolean is(Exception exceptionType);
+};
+```
+
+Where `type ExceptionType = {parameters: ValueType[]}`, following the format of the type reflection proposal (`ExceptionType` corresponds to a `FunctionType` without a `results` property).
+
 ## Changes to the text format
 
 This section describes change in the [instruction syntax
