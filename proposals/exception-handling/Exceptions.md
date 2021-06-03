@@ -199,7 +199,8 @@ If control is transferred to the body of a catch block, and the last instruction
 in the body is executed, control then exits the try block.
 
 If the selected catch block does not throw an exception, it must yield the
-value(s) specified by the type annotation on the corresponding catching try block.
+value(s) specified by the type annotation on the corresponding catching try
+block.
 
 Note that a caught exception can be rethrown using the `rethrow` instruction.
 
