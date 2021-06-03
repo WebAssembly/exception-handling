@@ -408,7 +408,7 @@ The `WebAssembly.RuntimeException` class represents an exception thrown from Web
 
 More formally, the added interfaces look like the following:
 
-```
+```WebIDL
 [LegacyNamespace=WebAssembly, Exposed=(Window,Worker,Worklet)]
 interface Exception {
   constructor(ExceptionType type);
@@ -417,9 +417,9 @@ interface Exception {
 
 [LegacyNamespace=WebAssembly, Exposed=(Window,Worker,Worklet)]
 interface RuntimeException {
-  constructor(Exception exceptionType, sequence<any> payload);
-  any getArg(Exception exceptionType, unsigned long index);
-  boolean is(Exception exceptionType);
+  constructor(Exception tag, sequence<any> payload);
+  any getArg(Exception tag, unsigned long index);
+  boolean is(Exception tag);
 };
 ```
 
