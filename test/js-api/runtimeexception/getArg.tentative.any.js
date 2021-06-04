@@ -3,7 +3,7 @@
 
 test(() => {
   const exn = new WebAssembly.Exception({ "parameters": [] })
-  const runtimeExn = new WebAssembly.RuntimeException(exn);
+  const runtimeExn = new WebAssembly.RuntimeException(exn, []);
   assert_throws_js(TypeError, () => runtimeExn.getArg());
   assert_throws_js(TypeError, () => runtimeExn.getArg(exn));
 }, "Missing arguments");
@@ -19,7 +19,7 @@ test(() => {
     {}
   ];
   const exn = new WebAssembly.Exception({ "parameters": [] })
-  const runtimeExn = new WebAssembly.RuntimeException(exn);
+  const runtimeExn = new WebAssembly.RuntimeException(exn, []);
   for (argument of invalidValues) {
     assert_throws_js(TypeError, () => runtimeExn.getArg(argument, 0));
   }
@@ -27,7 +27,7 @@ test(() => {
 
 test(() => {
   const exn = new WebAssembly.Exception({ "parameters": [] })
-  const runtimeExn = new WebAssembly.RuntimeException(exn);
+  const runtimeExn = new WebAssembly.RuntimeException(exn, []);
   assert_throws_js(RangeError, () => runtimeExn.getArg(exn, 1));
 }, "Index out of bounds");
 
@@ -45,7 +45,7 @@ test(() => {
   ];
 
   const exn = new WebAssembly.Exception({ "parameters": [] })
-  const runtimeExn = new WebAssembly.RuntimeException(exn);
+  const runtimeExn = new WebAssembly.RuntimeException(exn, []);
   for (const value of outOfRangeValues) {
     assert_throws_js(TypeError, () => runtimeExn.getArg(exn, value));
   }
@@ -53,6 +53,6 @@ test(() => {
 
 test(() => {
   const exn = new WebAssembly.Exception({ "parameters": ["i32"] })
-  const runtimeExn = new WebAssembly.RuntimeException(exn, 42);
+  const runtimeExn = new WebAssembly.RuntimeException(exn, [42]);
   assert_equals(runtimeExn.getArg(exn, 0), 42);
 }, "getArg");

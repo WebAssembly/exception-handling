@@ -3,7 +3,7 @@
 
 test(() => {
   const exn = new WebAssembly.Exception({ "parameters": [] })
-  const runtimeExn = new WebAssembly.RuntimeException(exn);
+  const runtimeExn = new WebAssembly.RuntimeException(exn, []);
   assert_throws_js(TypeError, () => runtimeExn.is());
 }, "Missing arguments");
 
@@ -18,7 +18,7 @@ test(() => {
     {}
   ];
   const exn = new WebAssembly.Exception({ "parameters": [] })
-  const runtimeExn = new WebAssembly.RuntimeException(exn);
+  const runtimeExn = new WebAssembly.RuntimeException(exn, []);
   for (argument of invalidValues) {
     assert_throws_js(TypeError, () => runtimeExn.is(argument));
   }
@@ -27,7 +27,7 @@ test(() => {
 test(() => {
   const exn1 = new WebAssembly.Exception({ "parameters": ["i32"] })
   const exn2 = new WebAssembly.Exception({ "parameters": ["i32"] })
-  const runtimeExn = new WebAssembly.RuntimeException(exn1, 42);
+  const runtimeExn = new WebAssembly.RuntimeException(exn1, [42]);
   assert_true(runtimeExn.is(exn1));
   assert_false(runtimeExn.is(exn2));
 }, "is");
