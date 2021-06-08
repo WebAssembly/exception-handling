@@ -16,10 +16,8 @@ exntype ::= [t*]→[]
 
 ```
 instr ::= ... | throw x | rethrow l
-        | try bt instr* (catch x instr*)+ end
-        | try bt instr* (catch x instr*)* catch_all instr* end
+        | try bt instr* (catch x instr*)* (catch_all instr*)? end
         | try bt instr* delegate l
-        | try bt instr* unwind instr* end
 ```
 
 ### Modules
@@ -27,14 +25,13 @@ instr ::= ... | throw x | rethrow l
 Exceptions (definitions)
 
 ```
-exn ::= export* exception exntype  | export* exception exntype import
+exception ::= export* exception exntype  | export* exception exntype import
 ```
 
 Modules
 
-
 ```
-mod ::= module ... exn*
+mod ::= module ... exception*
 ```
 
 ## Validation (Typing)
@@ -43,12 +40,12 @@ mod ::= module ... exn*
 
 To verify that a `try...delegate l` instruction refers to a label surrounding the instructions of a try block (call this a try-label), introduce a `kind` attribute to labels in the validation context, which is set to `try` when the label is a try-label.
 
-Similarly, to verify that the `rethrow l` instruction refers to a label surrounding the instructions of a catch block (call this a catch-label), we allow the `kind` attribute of labels in the validation context to be set to `catch` when the label is a catch-label. This addition is reflected in the execution rules, by the administrative instruction `caught` which introduces a label around the catching try-block.
+Similarly, to verify that the `rethrow l` instruction refers to a label surrounding the instructions of a catch block (call this a catch-label), we allow the `kind` attribute of labels in the validation context to be set to `catch` when the label is a catch-label.
 
-The original notation `label [t*]` is now an abbreviation for:
+The original notation `labels [t*]` is now an abbreviation for:
 
-````
-label {result [t*], kind ε}
+```
+labels {result [t*], kind ε}
 ```
 
 
@@ -56,37 +53,30 @@ label {result [t*], kind ε}
 
 
 ```
-C.exns(x) = [t*]→[]
+C.exceptions[x] = [t*]→[]
 -----------------------------
 C ⊢ throw x : [t1* t*]→[t2*]
 
 
-C.labels(l).kind = catch
+C.labels[l].kind = catch
 ----------------------------
 C ⊢ rethrow l : [t1*]→[t2*]
 
 
-C.types(bt) = [t1*]→[t2*]
+C.types[bt] = [t1*]→[t2*]
 C, labels {result [t2*], kind try} ⊢ instr* : [t1*]→[t2*]
-(C.exns(x) = [t*]→[] ∧
+(C.exceptions[x] = [t*]→[] ∧
  C, labels { result [t2*], kind catch } ⊢ instr* : [t*]→[t2*])*
 (C, labels { result [t2*], kind catch } ⊢ instr'* : []→[t2*])?
 -----------------------------------------------------------------------------
-C ⊢ try bt instr* (catch x instr'*)* (catch_all instr''*)? end : [t1*]→[t2*]
+C ⊢ try bt instr* (catch x instr'*)* (catch_all instr''*)? end : 	[t1*]→[t2*]
 
 
-C.types(bt) = [t1*]→[t2*]
+C.types[bt] = [t1*]→[t2*]
 C, labels {result [t2*], kind try} ⊢ instr* : [t1*]→[t2*]
-C.labels(l).kind = try
+C.labels[l].kind = try
 ----------------------------------------------------------
 C ⊢ try bt instr* delegate l : [t1*]→[t2*]
-
-
-C.types(bt) = [t1*]→[t2*]
-C, labels {result [t2*], kind try} ⊢ instr1* : [t1*]→[t2*]
-C, labels [t2*] ⊢ instr2* : []→[]
------------------------------------------------------------
-C ⊢ try bt instr1* unwind instr2* end : [t1*]→[t2*]
 ```
 
 ## Execution (Reduction)
@@ -96,7 +86,7 @@ C ⊢ try bt instr1* unwind instr2* end : [t1*]→[t2*]
 Stores
 
 ```
-S ::= {..., exns exninst*}
+S ::= {..., exceptions exninst*}
 ```
 
 Exception Instances
@@ -108,7 +98,7 @@ exninst ::= {type exntype}
 Module Instances
 
 ```
-m ::= {..., exns a*}
+m ::= {..., exceptions a*}
 ```
 
 Administrative Instructions
@@ -117,6 +107,22 @@ Administrative Instructions
 instr ::= ... | throw a | catch_n{a? instr*}* instr* end
         | delegate{l} instr* end | caught_m{a val^n} instr* end
 ```
+
+Block Contexts and label kinds
+
+So far block contexts are only used in the reduction of `br l` and `return`, and only include labels or values on the stack above the hole. If we want to be able to break jumping over try-catch and try-delegate blocks, we must allow for the new administrative control instructions to appear after labels in block contexts, mirroring the label kinds of labels in validation contexts.
+
+```
+label_kind ::= try_label_kind | catch_label_kind
+try_label_kind ::= catch_m{a? instr*}* | delegate{l}
+catch_label_kind ::= caught_m{a val*}
+B^0 ::= val* [_] instr*
+B^{k+1} ::= val* label_n{instr*} label_kind? B^k end? end instr*
+```
+
+Note that `label_n{instr*} label_kind? [_] end? end` could be seen as a simplified control frame.
+
+(Alternatively, we could have the above `label_kind`s be also labels,  remove the additional `label_m` from the execution rules below, and remove the execution rules below where the new administrative instructions only contain `val*`. This would make labels even more similar to control frames.)
 
 Throw Contexts
 
@@ -131,80 +137,75 @@ T ::= val* [_] instr* | label_n{instr*} T end | caught_m{a val^n} T end
 ```
 F; throw x  ↪  F; throw a  (if F.module.exnaddrs[x]=a)
 
-caught_m{a val^n} B^{l+1}[rethrow l] end
-  ↪ caught_m{a val^n} B^{l+1}[val^n (throw a)] end
+caught_m{a val^n} B^l[rethrow l] end
+  ↪ caught_m{a val^n} B^l[val^n (throw a)] end
 
 caught_m{a val^n} val^m end  ↪  val^m
 ```
 
-A missing exception address in a `catch_m` clause (i.e., `a? = ε`) represents a `catch_all`.
+A missing exception tag (exnaddr) in a `catch_m` clause (i.e., `a? = ε`) represents a `catch_all`.
 
 ```
 F; val^n (try bt instr* (catch x instr'*)* (catch_all instr''*)? end)
-  ↪  F; catch_m{a instr'*}*{instr''*}? (label_m{} val^n instr* end) end
-  (iff bt = [t1^n]→[t2^m] ∧ (val:t1)^n ∧ (F.module.exnaddrs[x]=a)*)
+  ↪  F; label_m{} (catch_m{a instr'*}*{instr''*}? val^n instr* end) end
+  (if bt = [t1^n]→[t2^m] ∧ (val:t1)^n ∧ (F.module.exnaddrs[x]=a)*)
 
 catch_m{a? instr*}* val^m end ↪ val^m
-```
 
-In the below reduction, a try-label is replaced by a catch label (see comment in the end of this file).
-
-```
-S; F; catch_m{a1? instr*}{a'? instr'*}* (label_m T[val^n (throw a)] end) end
-  ↪  S; F; caught_m{a val^n} (label_m{} (val^n)? instr* end) end
-  (iff (a1? = ε ∨ a1? = a) ∧ S.exceptions(a).type = [t^n]→[])
+S; F; catch_m{a1? instr*}{a'? instr'*}* T[val^n (throw a)] end
+  ↪  S; F; caught_m{a val^n} (val^n)? instr* end
+  (if (a1? = ε ∨ a1? = a) ∧ S.exceptions(a).type = [t^n]→[])
 
 S; F; catch_m{a1? instr*}{a'? instr'*}* T[val^n (throw a)] end
   ↪  S; F; catch_m{a'? instr'*}* T[val^n (throw a)] end
-  (iff a1? ≠ ε ∧ a1? ≠ a)
+  (if a1? ≠ ε ∧ a1? ≠ a)
 
 S; F; catch_m T[val^n (throw a)] end
   ↪  S; F; val^n (throw a)
 
 
 val^n (try bt instr* delegate l)
-  ↪ delegate{l} (label_m{} val^n instr* end) end
-  (iff bt = [t^n]→[t^m])
+  ↪ label_m{} (delegate{l} val^n instr* end) end
+  (if bt = [t^n]→[t^m])
 
 delegate{l} val^n end ↪ val^n
 
-B^l[ delegate{l} T[val^n (throw a)] end ] end
+B^l[ delegate{l} T[val^n (throw a)] end ]
   ↪ val^n (throw a)
-
-
-try bt instr* unwind instr'* end
-  ↪ try bt instr* catch_all instr'* rethrow 0 end
 ```
 
 ### Typing rules for administrative instructions
 
 ```
-S.exceptions(a).type = [t*]→[]
--------------------------------
-S;C ⊢ throw a : [t1* t*]→[t2*]
+S.exceptions[a].type = [t2*]→[]
+--------------------------------
+S;C ⊢ throw a : [t1* t2*]→[t*]
 
-(S.exceptions(a).type = [t'*]→[] ∧
+(S.exceptions[a].type = [t'*]→[] ∧
  S;C, labels {result [t*], kind catch} ⊢ instr1* : [t'*]→[t*])*
 (S;C, labels {result [t*], kind catch} ⊢ instr2* : []→[t*])?
 S;C, labels {result [t*], kind try} ⊢ instr3* : []→[t*]
----------------------------------------------------------------------------
-S;C ⊢ catch_n{a instr1*}*{instr2*}? (label_n {} instr3* end) end : []→[t*]
+-----------------------------------------------------------------------
+S;C, labels [t*] ⊢ catch_n{a instr1*}*{instr2*}? instr3* end : []→[t*]
 
-S;C, label {result [t*], kind try} ⊢ instr* : []→[t*]
-C_label(l).kind = try
--------------------------------------------------------
-S;C ⊢ delegate{l} (label_m{} instr* end) end : []→[t*]
+S;C, labels {result [t*], kind try} ⊢ instr* : []→[t*]
+C.labels[l].kind = try
+-----------------------------------------------------------------------
+S;C, labels [t*] ⊢ delegate{l} instr* end : []→[t*]
 
-S.exceptions(a).type = [t*]→[]
-(val:t)*
-S;C, labels {result [t'*], kind catch} ⊢ instr* : []→[t'*]
----------------------------------------------------------------  [T-caught-adm]
-S;C ⊢ caught_m{a val^n} (label_m{} instr* end) end : []→[t'*]
+S.exceptions[a].type = [t'*]→[]
+(val:t')*
+S;C, labels {result [t*], kind catch} ⊢ instr* : []→[t*]
+--------------------------------------------------------------------------------
+S;C, labels {result [t*], kind catch} ⊢ caught_m{a val^n} instr* end : []→[t'*]
 ```
 
-The above typing rules preserve types, because the manipulated labels (e.g. during `kind`-change)
-are included in the conclusions of such type rules. So for example one could see
+By adding the attribute `kind` to labels, we are creating situations in the proof of type preservation, where we have a derivation of some `S;C, label [t*] ⊢ instr* : []→[t*]` but we need to have that `S;C, label {result [t*], kind <labelkind>} ⊢ instr* : []→[t*]` for some `<labelkind> ::= try | catch`. To resolve this we add the following typing rule for labels in the context, which ensures our newly introduced `try` and `catch` blocks can contain any instructions a regular block can.
 
-- `caught_m{...} (label_m {} ... end) end` as the catch-label (holding the caught exception),
-- `catch_m{}*label_m{} ... end end` as a try-label (holding all its handlers), and
-- `delegate{l} (label_m{} instr* end) end` as a try-label holding the destination (depth) to another try-label.
+```
+S;C, label [t*] ⊢ instr* : []→[t*]
+labelkind = try ∨ labelkind = catch
+-----------------------------------------------------------
+S;C, label {result [t*], kind labelkind} ⊢ instr* : []→[t*]
+```
+
