@@ -399,31 +399,33 @@ out of memory are implementation-defined.)
 
 The following additional classes are added to the JS API in order to allow JavaScript to interact with WebAssembly exceptions:
 
-  * `WebAssembly.Exception`
-  * `WebAssembly.RuntimeException`.
+  * `WebAssembly.Tag`
+  * `WebAssembly.Exception`.
 
-The `WebAssembly.Exception` class represents an exception defined in the event section and exported from a WebAssembly module. It allows querying the type of an exception following the [JS type reflection proposal](https://github.com/WebAssembly/js-types/blob/master/proposals/js-types/Overview.md). Constructing an instance of `Exception` creates a fresh exception tag, and the new exception can be passed to a WebAssembly module as an import.
+The `WebAssembly.Tag` class represents a typed tag defined in the tag section and exported from a WebAssembly module. It allows querying the type of a tag following the [JS type reflection proposal](https://github.com/WebAssembly/js-types/blob/master/proposals/js-types/Overview.md). Constructing an instance of `Tag` creates a fresh tag, and the new tag can be passed to a WebAssembly module as a tag import.
 
-The `WebAssembly.RuntimeException` class represents an exception thrown from WebAssembly, or an exception that is constructed in JavaScript and is to be thrown to a WebAssembly exception handler. The `RuntimeException` constructor accepts an `Exception` argument and a sequence of arguments for the exception's data fields. The `Exception` argument determines the exception tag to use. The data field arguments must match the types specified by the `Exception`'s type. The `is` method can be used to query if the `RuntimeException` matches a given `Exception`'s exception tag. The `getArg` method allows access to the data fields of a `RuntimeException` if an `Exception` is passed with a matching exception tag. This last check ensures that without access to a WebAssembly module's exported exception, the associated data fields cannot be read.
+In the future, `WebAssembly.Tag` may be used for other proposals that require a typed tag and its constructor may be extended to accept other types and/or a tag attribute to differentiate them from tags used for exceptions.
+
+The `WebAssembly.Exception` class represents an exception thrown from WebAssembly, or an exception that is constructed in JavaScript and is to be thrown to a WebAssembly exception handler. The `Exception` constructor accepts a `Tag` argument and a sequence of arguments for the exception's data fields. The `Tag` argument determines the exception tag to use. The data field arguments must match the types specified by the `Tag`'s type. The `is` method can be used to query if the `Exception` matches a given tag. The `getArg` method allows access to the data fields of a `Exception` if a matching tag is given. This last check ensures that without access to a WebAssembly module's exported exception tag, the associated data fields cannot be read.
 
 More formally, the added interfaces look like the following:
 
 ```WebIDL
 [LegacyNamespace=WebAssembly, Exposed=(Window,Worker,Worklet)]
-interface Exception {
-  constructor(ExceptionType type);
-  ExceptionType type();
+interface Tag {
+  constructor(TagType type);
+  TagType type();
 };
 
 [LegacyNamespace=WebAssembly, Exposed=(Window,Worker,Worklet)]
-interface RuntimeException {
-  constructor(Exception tag, sequence<any> payload);
-  any getArg(Exception tag, unsigned long index);
-  boolean is(Exception tag);
+interface Exception {
+  constructor(Tag tag, sequence<any> payload);
+  any getArg(Tag tag, unsigned long index);
+  boolean is(Tag tag);
 };
 ```
 
-Where `type ExceptionType = {parameters: ValueType[]}`, following the format of the type reflection proposal (`ExceptionType` corresponds to a `FunctionType` without a `results` property).
+Where `type TagType = {parameters: ValueType[]}`, following the format of the type reflection proposal (`TagType` corresponds to a `FunctionType` without a `results` property). `TagType` could be extended in the future for other proposals that require a richer type specification.
 
 ## Changes to the text format
 
