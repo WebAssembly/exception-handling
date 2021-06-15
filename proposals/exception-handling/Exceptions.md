@@ -53,7 +53,7 @@ this new section to just defining exceptions, it defines a more general format
 `tag` that allows the declaration of other forms of typed tags in future.
 
 WebAssembly tags are defined in a new `tag` section of a WebAssembly module. The
-tag section is a list of declared tags associated with the module.
+tag section is a list of declared tags that are created fresh each time the module is instantiated.
 
 Each tag has an `attribute` and a `type`. Currently, the attribute can only
 specify that the tag is for an exception. In the future, additional attribute
@@ -68,15 +68,15 @@ attribute.
 An `exception tag` is a value to distinguish different exceptions, while an
 `exception tag index` is a numeric name to refer to an (imported or defined)
 exception tag within a module (see [tag index space](#tag-index-space) for
-details). Exception tags are defined in the tag and import sections of a module.
+details). Exception tags are declared in the tag and import sections of a module.
 
 An `exception` is an internal construct in WebAssembly that represents a runtime
-object that can be thrown. A WebAssembly exception is defined by an exception
+object that can be thrown. A WebAssembly exception consists of an exception
 tag and its runtime arguments.
 
 The type of an exception tag is denoted by an index to a function signature
 defined in the `type` section. The parameters of the function signature define
-the list of values associated with the tag. The result type must be empty.
+the list of argument values associated with the tag. The result type must be empty.
 
 Exception tag indices are used by:
 
