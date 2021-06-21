@@ -14,7 +14,7 @@ test(() => {
 }, "No arguments");
 
 test(() => {
-  const argument = { "parameters": [] };
+  const argument = new WebAssembly.Tag({ parameters: [] });
   assert_throws_js(TypeError, () => WebAssembly.Exception(argument));
 }, "Calling");
 
@@ -39,9 +39,9 @@ test(() => {
 }, "Invalid descriptor argument");
 
 test(() => {
-  const invalidTypes = ["i16", "i128", "f16", "f128", "u32", "u64", "i32\0"];
-  for (const value of invalidTypes) {
-    const argument = { parameters: [value] };
-    assert_throws_js(TypeError, () => new WebAssembly.Exception(argument));
+  const typesAndArgs = [["i32", 123n], ["i32", Symbol()], ["f32", 123n], ["f64", 123n], ["i64", undefined]];
+  for (const typeAndArg of typesAndArgs) {
+    const exn = new WebAssembly.Tag({ parameters: [typeAndArg[0]] });
+    assert_throws_js(TypeError, () => new WebAssembly.Exception(exn, typeAndArg[1]));
   }
-}, "Invalid type parameter");
+}, "Invalid exception argument");
