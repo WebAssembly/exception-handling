@@ -14,7 +14,7 @@ test(() => {
 }, "No arguments");
 
 test(() => {
-  const argument = { "parameters": [] };
+  const argument = { parameters: [] };
   assert_throws_js(TypeError, () => WebAssembly.Tag(argument));
 }, "Calling");
 
@@ -32,9 +32,11 @@ test(() => {
     {},
   ];
   for (const invalidArgument of invalidArguments) {
-    assert_throws_js(TypeError,
-                     () => new WebAssembly.Tag(invalidArgument),
-                     `new Tag(${format_value(invalidArgument)})`);
+    assert_throws_js(
+      TypeError,
+      () => new WebAssembly.Tag(invalidArgument),
+      `new Tag(${format_value(invalidArgument)})`
+    );
   }
 }, "Invalid descriptor argument");
 

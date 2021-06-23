@@ -2,7 +2,11 @@
 // META: script=/wasm/jsapi/assertions.js
 
 test(() => {
-  assert_function_name(WebAssembly.Exception, "Exception", "WebAssembly.Exception");
+  assert_function_name(
+    WebAssembly.Exception,
+    "Exception",
+    "WebAssembly.Exception"
+  );
 }, "name");
 
 test(() => {
@@ -32,16 +36,27 @@ test(() => {
     {},
   ];
   for (const invalidArgument of invalidArguments) {
-    assert_throws_js(TypeError,
-                     () => new WebAssembly.Exception(invalidArgument),
-                     `new Exception(${format_value(invalidArgument)})`);
+    assert_throws_js(
+      TypeError,
+      () => new WebAssembly.Exception(invalidArgument),
+      `new Exception(${format_value(invalidArgument)})`
+    );
   }
 }, "Invalid descriptor argument");
 
 test(() => {
-  const typesAndArgs = [["i32", 123n], ["i32", Symbol()], ["f32", 123n], ["f64", 123n], ["i64", undefined]];
+  const typesAndArgs = [
+    ["i32", 123n],
+    ["i32", Symbol()],
+    ["f32", 123n],
+    ["f64", 123n],
+    ["i64", undefined],
+  ];
   for (const typeAndArg of typesAndArgs) {
     const exn = new WebAssembly.Tag({ parameters: [typeAndArg[0]] });
-    assert_throws_js(TypeError, () => new WebAssembly.Exception(exn, typeAndArg[1]));
+    assert_throws_js(
+      TypeError,
+      () => new WebAssembly.Exception(exn, typeAndArg[1])
+    );
   }
 }, "Invalid exception argument");
