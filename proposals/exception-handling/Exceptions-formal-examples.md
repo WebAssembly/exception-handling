@@ -12,7 +12,7 @@ If anyone would like that I add another reduction trace, or other examples, plea
 
 ### notation
 
-If `x` is an exception index, then `a_x` denotes its exception tag, i.e., `F.exception[x] = a_x`, where `F` is the current frame.
+If `x` is an exception tag index, then `a_x` denotes its exception tag address, i.e., `F.exception[x] = a_x`, where `F` is the current frame.
 
 ## example 0
 

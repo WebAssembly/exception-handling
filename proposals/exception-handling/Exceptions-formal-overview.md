@@ -6,10 +6,10 @@ This is an overview of the 3rd proposal's formal spec additions, to aid in discu
 
 ### Types
 
-Exception Types
+Tag Types
 
 ```
-exntype ::= [t*]→[]
+tagtype ::= [t*]→[]
 ```
 
 ### Instructions
@@ -22,16 +22,16 @@ instr ::= ... | throw x | rethrow l
 
 ### Modules
 
-Exceptions (definitions)
+Tags
 
 ```
-exception ::= export* exception exntype  | export* exception exntype import
+tag ::= export* tag exntype  | export* tag tagtype import
 ```
 
 Modules
 
 ```
-mod ::= module ... exception*
+mod ::= module ... tag*
 ```
 
 ## Validation (Typing)
@@ -53,7 +53,7 @@ labels {result [t*], kind ε}
 
 
 ```
-C.exceptions[x] = [t*]→[]
+C.tags[x] = [t*]→[]
 -----------------------------
 C ⊢ throw x : [t1* t*]→[t2*]
 
@@ -65,7 +65,7 @@ C ⊢ rethrow l : [t1*]→[t2*]
 
 C.types[bt] = [t1*]→[t2*]
 C, labels {result [t2*], kind try} ⊢ instr* : [t1*]→[t2*]
-(C.exceptions[x] = [t*]→[] ∧
+(C.tags[x] = [t*]→[] ∧
  C, labels { result [t2*], kind catch } ⊢ instr* : [t*]→[t2*])*
 (C, labels { result [t2*], kind catch } ⊢ instr'* : []→[t2*])?
 -----------------------------------------------------------------------------
@@ -86,19 +86,19 @@ C ⊢ try bt instr* delegate l : [t1*]→[t2*]
 Stores
 
 ```
-S ::= {..., exceptions exninst*}
+S ::= {..., tags exninst*}
 ```
 
-Exception Instances
+Tag Instances
 
 ```
-exninst ::= {type exntype}
+taginst ::= {type tagtype}
 ```
 
 Module Instances
 
 ```
-m ::= {..., exceptions a*}
+m ::= {..., tags a*}
 ```
 
 Administrative Instructions
@@ -108,7 +108,7 @@ instr ::= ... | throw a | catch_n{a? instr*}* instr* end
         | delegate{l} instr* end | caught_m{a val^n} instr* end
 ```
 
-Block Contexts and label kinds
+Block contexts and label kinds
 
 So far block contexts are only used in the reduction of `br l` and `return`, and only include labels or values on the stack above the hole. If we want to be able to break jumping over try-catch and try-delegate blocks, we must allow for the new administrative control instructions to appear after labels in block contexts, mirroring the label kinds of labels in validation contexts.
 
@@ -143,7 +143,7 @@ caught_m{a val^n} B^l[rethrow l] end
 caught_m{a val^n} val^m end  ↪  val^m
 ```
 
-A missing exception tag (exnaddr) in a `catch_m` clause (i.e., `a? = ε`) represents a `catch_all`.
+A missing tagaddr in a `catch_m` clause (i.e., `a? = ε`) represents a `catch_all`.
 
 ```
 F; val^n (try bt instr* (catch x instr'*)* (catch_all instr''*)? end)
@@ -154,7 +154,7 @@ catch_m{a? instr*}* val^m end ↪ val^m
 
 S; F; catch_m{a1? instr*}{a'? instr'*}* T[val^n (throw a)] end
   ↪  S; F; caught_m{a val^n} (val^n)? instr* end
-  (if (a1? = ε ∨ a1? = a) ∧ S.exceptions(a).type = [t^n]→[])
+  (if (a1? = ε ∨ a1? = a) ∧ S.tags(a).type = [t^n]→[])
 
 S; F; catch_m{a1? instr*}{a'? instr'*}* T[val^n (throw a)] end
   ↪  S; F; catch_m{a'? instr'*}* T[val^n (throw a)] end
@@ -177,11 +177,11 @@ B^l[ delegate{l} T[val^n (throw a)] end ]
 ### Typing rules for administrative instructions
 
 ```
-S.exceptions[a].type = [t2*]→[]
+S.tags[a].type = [t2*]→[]
 --------------------------------
 S;C ⊢ throw a : [t1* t2*]→[t*]
 
-(S.exceptions[a].type = [t'*]→[] ∧
+(S.tags[a].type = [t'*]→[] ∧
  S;C, labels {result [t*], kind catch} ⊢ instr1* : [t'*]→[t*])*
 (S;C, labels {result [t*], kind catch} ⊢ instr2* : []→[t*])?
 S;C, labels {result [t*], kind try} ⊢ instr3* : []→[t*]
@@ -193,7 +193,7 @@ C.labels[l].kind = try
 -----------------------------------------------------------------------
 S;C, labels [t*] ⊢ delegate{l} instr* end : []→[t*]
 
-S.exceptions[a].type = [t'*]→[]
+S.tags[a].type = [t'*]→[]
 (val:t')*
 S;C, labels {result [t*], kind catch} ⊢ instr* : []→[t*]
 --------------------------------------------------------------------------------
