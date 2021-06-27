@@ -115,8 +115,8 @@ A try-catch block contains zero or more `catch` blocks and zero or one
 `catch_all` block. All `catch` blocks must precede the `catch_all` block, if
 any. The `catch`/`catch_all` instructions (within the try construct) are called
 the _catching_ instructions. There may not be any `catch` or `catch_all` blocks
-after a `try`, in which case the whole `try` block is effectively a regular
-block.
+after a `try`, in which case the `try` block does not catch any exceptions and
+rethrows them.
 
 The _body_ of the try block is the list of instructions before the first
 catching instruction. The _body_ of each catch block is the sequence of
@@ -258,6 +258,18 @@ end
 The `rethrow` here references `try $l2`, but the `rethrow` is not within its
 `catch` block.
 
+Also, targetting a label of `catch`-less `try` or `try`-`delegate` is also a
+validation failure, because `rethrow` is not within a `catch` or `catch_all`.
+```
+try $l1
+  rethrow $l1  ;; validation failure!
+delegate
+
+try $l2
+  rethrow $l2  ;; validation failure!
+end
+```
+
 ### Try-delegate blocks
 
 Try blocks can also be used with the `delegate` instruction. A try-delegate
@@ -271,9 +283,8 @@ delegate label
 
 The `delegate` clause does not have an associated body, so try-delegate blocks
 don't have an `end` instruction at the end. The `delegate` instruction takes a
-label defined by a construct in which they are enclosed, and delegates exception
-handling to a catch block specified by the label. For example, consider this
-code:
+try label and delegates exception handling to a `catch`/`catch_all`/`delegate`
+specified by the `try` label. For example, consider this code:
 
 ```
 try $l1
@@ -296,7 +307,7 @@ correspond to a `try` instruction, it is a validation failure.
 Note that the example below is a validation failure:
 ```
 try $l1
-catch 1
+catch
   try
     call $foo
   delegate $l1  ;; (= delegate 0)
@@ -304,9 +315,14 @@ catch_all
   ...
 end
 ```
-Here `delegate` is trying to delegate to `catch 1`, which exists before the
-`delegate`. The `delegate` instruction can only delegate to `catch`/`catch_all`
-blocks in a `try` or to another `delegate` below the `delegate` itself.
+Here `delegate` is trying to delegate to `catch`, which exists before the
+`delegate`. The `delegate` instruction can only target `try` label whose
+catching instructions (`catch`/`catch_all`/`delegate`) come after the
+`delegate` instruction.
+
+`delegate` can also target `catch`-less `try`, in which case the effect is the
+same as the `try` has catches but none of the catches are able to handle the
+exception.
 
 ### JS API
 
