@@ -241,8 +241,8 @@ can also be written as a label, like branches. So `rethrow 0` in the example
 above can also be written as `rethrow $l3`.
 
 Note that `rethrow 2` is not allowed because it does not refer to a `try` label
-from within its catch block. Rather, it references a `block` instruction, so it will
-result in a validation failure.
+from within its catch block. Rather, it references a `block` instruction, so it
+will result in a validation failure.
 
 Note that the example below is a validation failure:
 ```
