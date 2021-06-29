@@ -240,9 +240,9 @@ caught by `catch 1`. In wat format, the argument for the `rethrow` instructions
 can also be written as a label, like branches. So `rethrow 0` in the example
 above can also be written as `rethrow $l3`.
 
-Note that `rethrow 2` is not allowed because it does not reference a catch
-block. Rather, it references a `block` instruction, so it will result in a
-validation failure.
+Note that `rethrow 2` is not allowed because it does not refer to a `try` label
+with a catch block. Rather, it references a `block` instruction, so it will
+result in a validation failure.
 
 Note that the example below is a validation failure:
 ```
@@ -256,18 +256,6 @@ end
 ```
 The `rethrow` here references `try $l2`, but the `rethrow` is not within its
 `catch` block.
-
-Also, targetting a label of `catch`-less `try` or `try`-`delegate` is also a
-validation failure, because `rethrow` is not within a `catch` or `catch_all`.
-```
-try $l1
-  rethrow $l1  ;; validation failure!
-delegate
-
-try $l2
-  rethrow $l2  ;; validation failure!
-end
-```
 
 ### Try-delegate blocks
 
