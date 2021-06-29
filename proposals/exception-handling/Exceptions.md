@@ -241,7 +241,7 @@ can also be written as a label, like branches. So `rethrow 0` in the example
 above can also be written as `rethrow $l3`.
 
 Note that `rethrow 2` is not allowed because it does not refer to a `try` label
-with a catch block. Rather, it references a `block` instruction, so it will
+from within its catch block. Rather, it references a `block` instruction, so it will
 result in a validation failure.
 
 Note that the example below is a validation failure:
@@ -308,7 +308,7 @@ catching instructions (`catch`/`catch_all`/`delegate`) come after the
 `delegate` instruction.
 
 `delegate` can also target `catch`-less `try`, in which case the effect is the
-same as the `try` has catches but none of the catches are able to handle the
+same as if the `try` has catches but none of the catches are able to handle the
 exception.
 
 ### JS API
