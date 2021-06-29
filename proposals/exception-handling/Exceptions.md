@@ -115,8 +115,7 @@ A try-catch block contains zero or more `catch` blocks and zero or one
 `catch_all` block. All `catch` blocks must precede the `catch_all` block, if
 any. The `catch`/`catch_all` instructions (within the try construct) are called
 the _catching_ instructions. There may not be any `catch` or `catch_all` blocks
-after a `try`, in which case the `try` block does not catch any exceptions and
-rethrows them.
+after a `try`, in which case the `try` block does not catch any exceptions.
 
 The _body_ of the try block is the list of instructions before the first
 catching instruction. The _body_ of each catch block is the sequence of
