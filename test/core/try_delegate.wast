@@ -113,3 +113,13 @@
   (module quote "(module (func (try (do) (delegate) (delegate 0))))")
   "unexpected token"
 )
+
+(assert_invalid
+  (module (func (try (do) (delegate 1))))
+  "unknown label"
+)
+
+(assert_invalid
+  (module (func (block (try (do) (delegate 0)))))
+  "invalid delegate label"
+)
