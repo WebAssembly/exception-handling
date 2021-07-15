@@ -459,7 +459,7 @@ let run_assertion ass =
     | _ -> Assert.error ass.at "expected runtime error"
     )
 
-  | AssertUncaughtException act ->
+  | AssertException act ->
     trace ("Asserting exception...");
     (match run_action act with
     | exception Eval.Exception (_, msg) -> ()
