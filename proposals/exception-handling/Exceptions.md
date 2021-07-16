@@ -288,8 +288,7 @@ end
 If `call $foo` throws, searching for a catching block first finds `delegate`,
 and because it delegates exception handling to catching instructions associated
 with `$l1`, it will be next checked by the outer `catch` and then `catch_all`
-instructions. When the specified label within a `delegate` instruction does not
-correspond to a `try` instruction, it is a validation failure.
+instructions.
 
 Note that the example below is a validation failure:
 ```
@@ -310,6 +309,39 @@ catching instructions (`catch`/`catch_all`/`delegate`) come after the
 `delegate` can also target `catch`-less `try`, in which case the effect is the
 same as if the `try` has catches but none of the catches are able to handle the
 exception.
+
+If `delegate`'s immediate argument is the depth of block-like structures
+(blocks, loops, and trys) + 1, i.e., the function-level block, it is considered
+to be delegating the exception to the caller of the current function. For
+example:
+```
+try $l1
+  try
+    call $foo
+  delegate 1  ;; delegate to the caller
+catch
+  ...
+catch_all
+  ...
+end
+```
+In case `foo` throws, `delegate 1` here delegates the exception handling to the
+caller, i.e., the exception escapes the current function.
+
+When the specified label within a `delegate` instruction does not correspond to
+a `try` instruction or the function-level, it is a validation failure:
+```
+block $l0
+  loop $l1
+    try
+      call $foo
+    delegate $l0  ;; targets a 'block', validation failure
+    try
+      call $foo
+    delegate $l1  ;; targets a 'loop', validation failure
+  end
+end
+```
 
 ### JS API
 
