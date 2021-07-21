@@ -310,20 +310,22 @@ catching instructions (`catch`/`catch_all`/`delegate`) come after the
 same as if the `try` has catches but none of the catches are able to handle the
 exception.
 
-If `delegate`'s immediate argument is the depth of block-like structures
-(blocks, loops, and trys) + 1, i.e., the function-level block, it is considered
-to be delegating the exception to the caller of the current function. For
-example:
+If `delegate`'s immediate argument is the depth of the outermost block + 1, i.e.
+the function-level block, the function-level block is considered as a
+`catch`-less `try` and it delegates the exception handling to the caller of the
+current function. For example:
 ```
-try $l1
-  try
-    call $foo
-  delegate 1  ;; delegate to the caller
-catch
-  ...
-catch_all
-  ...
-end
+(func $test
+  try $l1
+    try
+      call $foo
+    delegate 1  ;; delegate to the caller
+  catch
+    ...
+  catch_all
+    ...
+  end
+)
 ```
 In case `foo` throws, `delegate 1` here delegates the exception handling to the
 caller, i.e., the exception escapes the current function.
