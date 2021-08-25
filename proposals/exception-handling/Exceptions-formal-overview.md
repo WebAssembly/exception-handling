@@ -165,7 +165,7 @@ S; F; catch_m T[val^n (throw a)] end
 
 
 val^n (try bt instr* delegate l)
-  ↪ label_m{} (delegate{l} val^n instr* end) end
+  ↪ label_m{} (delegate{l+1} val^n instr* end) end
   (if bt = [t^n]→[t^m])
 
 delegate{l} val^n end ↪ val^n
@@ -190,7 +190,7 @@ S;C, labels [t*] ⊢ catch_n{a? instr'*}* instr* end : []→[t*]
 S;C, labels {result [t*], kind try} ⊢ instr* : []→[t*]
 C.labels[l].kind = try
 -----------------------------------------------------------------------
-S;C, labels [t*] ⊢ delegate{l} instr* end : []→[t*]
+S;C, labels [t*] ⊢ delegate{l+1} instr* end : []→[t*]
 
 S.tags[a].type = [t'*]→[]
 (val:t')*
@@ -199,11 +199,3 @@ S;C, labels {result [t*], kind catch} ⊢ instr* : []→[t*]
 S;C, labels [t*] ⊢ caught_m{a val^n} instr* end : []→[t'*]
 ```
 
-By adding the attribute `kind` to labels, we are creating situations in the proof of type preservation, where we have a derivation of some `S;C, label [t*] ⊢ instr* : []→[t*]` but we need to have that `S;C, label {result [t*], kind <labelkind>} ⊢ instr* : []→[t*]` for some `<labelkind> ::= try | catch`. To resolve this we add the following typing rule for labels in the context, which ensures our newly introduced `try` and `catch` blocks can contain any instructions a regular block can.
-
-```
-S;C, label [t*] ⊢ instr* : []→[t*]
-labelkind = try ∨ labelkind = catch
------------------------------------------------------------
-S;C, label {result [t*], kind labelkind} ⊢ instr* : []→[t*]
-```

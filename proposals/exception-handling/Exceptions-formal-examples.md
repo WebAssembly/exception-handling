@@ -39,7 +39,7 @@ Take the frame `F = (locals i32.const 0, module m)`. We have:
 
 ```
 ↪ ↪ ↪ F; label_1{} (catch_1{a_x local.get 0}
-           (label_0{} (delegate{0}
+           (label_0{} (delegate{1}
              (label_0{} (catch_0{i32.const 27 local.set 0 rethrow 0}
                throw a_x end) end) end) end) end) end
 ```
@@ -48,12 +48,12 @@ For the empty throw context `T = [_]` the above is the same as
 
 ```
 F; label_1{} (catch_1{a_x local.get 0}
-     label_0{} (delegate{0}
+     label_0{} (delegate{1}
        label_0{} (catch_0{i32.const 27 local.set 0 rethrow 0}
          T[throw a_x] end) end) end) end) end
 
 ↪ F; label_1{} (catch_1{a_x local.get 0}
-       (label_0{} (delegate{0}
+       (label_0{} (delegate{1}
          (label_0{} (caught{a_x} i32.const 27 local.set 0 rethrow 0
            end) end) end) end) end) end
 ```
@@ -62,33 +62,25 @@ Let `F'` be the frame `{locals i32.const 27, module m}`, and let `B^0 = [_]`.
 
 ```
 ↪ F; label_1{} (catch_1{a_x local.get 0}
-       (label_0{} (delegate{0}
+       (label_0{} (delegate{1}
          (label_0{} (caught{a_x} B^0 [rethrow 0]
            end) end) end) end) end) end
 
 ↪ F; label_1{} (catch_1{a_x local.get 0}
-       (label_0{} (delegate{0}
+       (label_0{} (delegate{1}
          (label_0{} (caught{a_x} B^0 [throw a_x]
            end) end) end) end) end) end
 ```
 
-Let `T' = label_0{} (caught{a_x} B^0 [_] end) end`.
+Let `T' = label_0{} (caught{a_x} [_] end) end`, and `B^1 = label_0 [_] end`.
 
 ```
 ↪ F; label_1{} (catch_1{a_x local.get 0}
-       (label_0{} (delegate{0}
-         T'[throw a_x] end) end) end) end
+       (B^1 [delegate{1}
+         T'[throw a_x] end] end) end
 
 ↪ F; label_1{} (catch_1{a_x local.get 0}
-       (label_0{} (delegate{0}
-         T'[throw a_x] end) end) end) end
-
-↪ F; label_1{} (catch_1{a_x local.get 0}
-       (label_0{} (delegate{0}
-         T'[throw a_x] end) end) end) end
-
-↪ F; label_1{} (catch_1{a_x local.get 0}
-       T'[throw a_x] end) end
+       (throw a_x) end) end
 
 ↪ F; label_1{} (caught_1{a_x} local.get 0 end) end
 
