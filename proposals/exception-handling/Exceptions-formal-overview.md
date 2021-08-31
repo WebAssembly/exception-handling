@@ -41,9 +41,11 @@ mod ::= module ... tag*
 To verify that a `try...delegate l` instruction refers to a label surrounding the instructions of a try block (call this a try-label), introduce a `kind` attribute to labels in the validation context, which is set to `try` when the label is a try-label.
 
 Similarly, to verify that the `rethrow l` instruction refers to a label surrounding the instructions of a catch block (call this a catch-label), we allow the `kind` attribute of labels in the validation context to be set to `catch` when the label is a catch-label.
+```
 labelkind ::= try | catch
 labeltype ::= {result resulttype, kind labelkind?}
 C ::= {..., labels labeltype}
+```
 The original notation `labels [t*]` is now an abbreviation for:
 
 ```
@@ -68,10 +70,10 @@ C ⊢ rethrow l : [t1*]→[t2*]
 C.types[bt] = [t1*]→[t2*]
 C, labels {result [t2*], kind try} ⊢ instr* : [t1*]→[t2*]
 (C.tags[x] = [t*]→[] ∧
- C, labels { result [t2*], kind catch } ⊢ instr* : [t*]→[t2*])*
-(C, labels { result [t2*], kind catch } ⊢ instr'* : []→[t2*])?
+ C, labels { result [t2*], kind catch } ⊢ instr'* : [t*]→[t2*])*
+(C, labels { result [t2*], kind catch } ⊢ instr''* : []→[t2*])?
 -----------------------------------------------------------------------------
-C ⊢ try bt instr* (catch x instr'*)* (catch_all instr''*)? end : 	[t1*]→[t2*]
+C ⊢ try bt instr* (catch x instr'*)* (catch_all instr''*)? end : [t1*]→[t2*]
 
 
 C.types[bt] = [t1*]→[t2*]
