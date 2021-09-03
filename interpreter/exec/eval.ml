@@ -550,7 +550,7 @@ let rec step (c : config) : config =
       vs, [Delegating (Int32.sub k 1l, a, vs0) @@ at]
 
     | Label (n, es0, (vs', {it = Rethrowing (k, cont); at} :: es')), vs ->
-      vs, [Rethrowing (Int32.sub k 1l, (fun e -> Label (n, es0, (vs', (cont e) :: es')) @@ e.at)) @@ at]
+      vs, [Rethrowing (Int32.sub k 1l, (fun e -> Label (n, es0, (vs', cont e :: es')) @@ e.at)) @@ at]
 
     | Label (n, es0, code'), vs ->
       let c' = step {c with code = code'} in
