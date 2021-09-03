@@ -297,8 +297,7 @@ let rec check_instr (c : context) (e : instr) (s : infer_stack_type) : op_type =
 
   | TryDelegate (bt, es, x) ->
     let FuncType (ts1, ts2) as ft = check_block_type c bt in
-    let (kind, _) = label c x in
-    require (kind = BlockLabel) e.at "invalid delegate label";
+    ignore (label c x);
     check_block {c with labels = (BlockLabel, ts2) :: c.labels} es ft e.at;
     ts1 --> ts2
 
