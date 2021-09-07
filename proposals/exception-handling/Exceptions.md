@@ -293,9 +293,9 @@ instructions.
 `delegate` can also target `catch`-less `try`s or non-`try` block constructs
 like `block`s or `loop`s, in which case the delegated exception is assumed to
 propagate to the outer scope and will be caught by the next matching
-try-catches, or rethrown to the caller if there is no outer try block. In the examples, catches are annotated with `($label_name)` to
-clarify which `try` it belongs to for clarification; it is not the official
-syntax.
+try-catches, or rethrown to the caller if there is no outer try block. In the
+examples, catches are annotated with `($label_name)` to clarify which `try` it
+belongs to for clarification; it is not the official syntax.
 ```
 try $l0
   block $l1
