@@ -293,7 +293,7 @@ instructions.
 `delegate` can also target `catch`-less `try`s or non-`try` block constructs
 like `block`s or `loop`s, in which case the delegated exception is assumed to
 propagate to the outer scope and will be caught by the next matching
-try-catches. In the examples, catches are annotated with `($label_name)` to
+try-catches, or rethrown to the caller if there is no outer try block. In the examples, catches are annotated with `($label_name)` to
 clarify which `try` it belongs to for clarification; it is not the official
 syntax.
 ```
@@ -331,8 +331,7 @@ propagate further out. Even if the `catch_all` is below the `delegate`,
 `delegate` targets catches of a `try` as a whole and does not target an
 individual `catch`/`catch_all`, so it doesn't apply.
 
-If `delegate`'s immediate argument is (the depth of the outermost block + 1), it
-is considered to target the function-level block, so it in effect delegates the
+If `delegate` targets the implicit function body block, then in effect it delegates the
 exception to the caller of the current function. For example:
 ```
 (func $test
