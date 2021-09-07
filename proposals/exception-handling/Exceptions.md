@@ -274,10 +274,10 @@ try label and delegates exception handling to a `catch`/`catch_all`/`delegate`
 specified by the `try` label. For example, consider this code:
 
 ```
-try $l1
+try $l0
   try
     call $foo
-  delegate $l1  ;; (= delegate 0)
+  delegate $l0 (= delegate 0)
 catch
   ...
 catch_all
@@ -288,28 +288,104 @@ end
 If `call $foo` throws, searching for a catching block first finds `delegate`,
 and because it delegates exception handling to catching instructions associated
 with `$l1`, it will be next checked by the outer `catch` and then `catch_all`
-instructions. When the specified label within a `delegate` instruction does not
-correspond to a `try` instruction, it is a validation failure.
+instructions.
 
-Note that the example below is a validation failure:
+`delegate` can also target `catch`-less `try`s or non-`try` block constructs
+like `block`s or `loop`s, in which case the delegated exception is assumed to
+propagate to the outer scope and will be caught by the next matching
+try-catches. In the examples, catches are annotated with `($label_name)` to
+clarify which `try` it belongs to for clarification; it is not the official
+syntax.
 ```
-try $l1
-catch
-  try
-    call $foo
-  delegate $l1  ;; (= delegate 0)
-catch_all
-  ...
+try $l0
+  block $l1
+    try
+      call $foo
+    delegate $l1  ;; delegates to 'catch ($l0)'
+  end
+catch ($l0)
 end
 ```
-Here `delegate` is trying to delegate to `catch`, which exists before the
-`delegate`. The `delegate` instruction can only target `try` label whose
-catching instructions (`catch`/`catch_all`/`delegate`) come after the
-`delegate` instruction.
 
-`delegate` can also target `catch`-less `try`, in which case the effect is the
-same as if the `try` has catches but none of the catches are able to handle the
-exception.
+`delegate` can only target `catch`/`catch_all`s that are below the current
+instruction, i.e., it can only delegate downwards. It also targets all
+`catch`/`catch_all`s of a `try` as a whole and does not target individual
+`catch`/`catch_all` within a `try`. Here is another example:
+```
+try $l0
+  try $l1
+  catch ($l1)
+    try
+      call $foo
+    delegate $l1  ;; delegates to 'catch ($l0)'
+  catch_all
+    ...
+  end
+catch ($l0)
+```
+
+Here the `delegate` is targeting `catch ($l1)`, which exists before the
+`delegate`. So in case an exception occurs, it propagates out and ends up
+targetting `catch ($l0)`, if the catch has a matching tag. If not, it will
+propagate further out. Even if the `catch_all` is below the `delegate`,
+`delegate` targets catches of a `try` as a whole and does not target an
+individual `catch`/`catch_all`, so it doesn't apply.
+
+If `delegate`'s immediate argument is (the depth of the outermost block + 1), it
+is considered to target the function-level block, so it in effect delegates the
+exception to the caller of the current function. For example:
+```
+(func $test
+  try
+    try
+      call $foo
+    delegate 1  ;; delegates to the caller
+  catch
+    ...
+  catch_all
+    ...
+  end
+)
+```
+In case `foo` throws, `delegate 1` here delegates the exception handling to the
+caller, i.e., the exception escapes the current function. If the immediate is
+greater than the depth of the outermost block + 1, it is a validation failure.
+
+The below is an example that includes all the cases explained. The numbers
+within `()` after `delegate`s are the label operands in immediate values.
+```
+(func $test
+  try $lA
+    block $lB
+      try $lC
+        try
+        delegate $lC (0)  ;; delegates to 'catch ($lC)'
+        try
+        delegate $lB (1)  ;; $lB is a block, so delegates to 'catch ($lA)'
+        try
+        delegate $lA (2)  ;; delegates to 'catch ($lA)'
+        try
+        delegate 3        ;; propagates to the caller
+        try
+        delegate 4        ;; validation failure
+      catch ($lC)
+        try
+        delegate $lC (0)  ;; 'catch ($lC)' is above this instruction,
+                          ;; so delegates to 'catch ($lA)'
+        try
+        delegate $lB (1)  ;; $lB is a block, so delegates to 'catch ($lA)'
+        try
+        delegate $lA (2)  ;; delegates to 'catch ($lA)'
+        try
+        delegate 3        ;; propagates to the caller
+        try
+        delegate 4        ;; validation failure
+      end  ;; try $lC
+    end  ;; block $lB
+  catch ($lA)
+  end  ;; try $lA
+)
+```
 
 ### JS API
 
