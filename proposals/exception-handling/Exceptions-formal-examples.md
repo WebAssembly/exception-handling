@@ -1,4 +1,4 @@
-# 3rd proposal formal spec examples
+# 3rd Proposal Formal Spec Examples
 
 This document contains WebAssembly code examples mentioned in comments on this repository, and what they reduce to, according to the "3rd proposal formal spec overview".
 
@@ -10,24 +10,24 @@ For all other examples just the result of the reduction is given. These examples
 
 If anyone would like that I add another reduction trace, or other examples, please let me know, I'd be happy to.
 
-### notation
+### Notation
 
 If `x` is an exception tag index, then `a_x` denotes its exception tag address, i.e., `F.tag[x] = a_x`, where `F` is the current frame.
 
-## example 0
+## Example 0
 
 The only example with an almost full reduction trace, and all new instructions. The first 3 steps, reducing the several `try`s to their respective administrative instructions, are not shown.
 
 ```
 (func (result i32) (local i32)
-  try
+  try (result i32)
     try
       try
         throw x
       catch_all
         i32.const 27
         local.set 0
-      rethrow 0
+        rethrow 0
       end
     delegate 0
   catch x
@@ -54,42 +54,42 @@ F; label_1{} (catch_1{a_x local.get 0}
 
 ↪ F; label_1{} (catch_1{a_x local.get 0}
        (label_0{} (delegate{1}
-         (label_0{} (caught{a_x} i32.const 27 local.set 0 rethrow 0
+         (label_0{} (caught_0{a_x} i32.const 27 local.set 0 rethrow 0
            end) end) end) end) end) end
 ```
 
 Let `F'` be the frame `{locals i32.const 27, module m}`, and let `B^0 = [_]`.
 
 ```
-↪ F; label_1{} (catch_1{a_x local.get 0}
+↪ F'; label_1{} (catch_1{a_x local.get 0}
        (label_0{} (delegate{1}
-         (label_0{} (caught{a_x} B^0 [rethrow 0]
+         (label_0{} (caught_0{a_x} B^0 [rethrow 0]
            end) end) end) end) end) end
 
-↪ F; label_1{} (catch_1{a_x local.get 0}
+↪ F'; label_1{} (catch_1{a_x local.get 0}
        (label_0{} (delegate{1}
-         (label_0{} (caught{a_x} B^0 [throw a_x]
+         (label_0{} (caught_0{a_x} B^0 [throw a_x]
            end) end) end) end) end) end
 ```
 
-Let `T' = label_0{} (caught{a_x} [_] end) end`, and `B^1 = label_0 [_] end`.
+Let `T' = label_0{} (caught_0{a_x} [_] end) end`, and `B^1 = label_0 [_] end`.
 
 ```
-↪ F; label_1{} (catch_1{a_x local.get 0}
+↪ F'; label_1{} (catch_1{a_x local.get 0}
        (B^1 [delegate{1}
          T'[throw a_x] end] end) end
 
-↪ F; label_1{} (catch_1{a_x local.get 0}
+↪ F'; label_1{} (catch_1{a_x local.get 0}
        (throw a_x) end) end
 
-↪ F; label_1{} (caught_1{a_x} local.get 0 end) end
+↪ F'; label_1{} (caught_1{a_x} local.get 0 end) end
 
 ↪ ↪ ↪ i32.const 27
 ```
 
-## behaviour of `rethrow`
+## Behavior of `rethrow`
 
-### example 1
+### Example 1
 
 Location of a rethrown exception.
 
@@ -124,7 +124,7 @@ label_0{} caught{a_x val1}
 
 which in this case is the same as `val1 (throw a_x)`.
 
-### example 2
+### Example 2
 
 `rethrow`'s immediate validation error.
 
@@ -140,12 +140,12 @@ end
 
 This is a validation error (no catch block at given rethrow depth).
 
-## target of `delegate`'s immediate (label depth)
+## Target of `delegate`'s Immediate (Label Depth)
 
 @aheejin gave the following
 [examples in this comment](https://github.com/WebAssembly/exception-handling/pull/143#discussion_r522673735)
 
-### example 3
+### Example 3
 
 `delegate` targeting a catch is a validation error.
 
@@ -160,7 +160,7 @@ end
 
 This is a validation error because `delegate`'s `$label0` refers to the catch-label `label { result ε, type catch}`, not to a try-label.
 
-### example 4
+### Example 4
 
 `delegate` correctly targeting a `try-delegate` and a `try-catch`.
 

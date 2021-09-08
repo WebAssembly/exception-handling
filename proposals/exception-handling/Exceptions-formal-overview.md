@@ -6,7 +6,7 @@ This is an overview of the 3rd proposal's formal spec additions, to aid in discu
 
 ### Types
 
-Tag Types
+#### Tag Types
 
 ```
 tagtype ::= [t*]→[]
@@ -22,13 +22,13 @@ instr ::= ... | throw x | rethrow l
 
 ### Modules
 
-Tags
+#### Tags
 
 ```
 tag ::= export* tag tagtype  | export* tag tagtype import
 ```
 
-Modules
+#### Modules
 
 ```
 mod ::= module ... tag*
@@ -87,32 +87,32 @@ C ⊢ try bt instr* delegate l : [t1*]→[t2*]
 
 ### Runtime structure
 
-Stores
+#### Stores
 
 ```
 S ::= {..., tags taginst*}
 ```
 
-Tag Instances
+#### Tag Instances
 
 ```
 taginst ::= {type tagtype}
 ```
 
-Module Instances
+#### Module Instances
 
 ```
 m ::= {..., tags a*}
 ```
 
-Administrative Instructions
+#### Administrative Instructions
 
 ```
 instr ::= ... | throw a | catch_n{a? instr*}* instr* end
         | delegate{l} instr* end | caught_m{a val^n} instr* end
 ```
 
-Block contexts and label kinds
+#### Block contexts and label kinds
 
 So far block contexts are only used in the reduction of `br l` and `return`, and only include labels or values on the stack above the hole. If we want to be able to break jumping over try-catch and try-delegate blocks, we must allow for the new administrative control instructions to appear after labels in block contexts, mirroring the label kinds of labels in validation contexts.
 
@@ -126,7 +126,7 @@ Note that `label_n{instr*} label_kind? [_] end? end` could be seen as a simplifi
 
 (Alternatively, we could have the above `label_kind`s be also labels,  remove the additional `label_m` from the execution rules below, and remove the execution rules below where the new administrative instructions only contain `val*`. This would make labels even more similar to control frames.)
 
-Throw Contexts
+#### Throw Contexts
 
 ```
 T ::= val* [_] instr* | label_n{instr*} T end | caught_m{a val^n} T end
@@ -198,6 +198,6 @@ S.tags[a].type = [t'*]→[]
 (val:t')*
 S;C, labels {result [t*], kind catch} ⊢ instr* : []→[t*]
 --------------------------------------------------------------------------------
-S;C, labels [t*] ⊢ caught_m{a val^n} instr* end : []→[t'*]
+S;C, labels [t*] ⊢ caught_m{a val^n} instr* end : []→[t*]
 ```
 
