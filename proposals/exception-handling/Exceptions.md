@@ -277,7 +277,7 @@ specified by the `try` label. For example, consider this code:
 try $l0
   try
     call $foo
-  delegate $l0 (= delegate 0)
+  delegate $l0  ;; (= delegate 0)
 catch
   ...
 catch_all
@@ -331,8 +331,8 @@ propagate further out. Even if the `catch_all` is below the `delegate`,
 `delegate` targets catches of a `try` as a whole and does not target an
 individual `catch`/`catch_all`, so it doesn't apply.
 
-If `delegate` targets the implicit function body block, then in effect it delegates the
-exception to the caller of the current function. For example:
+If `delegate` targets the implicit function body block, then in effect it
+delegates the exception to the caller of the current function. For example:
 ```
 (func $test
   try
@@ -348,7 +348,8 @@ exception to the caller of the current function. For example:
 ```
 In case `foo` throws, `delegate 1` here delegates the exception handling to the
 caller, i.e., the exception escapes the current function. If the immediate is
-greater than the depth of the outermost block + 1, it is a validation failure.
+greater than the number of block nesting including the implicit function-level
+block, it is a validation failure.
 
 The below is an example that includes all the cases explained. The numbers
 within `()` after `delegate`s are the label operands in immediate values.
