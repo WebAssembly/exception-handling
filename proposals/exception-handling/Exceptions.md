@@ -350,7 +350,7 @@ In case `foo` throws, `delegate 1` here delegates the exception handling to the
 caller, i.e., the exception escapes the current function. If the immediate is
 greater than or equal to the number of block nesting including the implicit
 function-level block, it is a validation failure. In this example, any number
-equal to or greater than 2 is now allowed.
+equal to or greater than 2 is not allowed.
 
 The below is an example that includes all the cases explained. The numbers
 within `()` after `delegate`s are the label operands in immediate values.
