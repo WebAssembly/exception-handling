@@ -315,7 +315,6 @@ block does delegate the exception to the next enclosing handler -- analogous to
 performing a `throw` within a `catch` block, that handler is no longer active
 at that point. Here is another example:
 
-
 ```
 try $l0
   try $l1
