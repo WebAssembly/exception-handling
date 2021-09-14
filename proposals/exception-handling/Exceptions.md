@@ -307,10 +307,15 @@ catch ($l0)
 end
 ```
 
-`delegate` can only target `catch`/`catch_all`s that are below the current
-instruction, i.e., it can only delegate downwards. It also targets all
-`catch`/`catch_all`s of a `try` as a whole and does not target individual
-`catch`/`catch_all` within a `try`. Here is another example:
+Like branches, `delegate` can only target outer blocks, and effectively
+rethrows the exception in that block. Consequently, delegating to a specific
+`catch` or `catch_all` handler requires targeting the respective label from
+within the associated `try` block. Delegating to a label from within a `catch`
+block does delegate the exception to the next enclosing handler -- analogous to
+performing a `throw` within a `catch` block, that handler is no longer active
+at that point. Here is another example:
+
+
 ```
 try $l0
   try $l1
