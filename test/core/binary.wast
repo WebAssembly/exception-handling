@@ -45,7 +45,7 @@
 (assert_malformed (module binary "\00asm\00\00\00\01") "unknown binary version")
 
 ;; Invalid section id.
-(assert_malformed (module binary "\00asm" "\01\00\00\00" "\0e\00") "malformed section id")
+(assert_malformed (module binary "\00asm" "\01\00\00\00" "\0d\00") "malformed section id")
 (assert_malformed (module binary "\00asm" "\01\00\00\00" "\7f\00") "malformed section id")
 (assert_malformed (module binary "\00asm" "\01\00\00\00" "\80\00\01\00") "malformed section id")
 (assert_malformed (module binary "\00asm" "\01\00\00\00" "\81\00\01\00") "malformed section id")
@@ -641,7 +641,7 @@
     "\41\00"                   ;; i32.const 0
     "\41\03"                   ;; i32.const 3
     "\36"                      ;; i32.store
-    "\03"                      ;; alignment 2
+    "\02"                      ;; alignment 2
     "\82\80\80\80\10"          ;; offset 2 with unused bits set
     "\0b"                      ;; end
   )
@@ -1284,7 +1284,7 @@
       "\02\04\01"                           ;; import section with single entry
       "\00"                                 ;; string length 0
       "\00"                                 ;; string length 0
-      "\05"                                 ;; malformed import kind
+      "\04"                                 ;; malformed import kind
   )
   "malformed import kind"
 )
@@ -1294,7 +1294,7 @@
       "\02\05\01"                           ;; import section with single entry
       "\00"                                 ;; string length 0
       "\00"                                 ;; string length 0
-      "\05"                                 ;; malformed import kind
+      "\04"                                 ;; malformed import kind
       "\00"                                 ;; dummy byte
   )
   "malformed import kind"
@@ -1406,7 +1406,7 @@
 (assert_malformed
   (module binary
       "\00asm" "\01\00\00\00"
-      "\05\03\01"                           ;; table section with one entry
+      "\04\03\01"                           ;; table section with one entry
       "\70"                                 ;; anyfunc
       "\02"                                 ;; malformed table limits flag
   )
@@ -1415,7 +1415,7 @@
 (assert_malformed
   (module binary
       "\00asm" "\01\00\00\00"
-      "\05\04\01"                           ;; table section with one entry
+      "\04\04\01"                           ;; table section with one entry
       "\70"                                 ;; anyfunc
       "\02"                                 ;; malformed table limits flag
       "\00"                                 ;; dummy byte
@@ -1425,12 +1425,12 @@
 (assert_malformed
   (module binary
       "\00asm" "\01\00\00\00"
-      "\05\06\01"                           ;; table section with one entry
+      "\04\06\01"                           ;; table section with one entry
       "\70"                                 ;; anyfunc
       "\81\00"                              ;; malformed table limits flag as LEB128
       "\00\00"                              ;; dummy bytes
   )
-  "integer too large"
+  "integer representation too long"
 )
 
 ;; Memory count can be zero
@@ -1760,5 +1760,5 @@
     "\02\00"
     "\0b"                      ;; end
   )
-  "junk after last section"
+  "unexpected content after last section"
 )
