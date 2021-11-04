@@ -5,9 +5,9 @@
   <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
   <meta content="ED" name="w3c-status">
   <meta content="This document provides an explicit JavaScript API for interacting with WebAssembly." name="abstract">
-  <meta content="Bikeshed version d7036035b, updated Fri Oct 8 17:07:11 2021 -0700" name="generator">
+  <meta content="Bikeshed version 83b904c2e, updated Wed Nov 3 17:20:53 2021 -0700" name="generator">
   <link href="https://www.w3.org/TR/wasm-js-api-1/" rel="canonical">
-  <meta content="3c3dbaca69fc850583bab4eda2a9ed8108cabe1c" name="document-revision">
+  <meta content="58b3ed9315107ce4f57bec1a056418a49a969427" name="document-revision">
 <style>
 emu-const {
     font-family: serif;
@@ -296,7 +296,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2016/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">WebAssembly JavaScript Interface</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="profile-and-date"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2021-10-29">29 October 2021</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="profile-and-date"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2021-11-04">4 November 2021</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -307,7 +307,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
      <dd><a href="#issues-index">Inline In Spec</a>
      <dd><a href="https://github.com/WebAssembly/spec/labels/wasm-js-api-1">GitHub Issues</a>
      <dt class="editor">Editor:
-     <dd class="editor p-author h-card vcard"><span class="p-name fn">Ms2ger (Igalia)</span>
+     <dd class="editor p-author h-card vcard"><span class="p-name fn">Ms2ger</span> (<span class="p-org org">Igalia</span>)
     </dl>
    </div>
    <div data-fill-with="warning"></div>
@@ -1596,10 +1596,6 @@ This slot holds a <a data-link-type="dfn" href="https://webassembly.github.io/re
      <li data-md>
       <p>Let <var>realm</var> be the <a data-link-type="dfn" href="https://tc39.github.io/ecma262/#current-realm" id="ref-for-current-realm">current Realm</a>.</p>
      <li data-md>
-      <p>Let <var>function</var> be <a data-link-type="dfn" href="https://tc39.github.io/ecma262/#sec-createbuiltinfunction" id="ref-for-sec-createbuiltinfunction">CreateBuiltinFunction</a>(<var>realm</var>, <var>steps</var>, <a data-link-type="dfn" href="https://tc39.github.io/ecma262/#sec-properties-of-the-function-prototype-object" id="ref-for-sec-properties-of-the-function-prototype-object">%FunctionPrototype%</a>, « [[FunctionAddress]] »).</p>
-     <li data-md>
-      <p>Set <var>function</var>.[[FunctionAddress]] to <var>funcaddr</var>.</p>
-     <li data-md>
       <p>Let <var>store</var> be the <a data-link-type="dfn" href="https://tc39.github.io/ecma262/#surrounding-agent" id="ref-for-surrounding-agent②⑤">surrounding agent</a>'s <a data-link-type="dfn" href="#associated-store" id="ref-for-associated-store②③">associated store</a>.</p>
      <li data-md>
       <p>Let <var>functype</var> be <a data-link-type="dfn" href="https://webassembly.github.io/reference-types/core/appendix/embedding.html#embed-func-type" id="ref-for-embed-func-type">func_type</a>(<var>store</var>, <var>funcaddr</var>).</p>
@@ -1608,11 +1604,11 @@ This slot holds a <a data-link-type="dfn" href="https://webassembly.github.io/re
      <li data-md>
       <p>Let <var>arity</var> be <var>paramTypes</var>’s <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-size" id="ref-for-list-size">size</a>.</p>
      <li data-md>
-      <p>Perform ! <a data-link-type="dfn" href="https://tc39.github.io/ecma262/#sec-setfunctionlength" id="ref-for-sec-setfunctionlength">SetFunctionLength</a>(<var>function</var>, <var>arity</var>).</p>
-     <li data-md>
       <p>Let <var>name</var> be the <a data-link-type="dfn" href="#name-of-the-webassembly-function" id="ref-for-name-of-the-webassembly-function">name of the WebAssembly function</a> <var>funcaddr</var>.</p>
      <li data-md>
-      <p>Perform ! <a data-link-type="dfn" href="https://tc39.github.io/ecma262/#sec-setfunctionname" id="ref-for-sec-setfunctionname">SetFunctionName</a>(<var>function</var>, <var>name</var>).</p>
+      <p>Let <var>function</var> be <a data-link-type="dfn">!</a> <a data-link-type="dfn" href="https://tc39.github.io/ecma262/#sec-createbuiltinfunction" id="ref-for-sec-createbuiltinfunction">CreateBuiltinFunction</a>(<var>steps</var>, <var>arity</var>, <var>name</var>, « [[FunctionAddress]] », <var>realm</var>).</p>
+     <li data-md>
+      <p>Set <var>function</var>.[[FunctionAddress]] to <var>funcaddr</var>.</p>
      <li data-md>
       <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-set" id="ref-for-map-set③">Set</a> <var>map</var>[<var>funcaddr</var>] to <var>function</var>.</p>
      <li data-md>
@@ -1743,7 +1739,7 @@ This slot holds a <a data-link-type="dfn" href="https://webassembly.github.io/re
      <li data-md>
       <p class="assertion">Assert: <a data-link-type="dfn" href="https://tc39.github.io/ecma262/#sec-iscallable" id="ref-for-sec-iscallable②">IsCallable</a>(<var>func</var>).</p>
      <li data-md>
-      <p>Let <var>stored settings</var> be the <a data-link-type="dfn">incumbent settings object</a>.</p>
+      <p>Let <var>stored settings</var> be the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#incumbent-settings-object" id="ref-for-incumbent-settings-object">incumbent settings object</a>.</p>
      <li data-md>
       <p>Let <var>hostfunc</var> be a <a data-link-type="dfn" href="https://webassembly.github.io/reference-types/core/exec/runtime.html#syntax-hostfunc" id="ref-for-syntax-hostfunc">host function</a> which performs the following steps when called with arguments <var>arguments</var>:</p>
       <ol>
@@ -2412,12 +2408,6 @@ In practice, an implementation may run out of resources for valid modules below 
    <li><a href="#namespacedef-webassembly">WebAssembly</a><span>, in § 4</span>
    <li><a href="#dictdef-webassemblyinstantiatedsource">WebAssemblyInstantiatedSource</a><span>, in § 4</span>
   </ul>
-  <aside class="dfn-panel" data-for="term-for-sec-properties-of-the-function-prototype-object">
-   <a href="https://tc39.github.io/ecma262/#sec-properties-of-the-function-prototype-object">https://tc39.github.io/ecma262/#sec-properties-of-the-function-prototype-object</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-sec-properties-of-the-function-prototype-object">4.6. Exported Functions</a>
-   </ul>
-  </aside>
   <aside class="dfn-panel" data-for="term-for-sec-well-known-symbols">
    <a href="https://tc39.github.io/ecma262/#sec-well-known-symbols">https://tc39.github.io/ecma262/#sec-well-known-symbols</a><b>Referenced in:</b>
    <ul>
@@ -2571,18 +2561,6 @@ In practice, an implementation may run out of resources for valid modules below 
     <li><a href="#ref-for-sec-objectcreate">4. The WebAssembly Namespace</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="term-for-sec-setfunctionlength">
-   <a href="https://tc39.github.io/ecma262/#sec-setfunctionlength">https://tc39.github.io/ecma262/#sec-setfunctionlength</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-sec-setfunctionlength">4.6. Exported Functions</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="term-for-sec-setfunctionname">
-   <a href="https://tc39.github.io/ecma262/#sec-setfunctionname">https://tc39.github.io/ecma262/#sec-setfunctionname</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-sec-setfunctionname">4.6. Exported Functions</a>
-   </ul>
-  </aside>
   <aside class="dfn-panel" data-for="term-for-sec-setintegritylevel">
    <a href="https://tc39.github.io/ecma262/#sec-setintegritylevel">https://tc39.github.io/ecma262/#sec-setintegritylevel</a><b>Referenced in:</b>
    <ul>
@@ -2659,6 +2637,12 @@ In practice, an implementation may run out of resources for valid modules below 
    <a href="https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel">https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-in-parallel">4. The WebAssembly Namespace</a> <a href="#ref-for-in-parallel①">(2)</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-incumbent-settings-object">
+   <a href="https://html.spec.whatwg.org/multipage/webappapis.html#incumbent-settings-object">https://html.spec.whatwg.org/multipage/webappapis.html#incumbent-settings-object</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-incumbent-settings-object">4.6. Exported Functions</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-prepare-to-run-a-callback">
@@ -3458,7 +3442,6 @@ In practice, an implementation may run out of resources for valid modules below 
    <li>
     <a data-link-type="biblio">[ECMASCRIPT]</a> defines the following terms:
     <ul>
-     <li><span class="dfn-paneled" id="term-for-sec-properties-of-the-function-prototype-object">%functionprototype%</span>
      <li><span class="dfn-paneled" id="term-for-sec-well-known-symbols">@@iterator</span>
      <li><span class="dfn-paneled" id="term-for-sec-arraybuffer-objects">ArrayBuffer</span>
      <li><span class="dfn-paneled" id="term-for-sec-createmethodproperty">CreateMethodProperty</span>
@@ -3482,8 +3465,6 @@ In practice, an implementation may run out of resources for valid modules below 
      <li><span class="dfn-paneled" id="term-for-sec-nativeerror-object-structure">nativeerror object structure</span>
      <li><span class="dfn-paneled" id="term-for-sec-numbertorawbytes">numbertorawbytes</span>
      <li><span class="dfn-paneled" id="term-for-sec-objectcreate">objectcreate</span>
-     <li><span class="dfn-paneled" id="term-for-sec-setfunctionlength">setfunctionlength</span>
-     <li><span class="dfn-paneled" id="term-for-sec-setfunctionname">setfunctionname</span>
      <li><span class="dfn-paneled" id="term-for-sec-setintegritylevel">setintegritylevel</span>
      <li><span class="dfn-paneled" id="term-for-surrounding-agent">surrounding agent</span>
      <li><span class="dfn-paneled" id="term-for-sec-ecmascript-language-types-number-type">the number value</span>
@@ -3504,6 +3485,7 @@ In practice, an implementation may run out of resources for valid modules below 
      <li><span class="dfn-paneled" id="term-for-clean-up-after-running-a-callback">clean up after running a callback</span>
      <li><span class="dfn-paneled" id="term-for-clean-up-after-running-script">clean up after running script</span>
      <li><span class="dfn-paneled" id="term-for-in-parallel">in parallel</span>
+     <li><span class="dfn-paneled" id="term-for-incumbent-settings-object">incumbent settings object</span>
      <li><span class="dfn-paneled" id="term-for-prepare-to-run-a-callback">prepare to run a callback</span>
      <li><span class="dfn-paneled" id="term-for-prepare-to-run-script">prepare to run script</span>
      <li><span class="dfn-paneled" id="term-for-queue-a-task">queue a task</span>
