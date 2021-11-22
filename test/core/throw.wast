@@ -1,12 +1,12 @@
 ;; Test throw instruction.
 
 (module
-  (event $e0)
-  (event $e-i32 (param i32))
-  (event $e-f32 (param f32))
-  (event $e-i64 (param i64))
-  (event $e-f64 (param f64))
-  (event $e-i32-i32 (param i32 i32))
+  (tag $e0)
+  (tag $e-i32 (param i32))
+  (tag $e-f32 (param f32))
+  (tag $e-i64 (param i64))
+  (tag $e-f64 (param f64))
+  (tag $e-i32-i32 (param i32 i32))
 
   (func $throw-if (export "throw-if") (param i32) (result i32)
     (local.get 0)
@@ -43,3 +43,9 @@
 (assert_exception (invoke "throw-param-f64" (f64.const 5.0)))
 
 (assert_return (invoke "test-throw-1-2"))
+
+(assert_invalid (module (func (throw 0))) "unknown tag 0")
+(assert_invalid (module (tag (param i32)) (func (throw 0)))
+                "type mismatch: instruction requires [i32] but stack has []")
+(assert_invalid (module (tag (param i32)) (func (i64.const 5) (throw 0)))
+                "type mismatch: instruction requires [i32] but stack has [i64]")

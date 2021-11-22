@@ -3,20 +3,20 @@
 type num_type = I32Type | I64Type | F32Type | F64Type
 type ref_type = FuncRefType | ExternRefType
 type value_type = NumType of num_type | RefType of ref_type
-type stack_type = value_type list
-type func_type = FuncType of stack_type * stack_type
+type result_type = value_type list
+type func_type = FuncType of result_type * result_type
 
 type 'a limits = {min : 'a; max : 'a option}
 type mutability = Immutable | Mutable
-type table_type = TableType of int32 limits * ref_type
-type memory_type = MemoryType of int32 limits
-type event_type = EventType of int32
+type table_type = TableType of Int32.t limits * ref_type
+type memory_type = MemoryType of Int32.t limits
+type tag_type = TagType of Int32.t
 type global_type = GlobalType of value_type * mutability
 type extern_type =
   | ExternFuncType of func_type
   | ExternTableType of table_type
   | ExternMemoryType of memory_type
-  | ExternEventType of func_type
+  | ExternTagType of func_type
   | ExternGlobalType of global_type
 
 type pack_size = Pack8 | Pack16 | Pack32
@@ -53,8 +53,8 @@ let memories =
   Lib.List.map_filter (function ExternMemoryType t -> Some t | _ -> None)
 let globals =
   Lib.List.map_filter (function ExternGlobalType t -> Some t | _ -> None)
-let events =
-  Lib.List.map_filter (function ExternEventType t -> Some t | _ -> None)
+let tags =
+  Lib.List.map_filter (function ExternTagType t -> Some t | _ -> None)
 
 
 (* Subtyping *)
@@ -81,7 +81,7 @@ let match_global_type gt1 gt2 =
 let match_extern_type et1 et2 =
   match et1, et2 with
   | ExternFuncType ft1, ExternFuncType ft2
-  | ExternEventType ft1, ExternEventType ft2 -> match_func_type ft1 ft2
+  | ExternTagType ft1, ExternTagType ft2 -> match_func_type ft1 ft2
   | ExternTableType tt1, ExternTableType tt2 -> match_table_type tt1 tt2
   | ExternMemoryType mt1, ExternMemoryType mt2 -> match_memory_type mt1 mt2
   | ExternGlobalType gt1, ExternGlobalType gt2 -> match_global_type gt1 gt2
@@ -127,15 +127,15 @@ let string_of_global_type = function
   | GlobalType (t, Immutable) -> string_of_value_type t
   | GlobalType (t, Mutable) -> "(mut " ^ string_of_value_type t ^ ")"
 
-let string_of_stack_type ts =
+let string_of_result_type ts =
   "[" ^ String.concat " " (List.map string_of_value_type ts) ^ "]"
 
 let string_of_func_type (FuncType (ins, out)) =
-  string_of_stack_type ins ^ " -> " ^ string_of_stack_type out
+  string_of_result_type ins ^ " -> " ^ string_of_result_type out
 
 let string_of_extern_type = function
   | ExternFuncType ft -> "func " ^ string_of_func_type ft
   | ExternTableType tt -> "table " ^ string_of_table_type tt
   | ExternMemoryType mt -> "memory " ^ string_of_memory_type mt
   | ExternGlobalType gt -> "global " ^ string_of_global_type gt
-  | ExternEventType ft -> "event " ^ string_of_func_type ft
+  | ExternTagType tt -> "tag " ^ string_of_func_type tt

@@ -115,8 +115,7 @@ A try-catch block contains zero or more `catch` blocks and zero or one
 `catch_all` block. All `catch` blocks must precede the `catch_all` block, if
 any. The `catch`/`catch_all` instructions (within the try construct) are called
 the _catching_ instructions. There may not be any `catch` or `catch_all` blocks
-after a `try`, in which case the whole `try` block is effectively a regular
-block.
+after a `try`, in which case the `try` block does not catch any exceptions.
 
 The _body_ of the try block is the list of instructions before the first
 catching instruction. The _body_ of each catch block is the sequence of
@@ -241,9 +240,9 @@ caught by `catch 1`. In wat format, the argument for the `rethrow` instructions
 can also be written as a label, like branches. So `rethrow 0` in the example
 above can also be written as `rethrow $l3`.
 
-Note that `rethrow 2` is not allowed because it does not reference a catch
-block. Rather, it references a `block` instruction, so it will result in a
-validation failure.
+Note that `rethrow 2` is not allowed because it does not refer to a `try` label
+from within its catch block. Rather, it references a `block` instruction, so it
+will result in a validation failure.
 
 Note that the example below is a validation failure:
 ```
@@ -271,15 +270,14 @@ delegate label
 
 The `delegate` clause does not have an associated body, so try-delegate blocks
 don't have an `end` instruction at the end. The `delegate` instruction takes a
-label defined by a construct in which they are enclosed, and delegates exception
-handling to a catch block specified by the label. For example, consider this
-code:
+try label and delegates exception handling to a `catch`/`catch_all`/`delegate`
+specified by the `try` label. For example, consider this code:
 
 ```
-try $l1
+try $l0
   try
     call $foo
-  delegate $l1  ;; (= delegate 0)
+  delegate $l0  ;; (= delegate 0)
 catch
   ...
 catch_all
@@ -290,23 +288,109 @@ end
 If `call $foo` throws, searching for a catching block first finds `delegate`,
 and because it delegates exception handling to catching instructions associated
 with `$l1`, it will be next checked by the outer `catch` and then `catch_all`
-instructions. When the specified label within a `delegate` instruction does not
-correspond to a `try` instruction, it is a validation failure.
+instructions.
 
-Note that the example below is a validation failure:
+`delegate` can also target `catch`-less `try`s or non-`try` block constructs
+like `block`s or `loop`s, in which case the delegated exception is assumed to
+propagate to the outer scope and will be caught by the next matching
+try-catches, or rethrown to the caller if there is no outer try block. In the
+examples, catches are annotated with `($label_name)` to clarify which `try` it
+belongs to for clarification; it is not the official syntax.
 ```
-try $l1
-catch 1
-  try
-    call $foo
-  delegate $l1  ;; (= delegate 0)
-catch_all
-  ...
+try $l0
+  block $l1
+    try
+      call $foo
+    delegate $l1  ;; delegates to 'catch ($l0)'
+  end
+catch ($l0)
 end
 ```
-Here `delegate` is trying to delegate to `catch 1`, which exists before the
-`delegate`. The `delegate` instruction can only delegate to `catch`/`catch_all`
-blocks in a `try` or to another `delegate` below the `delegate` itself.
+
+Like branches, `delegate` can only target outer blocks, and effectively
+rethrows the exception in that block. Consequently, delegating to a specific
+`catch` or `catch_all` handler requires targeting the respective label from
+within the associated `try` block. Delegating to a label from within a `catch`
+block does delegate the exception to the next enclosing handler -- analogous to
+performing a `throw` within a `catch` block, that handler is no longer active
+at that point. Here is another example:
+
+```
+try $l0
+  try $l1
+  catch ($l1)
+    try
+      call $foo
+    delegate $l1  ;; delegates to 'catch ($l0)'
+  catch_all
+    ...
+  end
+catch ($l0)
+```
+
+Here the `delegate` is targeting `catch ($l1)`, which exists before the
+`delegate`. So in case an exception occurs, it propagates out and ends up
+targetting `catch ($l0)`, if the catch has a matching tag. If not, it will
+propagate further out. Even if the `catch_all` is below the `delegate`,
+`delegate` targets catches of a `try` as a whole and does not target an
+individual `catch`/`catch_all`, so it doesn't apply.
+
+If `delegate` targets the implicit function body block, then in effect it
+delegates the exception to the caller of the current function. For example:
+```
+(func $test
+  try
+    try
+      call $foo
+    delegate 1  ;; delegates to the caller
+  catch
+    ...
+  catch_all
+    ...
+  end
+)
+```
+In case `foo` throws, `delegate 1` here delegates the exception handling to the
+caller, i.e., the exception escapes the current function. If the immediate is
+greater than or equal to the number of block nesting including the implicit
+function-level block, it is a validation failure. In this example, any number
+equal to or greater than 2 is not allowed.
+
+The below is an example that includes all the cases explained. The numbers
+within `()` after `delegate`s are the label operands in immediate values.
+```
+(func $test
+  try $lA
+    block $lB
+      try $lC
+        try
+        delegate $lC (0)  ;; delegates to 'catch ($lC)'
+        try
+        delegate $lB (1)  ;; $lB is a block, so delegates to 'catch ($lA)'
+        try
+        delegate $lA (2)  ;; delegates to 'catch ($lA)'
+        try
+        delegate 3        ;; propagates to the caller
+        try
+        delegate 4        ;; validation failure
+      catch ($lC)
+        try
+        delegate $lC (0)  ;; 'catch ($lC)' is above this instruction,
+                          ;; so delegates to 'catch ($lA)'
+        try
+        delegate $lB (1)  ;; $lB is a block, so delegates to 'catch ($lA)'
+        try
+        delegate $lA (2)  ;; delegates to 'catch ($lA)'
+        try
+        delegate 3        ;; propagates to the caller
+        try
+        delegate 4        ;; validation failure
+      end  ;; try $lC
+    end  ;; block $lB
+  catch ($lA)
+  end  ;; try $lA
+)
+```
 
 ### JS API
 
@@ -343,16 +427,33 @@ out of memory are implementation-defined.)
 
 #### API additions
 
-The following additional classes are added to the JS API in order to allow JavaScript to interact with WebAssembly exceptions:
+The following additional classes are added to the JS API in order to allow
+JavaScript to interact with WebAssembly exceptions:
 
   * `WebAssembly.Tag`
   * `WebAssembly.Exception`.
 
-The `WebAssembly.Tag` class represents a typed tag defined in the tag section and exported from a WebAssembly module. It allows querying the type of a tag following the [JS type reflection proposal](https://github.com/WebAssembly/js-types/blob/master/proposals/js-types/Overview.md). Constructing an instance of `Tag` creates a fresh tag, and the new tag can be passed to a WebAssembly module as a tag import.
+The `WebAssembly.Tag` class represents a typed tag defined in the tag section
+and exported from a WebAssembly module. It allows querying the type of a tag
+following the [JS type reflection
+proposal](https://github.com/WebAssembly/js-types/blob/master/proposals/js-types/Overview.md).
+Constructing an instance of `Tag` creates a fresh tag, and the new tag can be
+passed to a WebAssembly module as a tag import.
 
-In the future, `WebAssembly.Tag` may be used for other proposals that require a typed tag and its constructor may be extended to accept other types and/or a tag attribute to differentiate them from tags used for exceptions.
+In the future, `WebAssembly.Tag` may be used for other proposals that require a
+typed tag and its constructor may be extended to accept other types and/or a tag
+attribute to differentiate them from tags used for exceptions.
 
-The `WebAssembly.Exception` class represents an exception thrown from WebAssembly, or an exception that is constructed in JavaScript and is to be thrown to a WebAssembly exception handler. The `Exception` constructor accepts a `Tag` argument and a sequence of arguments for the exception's data fields. The `Tag` argument determines the exception tag to use. The data field arguments must match the types specified by the `Tag`'s type. The `is` method can be used to query if the `Exception` matches a given tag. The `getArg` method allows access to the data fields of a `Exception` if a matching tag is given. This last check ensures that without access to a WebAssembly module's exported exception tag, the associated data fields cannot be read.
+The `WebAssembly.Exception` class represents an exception thrown from
+WebAssembly, or an exception that is constructed in JavaScript and is to be
+thrown to a WebAssembly exception handler. The `Exception` constructor accepts a
+`Tag` argument and a sequence of arguments for the exception's data fields. The
+`Tag` argument determines the exception tag to use. The data field arguments
+must match the types specified by the `Tag`'s type. The `is` method can be used
+to query if the `Exception` matches a given tag. The `getArg` method allows
+access to the data fields of a `Exception` if a matching tag is given. This last
+check ensures that without access to a WebAssembly module's exported exception
+tag, the associated data fields cannot be read.
 
 More formally, the added interfaces look like the following:
 
@@ -371,7 +472,10 @@ interface Exception {
 };
 ```
 
-Where `type TagType = {parameters: ValueType[]}`, following the format of the type reflection proposal (`TagType` corresponds to a `FunctionType` without a `results` property). `TagType` could be extended in the future for other proposals that require a richer type specification.
+Where `type TagType = {parameters: ValueType[]}`, following the format of the
+type reflection proposal (`TagType` corresponds to a `FunctionType` without a
+`results` property). `TagType` could be extended in the future for other
+proposals that require a richer type specification.
 
 ## Changes to the text format
 

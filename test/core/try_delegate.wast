@@ -1,8 +1,8 @@
 ;; Test try-delegate blocks.
 
 (module
-  (event $e0)
-  (event $e1)
+  (tag $e0)
+  (tag $e1)
 
   (func (export "delegate-no-throw") (result i32)
     (try $t (result i32)
@@ -45,11 +45,28 @@
     )
   )
 
+  (func (export "delegate-to-block") (result i32)
+    (try (result i32)
+      (do (block (try (do (throw $e0)) (delegate 0)))
+          (i32.const 0))
+      (catch_all (i32.const 1)))
+  )
+
+  (func (export "delegate-to-catch") (result i32)
+    (try (result i32)
+      (do (try
+            (do (throw $e0))
+            (catch $e0
+              (try (do (rethrow 1)) (delegate 0))))
+          (i32.const 0))
+      (catch_all (i32.const 1)))
+  )
+
   (func (export "delegate-to-caller")
     (try (do (try (do (throw $e0)) (delegate 1))) (catch_all))
   )
 
-  (func $select-event (param i32)
+  (func $select-tag (param i32)
     (block (block (block (local.get 0) (br_table 0 1 2)) (return)) (throw $e0))
     (throw $e1)
   )
@@ -58,10 +75,10 @@
     (try $t (result i32)
       (do
         (local.get 0)
-        (call $select-event)
+        (call $select-tag)
         (try
           (result i32)
-          (do (local.get 1) (call $select-event) (i32.const 1))
+          (do (local.get 1) (call $select-tag) (i32.const 1))
           (delegate $t)
         )
       )
@@ -92,6 +109,9 @@
 
 (assert_return (invoke "delegate-skip") (i32.const 3))
 
+(assert_return (invoke "delegate-to-block") (i32.const 1))
+(assert_return (invoke "delegate-to-catch") (i32.const 1))
+
 (assert_exception (invoke "delegate-to-caller"))
 
 (assert_malformed
@@ -100,7 +120,7 @@
 )
 
 (assert_malformed
-  (module quote "(module (event $e) (func (try (do) (catch $e) (delegate 0))))")
+  (module quote "(module (tag $e) (func (try (do) (catch $e) (delegate 0))))")
   "unexpected token"
 )
 
@@ -112,4 +132,9 @@
 (assert_malformed
   (module quote "(module (func (try (do) (delegate) (delegate 0))))")
   "unexpected token"
+)
+
+(assert_invalid
+  (module (func (try (do) (delegate 1))))
+  "unknown label"
 )

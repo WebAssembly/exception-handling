@@ -112,6 +112,7 @@ let input_from get_script run =
   | Eval.Trap (at, msg) -> error at "runtime trap" msg
   | Eval.Exhaustion (at, msg) -> error at "resource exhaustion" msg
   | Eval.Crash (at, msg) -> error at "runtime crash" msg
+  | Eval.Exception (at, msg) -> error at "uncaught exception" msg
   | Encode.Code (at, msg) -> error at "encoding error" msg
   | Script.Error (at, msg) -> error at "script error" msg
   | IO (at, msg) -> error at "i/o error" msg
@@ -215,7 +216,7 @@ let print_import m im =
     | ExternFuncType t -> "func", string_of_func_type t
     | ExternTableType t -> "table", string_of_table_type t
     | ExternMemoryType t -> "memory", string_of_memory_type t
-    | ExternEventType t -> "event", string_of_func_type t
+    | ExternTagType t -> "tag", string_of_func_type t
     | ExternGlobalType t -> "global", string_of_global_type t
   in
   Printf.printf "  import %s \"%s\" \"%s\" : %s\n"
@@ -229,7 +230,7 @@ let print_export m ex =
     | ExternFuncType t -> "func", string_of_func_type t
     | ExternTableType t -> "table", string_of_table_type t
     | ExternMemoryType t -> "memory", string_of_memory_type t
-    | ExternEventType t -> "event", string_of_func_type t
+    | ExternTagType t -> "tag", string_of_func_type t
     | ExternGlobalType t -> "global", string_of_global_type t
   in
   Printf.printf "  export %s \"%s\" : %s\n"
@@ -458,7 +459,12 @@ let run_assertion ass =
     | _ -> Assert.error ass.at "expected runtime error"
     )
 
-  | AssertUncaughtException act -> () (* TODO *)
+  | AssertException act ->
+    trace ("Asserting exception...");
+    (match run_action act with
+    | exception Eval.Exception (_, msg) -> ()
+    | _ -> Assert.error ass.at "expected exception"
+    )
 
   | AssertExhaustion (act, re) ->
     trace ("Asserting exhaustion...");

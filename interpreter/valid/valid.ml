@@ -14,38 +14,40 @@ let require b at s = if not b then error at s
 
 (* Context *)
 
+type label_kind = BlockLabel | CatchLabel
+
 type context =
 {
   types : func_type list;
   funcs : func_type list;
   tables : table_type list;
   memories : memory_type list;
-  events : event_type list;
+  tags : tag_type list;
   globals : global_type list;
   elems : ref_type list;
   datas : unit list;
   locals : value_type list;
   results : value_type list;
-  labels : stack_type list;
+  labels : (label_kind * result_type) list;
   refs : Free.t;
 }
 
 let empty_context =
   { types = []; funcs = []; tables = []; memories = [];
-    events = []; globals = []; elems = []; datas = [];
+    tags = []; globals = []; elems = []; datas = [];
     locals = []; results = []; labels = [];
     refs = Free.empty
   }
 
 let lookup category list x =
   try Lib.List32.nth list x.it with Failure _ ->
-    error x.at ("unknown " ^ category ^ " " ^ Int32.to_string x.it)
+    error x.at ("unknown " ^ category ^ " " ^ I32.to_string_u x.it)
 
 let type_ (c : context) x = lookup "type" c.types x
 let func (c : context) x = lookup "function" c.funcs x
 let table (c : context) x = lookup "table" c.tables x
 let memory (c : context) x = lookup "memory" c.memories x
-let event (c : context) x = lookup "event" c.events x
+let tag (c : context) x = lookup "tag" c.tags x
 let global (c : context) x = lookup "global" c.globals x
 let elem (c : context) x = lookup "elem segment" c.elems x
 let data (c : context) x = lookup "data segment" c.datas x
@@ -72,8 +74,8 @@ let refer_func (c : context) x = refer "function" c.refs.Free.funcs x
  *)
 
 type ellipses = NoEllipses | Ellipses
-type infer_stack_type = ellipses * value_type option list
-type op_type = {ins : infer_stack_type; outs : infer_stack_type}
+type infer_result_type = ellipses * value_type option list
+type op_type = {ins : infer_result_type; outs : infer_result_type}
 
 let known = List.map (fun t -> Some t)
 let stack ts = (NoEllipses, known ts)
@@ -186,7 +188,7 @@ let check_memop (c : context) (memop : 'a memop) get_sz at =
  *   es : instr list
  *   v  : value
  *   t  : value_type var
- *   ts : stack_type
+ *   ts : result_type
  *   x  : variable
  *
  * Note: To deal with the non-determinism in some of the declarative rules,
@@ -205,7 +207,7 @@ let check_block_type (c : context) (bt : block_type) : func_type =
   | ValBlockType None -> FuncType ([], [])
   | ValBlockType (Some t) -> FuncType ([], [t])
 
-let rec check_instr (c : context) (e : instr) (s : infer_stack_type) : op_type =
+let rec check_instr (c : context) (e : instr) (s : infer_result_type) : op_type =
   match e.it with
   | Unreachable ->
     [] -->... []
@@ -229,32 +231,35 @@ let rec check_instr (c : context) (e : instr) (s : infer_stack_type) : op_type =
 
   | Block (bt, es) ->
     let FuncType (ts1, ts2) as ft = check_block_type c bt in
-    check_block {c with labels = ts2 :: c.labels} es ft e.at;
+    check_block {c with labels = (BlockLabel, ts2) :: c.labels} es ft e.at;
     ts1 --> ts2
 
   | Loop (bt, es) ->
     let FuncType (ts1, ts2) as ft = check_block_type c bt in
-    check_block {c with labels = ts1 :: c.labels} es ft e.at;
+    check_block {c with labels = (BlockLabel, ts1) :: c.labels} es ft e.at;
     ts1 --> ts2
 
   | If (bt, es1, es2) ->
     let FuncType (ts1, ts2) as ft = check_block_type c bt in
-    check_block {c with labels = ts2 :: c.labels} es1 ft e.at;
-    check_block {c with labels = ts2 :: c.labels} es2 ft e.at;
+    check_block {c with labels = (BlockLabel, ts2) :: c.labels} es1 ft e.at;
+    check_block {c with labels = (BlockLabel, ts2) :: c.labels} es2 ft e.at;
     (ts1 @ [NumType I32Type]) --> ts2
 
   | Br x ->
-    label c x -->... []
+    let (_, ts) = label c x in
+    ts -->... []
 
   | BrIf x ->
-    (label c x @ [NumType I32Type]) --> label c x
+    let (_, ts) = label c x in
+    (ts @ [NumType I32Type]) --> ts
 
   | BrTable (xs, x) ->
-    let n = List.length (label c x) in
-    let ts = Lib.List.table n (fun i -> peek (n - i) s) in
-    check_stack ts (known (label c x)) x.at;
-    List.iter (fun x' -> check_stack ts (known (label c x')) x'.at) xs;
-    (ts @ [Some (NumType I32Type)]) -~>... []
+    let (_, ts) = label c x in
+    let n = List.length ts in
+    let ts' = Lib.List.table n (fun i -> peek (n - i) s) in
+    check_stack ts' (known ts) x.at;
+    List.iter (fun x' -> check_stack ts' (known (snd (label c x'))) x'.at) xs;
+    (ts' @ [Some (NumType I32Type)]) -~>... []
 
   | Return ->
     c.results -->... []
@@ -270,6 +275,31 @@ let rec check_instr (c : context) (e : instr) (s : infer_stack_type) : op_type =
       ("type mismatch: instruction requires table of functions" ^
        " but table has " ^ string_of_ref_type t);
     (ts1 @ [NumType I32Type]) --> ts2
+
+  | Throw x ->
+    let TagType y = tag c x in
+    let FuncType (ts1, _) = type_ c (y @@ e.at) in
+    ts1 -->... []
+
+  | Rethrow x ->
+    let (kind, _) = label c x in
+    require (kind = CatchLabel) e.at "invalid rethrow label";
+    [] -->... []
+
+  | TryCatch (bt, es, cts, ca) ->
+    let FuncType (ts1, ts2) as ft = check_block_type c bt in
+    let c_try = {c with labels = (BlockLabel, ts2) :: c.labels} in
+    let c_catch = {c with labels = (CatchLabel, ts2) :: c.labels} in
+    check_block c_try es ft e.at;
+    List.iter (fun ct -> check_catch ct c_catch ft e.at) cts;
+    Lib.Option.app (fun es -> check_block c_catch es ft e.at) ca;
+    ts1 --> ts2
+
+  | TryDelegate (bt, es, x) ->
+    let FuncType (ts1, ts2) as ft = check_block_type c bt in
+    ignore (label c x);
+    check_block {c with labels = (BlockLabel, ts2) :: c.labels} es ft e.at;
+    ts1 --> ts2
 
   | LocalGet x ->
     [] --> [local c x]
@@ -402,13 +432,8 @@ let rec check_instr (c : context) (e : instr) (s : infer_stack_type) : op_type =
     let t1, t2 = type_cvtop e.at cvtop in
     [NumType t1] --> [NumType t2]
 
-  | TryCatch _ -> [] --> [] (* TODO *)
-  | TryDelegate _ -> [] --> [] (* TODO *)
-  | Throw _ -> [] --> [] (* TODO *)
-  | Rethrow _ -> [] --> [] (* TODO *)
-
-and check_seq (c : context) (s : infer_stack_type) (es : instr list)
-  : infer_stack_type =
+and check_seq (c : context) (s : infer_result_type) (es : instr list)
+  : infer_result_type =
   match es with
   | [] ->
     s
@@ -424,8 +449,15 @@ and check_block (c : context) (es : instr list) (ft : func_type) at =
   let s = check_seq c (stack ts1) es in
   let s' = pop (stack ts2) s at in
   require (snd s' = []) at
-    ("type mismatch: block requires " ^ string_of_stack_type ts2 ^
+    ("type mismatch: block requires " ^ string_of_result_type ts2 ^
      " but stack has " ^ string_of_infer_types (snd s))
+
+and check_catch (ct : var * instr list) (c : context) (ft : func_type) at =
+  let (x, es) = ct in
+  let TagType y = tag c x in
+  let FuncType (ts1, _) = type_ c (y @@ at) in
+  let FuncType (_, ts2) = ft in
+  check_block c es (FuncType (ts1, ts2)) at
 
 
 (* Types *)
@@ -491,13 +523,13 @@ let check_type (t : type_) =
 let check_func (c : context) (f : func) =
   let {ftype; locals; body} = f.it in
   let FuncType (ts1, ts2) = type_ c ftype in
-  let c' = {c with locals = ts1 @ locals; results = ts2; labels = [ts2]} in
+  let c' = {c with locals = ts1 @ locals; results = ts2; labels = [(BlockLabel, ts2)]} in
   check_block c' body (FuncType ([], ts2)) f.at
 
-let check_event (c : context) (e : event) =
-  match type_ c (e.it.etype) with
+let check_tag (c : context) (t : tag) =
+  match type_ c (t.it.tgtype) with
   | FuncType (_, []) -> ()
-  | FuncType _ -> error e.at "non-empty event result type"
+  | FuncType _ -> error t.at "non-empty tag result type"
 
 let is_const (c : context) (e : instr) =
   match e.it with
@@ -579,8 +611,8 @@ let check_import (im : import) (c : context) : context =
   | GlobalImport gt ->
     check_global_type gt idesc.at;
     {c with globals = gt :: c.globals}
-  | EventImport x ->
-    {c with events = EventType x.it :: c.events}
+  | TagImport x ->
+    {c with tags = TagType x.it :: c.tags}
 
 module NameSet = Set.Make(struct type t = Ast.name let compare = compare end)
 
@@ -590,7 +622,7 @@ let check_export (c : context) (set : NameSet.t) (ex : export) : NameSet.t =
   | FuncExport x -> ignore (func c x)
   | TableExport x -> ignore (table c x)
   | MemoryExport x -> ignore (memory c x)
-  | EventExport x -> ignore (event c x)
+  | TagExport x -> ignore (tag c x)
   | GlobalExport x -> ignore (global c x)
   );
   require (not (NameSet.mem name set)) ex.at "duplicate export name";
@@ -598,7 +630,7 @@ let check_export (c : context) (set : NameSet.t) (ex : export) : NameSet.t =
 
 let check_module (m : module_) =
   let
-    { types; imports; tables; memories; events; globals; funcs; start; elems;
+    { types; imports; tables; memories; tags; globals; funcs; start; elems;
       datas; exports } = m.it
   in
   let c0 =
@@ -613,7 +645,7 @@ let check_module (m : module_) =
       funcs = c0.funcs @ List.map (fun f -> type_ c0 f.it.ftype) funcs;
       tables = c0.tables @ List.map (fun tab -> tab.it.ttype) tables;
       memories = c0.memories @ List.map (fun mem -> mem.it.mtype) memories;
-      events = c0.events @ List.map (fun (ev : event) -> EventType ev.it.etype.it) events;
+      tags = c0.tags @ List.map (fun (tg : tag) -> TagType tg.it.tgtype.it) tags;
       elems = List.map (fun (elem : elem_segment) -> elem.it.etype) elems;
       datas = List.map (fun _data -> ()) datas;
     }
@@ -625,7 +657,7 @@ let check_module (m : module_) =
   List.iter (check_global c1) globals;
   List.iter (check_table c1) tables;
   List.iter (check_memory c1) memories;
-  List.iter (check_event c1) events;
+  List.iter (check_tag c1) tags;
   List.iter (check_elem c1) elems;
   List.iter (check_data c1) datas;
   List.iter (check_func c) funcs;
