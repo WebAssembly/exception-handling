@@ -12,11 +12,15 @@ If anyone would like that I add another reduction trace, or other examples, plea
 
 ### Notation
 
-If `x` is an exception tag index, then `a_x` denotes its exception tag address, i.e., `F.tag[x] = a_x`, where `F` is the current frame.
+If `x` is an exception tag index, then `a_x` denotes its exception tag address, i.e., `a_x := F.tag[x]`, where `F` is the current frame.
 
-## Example 0
+Note that the block contexts and throw contexts given for the reductions are the largest possible in each case, so the reduction steps are the only possible ones.
 
-The only example with an almost full reduction trace, and all new instructions. The first 3 steps, reducing the several `try`s to their respective administrative instructions, are not shown.
+## Example 0.
+
+The only example with an almost full reduction trace, and all new instructions. Such explicit reduction steps are only shown in Example 4 and Example 5, to highlight the reduction step of the administrative `delegate`.
+
+In the following reduction, we don't show the first 4 steps, which just reduce the several `try`s and the `throw x` to their respective administrative instructions.
 
 ```
 (func (result i32) (local i32)
@@ -35,56 +39,110 @@ The only example with an almost full reduction trace, and all new instructions. 
   end)
 ```
 
+We write the body of this function in folded form, because it is easier to parse.
+
+```
+(try (result i32)
+  (do
+    (try
+      (do
+        (try
+          (do
+            (throw x))
+          (catch_all
+            (local.set 0 (i32.const 27))
+            (rethrow 0))))
+      (delegate 0)))
+  (catch x
+    (local.get 0)))
+```
+
 Take the frame `F = (locals i32.const 0, module m)`. We have:
 
 ```
-↪ ↪ ↪ F; label_1{} (catch_1{a_x local.get 0}
-           (label_0{} (delegate{1}
-             (label_0{} (catch_0{i32.const 27 local.set 0 rethrow 0}
-               throw a_x end) end) end) end) end) end
+↪ ↪ ↪
+↪ F; (label_1{}
+        (catch_1{ a_x (local.get 0) }
+          (label_0{}
+            (delegate{ 0 }
+              (label_0{}
+                (catch_0{ ε (local.set 0 (i32.const 27)) (rethrow 0) }
+                  (throw a_x) end) end) end) end) end) end)
 ```
 
-For the empty throw context `T = [_]` the above is the same as
+For the trivial throw context `T = [_]` the above is the same as
 
 ```
-F; label_1{} (catch_1{a_x local.get 0}
-     label_0{} (delegate{1}
-       label_0{} (catch_0{i32.const 27 local.set 0 rethrow 0}
-         T[throw a_x] end) end) end) end) end
+↪ F; (label_1{}
+        (catch_1{ a_x (local.get 0) }
+          (label_0{}
+            (delegate{ 0 }
+              (label_0{}
+                (catch_0{ ε (local.set 0 (i32.const 27)) (rethrow 0) }
+                  T[(throw a_x)]) end) end) end) end) end)
 
-↪ F; label_1{} (catch_1{a_x local.get 0}
-       (label_0{} (delegate{1}
-         (label_0{} (caught_0{a_x} i32.const 27 local.set 0 rethrow 0
-           end) end) end) end) end) end
+↪ F; (label_1{}
+        (catch_1{ a_x (local.get 0) }
+          (label_0{}
+            (delegate{ 0 }
+              (label_0{}
+                (caught_0{ a_x ε }
+                  (local.set 0 (i32.const 27))
+                  (rethrow 0) end) end) end) end) end) end)
 ```
 
-Let `F'` be the frame `{locals i32.const 27, module m}`, and let `B^0 = [_]`.
+Let `F'` be the frame `{locals i32.const 27, module m}`, and let `B^0 = [_]` to reduce `rethrow 0`.
 
 ```
-↪ F'; label_1{} (catch_1{a_x local.get 0}
-       (label_0{} (delegate{1}
-         (label_0{} (caught_0{a_x} B^0 [rethrow 0]
-           end) end) end) end) end) end
+↪ F'; (label_1{}
+         (catch_1{ a_x (local.get 0) }
+           (label_0{}
+             (delegate{ 0 }
+               (label_0{}
+                 (caught_0{ a_x ε }
+                   B^0[ (rethrow 0) ] end) end) end) end) end) end)
 
-↪ F'; label_1{} (catch_1{a_x local.get 0}
-       (label_0{} (delegate{1}
-         (label_0{} (caught_0{a_x} B^0 [throw a_x]
-           end) end) end) end) end) end
+↪ F'; (label_1{}
+         (catch_1{ a_x (local.get 0) }
+           (label_0{}
+             (delegate{ 0 }
+               (label_0{}
+                 (caught_0{ a_x }
+                   (throw a_x) end) end) end) end) end) end)
 ```
 
-Let `T' = label_0{} (caught_0{a_x} [_] end) end`, and `B^1 = label_0 [_] end`.
+Let `T' = (label_0{} (caught_0{ a_x ε } [_] end) end)` and use the same `B^0` as above to reduce the throw with the delegate.
 
 ```
-↪ F'; label_1{} (catch_1{a_x local.get 0}
-       (B^1 [delegate{1}
-         T'[throw a_x] end] end) end
+↪ F'; (label_1{}
+         (catch_1{ a_x (local.get 0) }
+           (label_0{}
+             B^0[ (delegate{ 0 } T'[ (throw a_x) ] end) ] end) end) end)
 
-↪ F'; label_1{} (catch_1{a_x local.get 0}
-       (throw a_x) end) end
+↪ F'; (label_1{}
+         (catch_1{ a_x (local.get 0) }
+           (throw a_x) end) end)
+```
 
-↪ F'; label_1{} (caught_1{a_x} local.get 0 end) end
+Use the trivial throw context `T` again, this time to match the throw to the `catch_1`.
 
-↪ ↪ ↪ i32.const 27
+```
+↪ F'; (label_1{}
+         (catch_1{ a_x (local.get 0) }
+           T[ (throw a_x) ] end) end)
+
+↪ F'; (label_1{}
+         (caught_1{ a_x ε }
+           (local.get 0) end) end)
+
+↪ F'; (label_1{}
+         (caught_1{ a_x ε }
+           (i32.const 27) end) end)
+
+↪ F'; (label_1{}
+         (i32.const 27) end)
+
+↪ F'; (i32.const 27)
 ```
 
 ## Behavior of `rethrow`
@@ -112,17 +170,45 @@ catch x
 end
 ```
 
+Folded it looks as follows.
+
+```
+(try
+  (do
+    val1
+    (throw x))
+  (catch x  ;; <--- (rethrow 2) targets this catch.
+    (try
+      (do
+        val2
+        (throw y))
+      (catch_all
+        (try
+          (do
+            val3
+            (throw z))
+          (catch z
+            (rethrow 2)))))))
+```
+
 In the above example, all thrown exceptions get caught and the first one gets rethrown from the catching block of the last one. So the above reduces to
 
 ```
-label_0{} caught{a_x val1}
-  val1 (label_0{} caught{a_y val2}
-    (label_0{} caught{a_z val3}
-      val3 val1 (throw a_x) end end)
-        end end) end end)
+(label_0{}
+  (caught_0{ a_x val1 }
+    val1
+    (label_0{}
+      (caught_0{ a_y val2 }
+        ;; The catch_all does not leave val2 here.
+        (label_0{}
+          (caught_0{ a_z val3 }
+            val3
+            ;; (rethrow 2) puts val1 and the throw below.
+            val1
+            (throw a_x) end) end) end) end) end) end)
 ```
 
-which in this case is the same as `val1 (throw a_x)`.
+This reduces to `val1 (throw a_x)`, throwing to the caller.
 
 ### Example 2
 
@@ -132,33 +218,29 @@ which in this case is the same as `val1 (throw a_x)`.
 [example in this comment](https://github.com/WebAssembly/exception-handling/pull/143#discussion_r522673735)
 
 ```
-try $label0
-  rethrow $label0  ;; cannot be done, because it's not within catch below
-catch
-end
+(func
+  try $label0
+    rethrow $label0 ;; cannot be done, because it's not within catch below
+  catch x
+  end)
 ```
 
 This is a validation error (no catch block at given rethrow depth).
 
 ## Target of `delegate`'s Immediate (Label Depth)
 
-@aheejin gave the following
-[examples in this comment](https://github.com/WebAssembly/exception-handling/pull/143#discussion_r522673735)
-
 ### Example 3
 
-`delegate` targeting a catch is a validation error.
+`delegate 0` target.
 
 ```
-try $label0
-catch
-  try
-    ...
-  delegate $label0  ;; cannot be done, because $label0's catch is not below but above here
-end
+(try $l
+  (do
+    (throw x))
+  (delegate $l))
 ```
 
-This is a validation error because `delegate`'s `$label0` refers to the catch-label `label { result ε, type catch}`, not to a try-label.
+This is a validation error, a `delegate` always refers to an outer block.
 
 ### Example 4
 
@@ -166,18 +248,122 @@ This is a validation error because `delegate`'s `$label0` refers to the catch-la
 
 ```
 try $label1
-  try $label0
-    try
-      throw x
-    delegate $label0 ;; delegate 0
-  delegate $label1 ;; delegate 1
+  try
+    try $label0
+      try
+        throw x
+      delegate $label0 ;; delegate 0
+    delegate $label1 ;; delegate 1
+  catch_all
+  end
 catch x
   instr*
 end
 ```
 
+In folded form and reduced to the point `throw x` is called, this is:
+
+```
+(label_0{}
+  (catch_0{ a_x instr* }
+    (label_0{}
+      (catch_0{ ε ε }
+        (label_0{}
+          (delegate{ 1 }
+            (label_0{}
+              (delegate{ 0 }
+                (throw a_x) end) end) end) end) end) end) end) end)
+```
+
+The `delegate{ 0 }` reduces using the trivial throw and block contexts to:
+
+```
+(label_0{}
+  (catch_0{ a_x instr* }
+    (label_0{}
+      (catch_0{ ε ε }
+        (label_0{}
+          (delegate{ 1 }
+            (throw a_x) end) end) end) end) end) end)
+```
+
+The `delegate{ 1 }` reduces using the trivial throw context and the block context `B^1 := (catch_0{ ε ε } (label_0{} [_] end) end)` to the following:
+
+```
+(label_0{}
+  (catch_0{ a_x instr* }
+    (throw a_x) end) end)
+```
 The thrown exception is (eventually) caught by the outer try's `catch x`, so the above reduces to the following.
 
 ```
-label_0 {} (caught_0{a_x}  (label_0 {} instr* end) end
+(label_0 {}
+  (caught_0{a_x}
+    instr* end) end)
 ```
+
+### Example 5
+
+`delegate 0` targeting a catch inside a try.
+
+```
+try (result i32)
+  try $label0
+    throw x
+  catch_all
+    try
+      throw y
+    delegate $label0 ;; delegate 0
+  end
+catch_all
+  i32.const 4
+end
+```
+
+In folded form this is:
+
+```
+(try (result i32)
+  (do
+    (try
+      (do
+        (throw x))
+      (catch_all
+        (try
+          (do
+            (throw y)
+          (delegate 0))))))
+  (catch_all
+    (i32.const 4)))
+```
+
+When it's time to reduce `(throw y)`, the reduction looks as follows.
+
+```
+(label_1{}
+  (catch_1{ ε (i32.const 4) }
+    (label_0{}
+      (caught_0{ a_x ε }
+        (label_0{}
+          (delegate{ 0 }
+            (throw a_y) end) end) end) end) end) end)
+```
+
+For `B^0 := [_] := T`, the above is the same as the following.
+
+```
+(label_1{}
+  (catch_1{ ε (i32.const 4) }
+    (label_0{}
+      (caught_0{ a_x ε }
+        (label_0{}
+          B^0 [(delegate{ 0 } T[ (throw a_y) ] end)] end) end) end) end) end)
+
+↪ (label_1{}
+     (catch_1{ ε (i32.const 4) }
+       (label_0{}
+         (caught_0{ a_x ε }
+           (throw a_y) end) end) end) end)
+```
+
+So `throw a_y` gets correctly caught by `catch_1{ ε (i32.const 4) }` and this example reduces to `(i32.const 4)`.
