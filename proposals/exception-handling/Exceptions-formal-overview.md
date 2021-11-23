@@ -15,9 +15,9 @@ tagtype ::= [t*]→[]
 ### Instructions
 
 ```
-instr ::= ... | throw x | rethrow l
-        | try bt instr* (catch x instr*)* (catch_all instr*)? end
-        | try bt instr* delegate l
+instr ::= ... | throw tagidx | rethrow labelidx
+        | try blocktype instr* (catch tagidx instr*)* (catch_all instr*)? end
+        | try blocktype instr* delegate labelidx
 ```
 
 ### Modules
@@ -102,14 +102,14 @@ taginst ::= {type tagtype}
 #### Module Instances
 
 ```
-m ::= {..., tags a*}
+m ::= {..., tags tagaddr*}
 ```
 
 #### Administrative Instructions
 
 ```
-instr ::= ... | throw a | catch_n{a? instr*}* instr* end
-        | delegate{l} instr* end | caught_m{a val^n} instr* end
+instr ::= ... | throw tagaddr | catch_n{ tagaddr? instr* }* instr* end
+        | delegate{ labelidx } instr* end | caught_m{ tagaddr val^n } instr* end
 ```
 
 #### Block contexts and label kinds
@@ -118,7 +118,8 @@ So far block contexts are only used in the reduction of `br l` and `return`, and
 
 ```
 B^0 ::= val* [_] instr*
-B^k ::= catch_m{a^? instr*}* B^k end | caught_m{a val*} B^k end | delegate{l} B^k end
+B^k ::= catch_m{ tagaddr^? instr* }* B^k end | caught_m{ tagaddr val* } B^k end
+      | delegate{ labelidx } B^k end
 B^{k+1} ::= val* (label_n{instr*} B^k end) instr*
 ```
 
@@ -127,7 +128,7 @@ B^{k+1} ::= val* (label_n{instr*} B^k end) instr*
 Throw contexts don't skip over handlers, they are used to match a thrown exception with the innermost handler.
 
 ```
-T ::= val* [_] instr* | label_n{instr*} T end | caught_m{a val^n} T end
+T ::= val* [_] instr* | label_n{instr*} T end | caught_m{ tagaddr val^n } T end
    | frame_n{F} T end
 ```
 
