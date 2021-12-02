@@ -1,12 +1,12 @@
 # 3rd Proposal Formal Spec Examples
 
-This document contains WebAssembly code examples mentioned in comments on this repository, and what they reduce to, according to the "3rd proposal formal spec overview".
+This document contains WebAssembly code examples mentioned in comments on this repository, and what they reduce to, according to the ["3rd proposal formal spec overview"](Exceptions-formal-overview.md).
 
 Its purpose is to make sure everyone is happy with the implications of the semantics in the current 3rd proposal, or to aid discussions on these semantics.
 
 The first *example 0* contains all the new instructions, and it is the only one with an almost full reduction displayed. It is meant to easily show how the spec works, even if the reader has not spent much time with the WebAssembly formal spec.
 
-For all other examples just the result of the reduction is given. These examples are taken from comments in this repository, which are linked. Some times/often the examples are modified to fit the current syntax.
+For all other examples just the result of the reduction is given. These examples are taken from comments in this repository, which are linked. Sometimes/often the examples are modified to fit the current syntax.
 
 If anyone would like that I add another reduction trace, or other examples, please let me know, I'd be happy to.
 
@@ -16,7 +16,7 @@ If `x` is an exception tag index, then `a_x` denotes its exception tag address, 
 
 Note that the block contexts and throw contexts given for the reductions are the largest possible in each case, so the reduction steps are the only possible ones.
 
-## Example 0.
+## Example 0
 
 The only example with an almost full reduction trace, and all new instructions. Such explicit reduction steps are only shown in Example 4 and Example 5, to highlight the reduction step of the administrative `delegate`.
 
@@ -107,7 +107,7 @@ Let `F'` be the frame `{locals i32.const 27, module m}`, and let `B^0 = [_]` to 
            (label_0{}
              (delegate{ 0 }
                (label_0{}
-                 (caught_0{ a_x }
+                 (caught_0{ a_x ε }
                    (throw a_x) end) end) end) end) end) end)
 ```
 

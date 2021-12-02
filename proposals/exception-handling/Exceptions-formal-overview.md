@@ -1,4 +1,4 @@
-# 3rd proposal formal spec overview
+# 3rd Proposal Formal Spec Overview
 
 This is an overview of the 3rd proposal's formal spec additions, to aid in discussions concerning the proposed semantics.
 
@@ -9,15 +9,15 @@ This is an overview of the 3rd proposal's formal spec additions, to aid in discu
 #### Tag Types
 
 ```
-tagtype ::= [t*]→[]
+tagtype ::= [valtype*]→[]
 ```
 
 ### Instructions
 
 ```
-instr ::= ... | throw tagidx | rethrow labelidx
-        | try blocktype instr* (catch tagidx instr*)* (catch_all instr*)? end
-        | try blocktype instr* delegate labelidx
+instr ::= ... | 'throw' tagidx | 'rethrow' labelidx
+        | 'try' blocktype instr* ('catch' tagidx instr*)* ('catch_all' instr*)? 'end'
+        | 'try' blocktype instr* 'delegate' labelidx
 ```
 
 ### Modules
@@ -25,18 +25,18 @@ instr ::= ... | throw tagidx | rethrow labelidx
 #### Tags
 
 ```
-tag ::= export* tag tagtype  | export* tag tagtype import
+tag ::= export* 'tag' tagtype  | export* 'tag' tagtype import
 ```
 
 #### Modules
 
 ```
-mod ::= module ... tag*
+mod ::= 'module' ... tag*
 ```
 
 ## Validation (Typing)
 
-#### Modification to labels
+#### Modification to Labels
 
 To verify that the `rethrow l` instruction refers to a label surrounding the instructions of a catch block (call this a catch-label), we introduce a `kind` attribute to labels in the validation context, which is set to `catch` when the label is a catch-label and empty otherwise.
 
@@ -67,7 +67,7 @@ C.labels[l].kind = catch
 C ⊢ rethrow l : [t1*]→[t2*]
 
 
-C.types[bt] = [t1*]→[t2*]
+C ⊢ bt : [t1*]→[t2*]
 C, labels [t2*] ⊢ instr* : [t1*]→[t2*]
 (C.tags[x] = [t*]→[] ∧
  C, labels { result [t2*], kind catch } ⊢ instr'* : [t*]→[t2*])*
@@ -76,7 +76,7 @@ C, labels [t2*] ⊢ instr* : [t1*]→[t2*]
 C ⊢ try bt instr* (catch x instr'*)* (catch_all instr''*)? end : [t1*]→[t2*]
 
 
-C.types[bt] = [t1*]→[t2*]
+C ⊢ bt : [t1*]→[t2*]
 C, labels [t2*] ⊢ instr* : [t1*]→[t2*]
 C.labels[l] = [t*]
 -------------------------------------------
@@ -85,7 +85,7 @@ C ⊢ try bt instr* delegate l : [t1*]→[t2*]
 
 ## Execution (Reduction)
 
-### Runtime structure
+### Runtime Structure
 
 #### Stores
 
@@ -108,17 +108,17 @@ m ::= {..., tags tagaddr*}
 #### Administrative Instructions
 
 ```
-instr ::= ... | throw tagaddr | catch_n{ tagaddr? instr* }* instr* end
+instr ::= ... | 'throw' tagaddr | 'catch'_n{ tagaddr? instr* }* instr* 'end'
         | delegate{ labelidx } instr* end | caught_m{ tagaddr val^n } instr* end
 ```
 
-#### Block contexts and label kinds
+#### Block Contexts and Label Kinds
 
 So far block contexts are only used in the reduction of `br l` and `return`, and only include labels or values on the stack above the hole. If we want to be able to break jumping over try-catch and try-delegate blocks, we must allow for the new administrative control instructions to appear after labels in block contexts.
 
 ```
 B^0 ::= val* [_] instr*
-B^k ::= catch_m{ tagaddr^? instr* }* B^k end | caught_m{ tagaddr val* } B^k end
+B^k ::= catch_m{ tagaddr? instr* }* B^k end | caught_m{ tagaddr val* } B^k end
       | delegate{ labelidx } B^k end
 B^{k+1} ::= val* (label_n{instr*} B^k end) instr*
 ```
@@ -132,9 +132,9 @@ T ::= val* [_] instr* | label_n{instr*} T end | caught_m{ tagaddr val^n } T end
    | frame_n{F} T end
 ```
 
-Note that because `catch_n` instructions are not included above, there is always a unique maximal throw context.
+Note that because `catch_n` and `delegate` instructions are not included above, there is always a unique maximal throw context.
 
-### Reduction of instructions
+### Reduction of Instructions
 
 Reduction steps for the new instructions or administrative instructions.
 
@@ -152,7 +152,7 @@ An absent tag address in a `handler` clause (i.e., `a? = ε`) represents a `catc
 ```
 F; val^n (try bt instr* (catch x instr'*)* (catch_all instr''*)? end)
   ↪  F; label_m{} (catch_m{a instr'*}*{ε instr''*}? val^n instr* end) end
-  (if bt = [t1^n]→[t2^m] ∧ (F.module.tagaddrs[x]=a)*)
+  (if expand_F(bt) = [t1^n]→[t2^m] ∧ (F.module.tagaddrs[x]=a)*)
 
 catch_m{a? instr*}* val^m end ↪ val^m
 
@@ -170,7 +170,7 @@ S; F; catch_m T[val^n (throw a)] end
 
 val^n (try bt instr* delegate l)
   ↪ label_m{} (delegate{l} val^n instr* end) end
-  (if bt = [t^n]→[t^m])
+  (if expand_F(bt) = [t^n]→[t^m])
 
 delegate{l} val^n end ↪ val^n
 
@@ -180,7 +180,7 @@ label_m{} B^l[ delegate{l} T[val^n (throw a)] end ] end
 
 Note that the last reduction step above is similar to the reduction of `br`.
 
-### Typing rules for administrative instructions
+### Typing Rules for Administrative Instructions
 
 ```
 S.tags[a].type = [t*]→[]
