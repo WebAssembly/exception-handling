@@ -175,7 +175,7 @@ It decodes into a vector of :ref:`imports <syntax-import>` that represent the |M
      \hex{01}~~\X{tt}{:}\Btabletype &\Rightarrow& \IDTABLE~\X{tt} \\ &&|&
      \hex{02}~~\X{mt}{:}\Bmemtype &\Rightarrow& \IDMEM~\X{mt} \\ &&|&
      \hex{03}~~\X{gt}{:}\Bglobaltype &\Rightarrow& \IDGLOBAL~\X{gt} \\ &&|&
-     \hex{04}~~\X{et}{:}\Bexn &\Rightarrow& \IDEXN~\X{et} \\
+     \hex{04}~~\X{et}{:}\Bexntype &\Rightarrow& \IDEXN~\X{et} \\
    \end{array}
 
 
