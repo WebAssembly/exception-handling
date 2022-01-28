@@ -20,21 +20,22 @@ Note that the block contexts and throw contexts given for the reductions are the
 
 The only example with an almost full reduction trace, and all new instructions. Such explicit reduction steps are only shown in Example 4 and Example 5, to highlight the reduction step of the administrative `delegate`.
 
-In the following reduction, we don't show the first 4 steps, which just reduce the several `try`s and the `throw x` to their respective administrative instructions.
+In the following reduction, we don't show the first 4 steps, which just reduce the several `try`s and the `throw x` to their respective administrative instructions. The type of the tag `$x` here is `[]→[]`.
 
 ```
+(tag $x)
 (func (result i32) (local i32)
   try (result i32)
     try
       try
-        throw x
+        throw $x
       catch_all
         i32.const 27
         local.set 0
         rethrow 0
       end
     delegate 0
-  catch x
+  catch $x
     local.get 0
   end)
 ```
@@ -48,12 +49,12 @@ We write the body of this function in folded form, because it is easier to parse
       (do
         (try
           (do
-            (throw x))
+            (throw $x))
           (catch_all
             (local.set 0 (i32.const 27))
             (rethrow 0))))
       (delegate 0)))
-  (catch x
+  (catch $x
     (local.get 0)))
 ```
 
@@ -149,22 +150,22 @@ Use the trivial throw context `T` again, this time to match the throw to the `ca
 
 ### Example 1
 
-Location of a rethrown exception.
+Location of a rethrown exception. Let `x, y, z` be tag indices of tags with type `[t_x]→[]`, `[t_y]→[]`, and `[t_z]→[]` respectively. Let `val_p : t_p` for every `p` among `x, y, z`.
 
 ```
 try
-  val1
+  val_x
   throw x
 catch x
-  try
-    val2
+  try $label2
+    val_y
     throw y
   catch_all
     try
-      val3
+      val_z
       throw z
     catch z
-      rethrow 2
+      rethrow $label2 ;; This is rethrow 2.
     end
   end
 end
@@ -175,17 +176,17 @@ Folded it looks as follows.
 ```
 (try
   (do
-    val1
+    val_x
     (throw x))
   (catch x  ;; <--- (rethrow 2) targets this catch.
     (try
       (do
-        val2
+        val_y
         (throw y))
       (catch_all
         (try
           (do
-            val3
+            val_z
             (throw z))
           (catch z
             (rethrow 2)))))))
@@ -195,20 +196,20 @@ In the above example, all thrown exceptions get caught and the first one gets re
 
 ```
 (label_0{}
-  (caught_0{ a_x val1 }
-    val1
+  (caught_0{ a_x val_x } ;; <---- The exception rethrown by `rethrow 2` below.
+    val_x
     (label_0{}
-      (caught_0{ a_y val2 }
-        ;; The catch_all does not leave val2 here.
+      (caught_0{ a_y val_y }
+        ;; The catch_all does not leave val_y here.
         (label_0{}
-          (caught_0{ a_z val3 }
-            val3
-            ;; (rethrow 2) puts val1 and the throw below.
-            val1
+          (caught_0{ a_z val_z }
+            val_z
+            ;; (rethrow 2) puts val_x and the throw below.
+            val_x
             (throw a_x) end) end) end) end) end) end)
 ```
 
-This reduces to `val1 (throw a_x)`, throwing to the caller.
+This reduces to `val_x (throw a_x)`, throwing to the caller.
 
 ### Example 2
 
