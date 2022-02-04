@@ -217,3 +217,6 @@ S;C, labels catch [t*] ⊢ instr* : []→[t*]
 S;C, labels [t*] ⊢ caught{a val^n} instr* end : []→[t*]
 ```
 
+## TODO Uncaught Exceptions
+
+We haven't yet described the formalism for an uncaught exception being the result of evaluation.
