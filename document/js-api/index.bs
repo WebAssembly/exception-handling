@@ -443,12 +443,11 @@ The verification of WebAssembly type requirements is deferred to the
             1. Let [=external value|table=] |tableaddr| be |externval|.
             1. Let |table| be [=create a Table object|a new Table object=] created from |tableaddr|.
             1. Let |value| be |table|.
-        1. If |externtype| is of the form [=externtype/tag=] |attribute| <var ignore>functype</var>,
-            1. Assert: |attribute| is [=tagtype/attribute/exception=].
+        1. If |externtype| is of the form [=externtype/tag=] |attribute| <var ignore>tagtype</var>,
             1. Assert: |externval| is of the form [=external value/tag=] |tagaddr|.
             1. Let [=external value/tag=] |tagaddr| be |externval|.
-            1. Let |exception| be [=create a Tag object|a new Tag object=] created from |tagaddr|.
-            1. Let |value| be |exception|.
+            1. Let |tag| be [=create a Tag object|a new Tag object=] created from |tagaddr|.
+            1. Let |value| be |tag|.
         1. Let |status| be ! [=CreateDataProperty=](|exportsObject|, |name|, |value|).
         1. Assert: |status| is true.
 
@@ -1101,12 +1100,12 @@ Note: Exported Functions do not have a \[[Construct]] method and thus it is not 
         1. [=Clean up after running script=] with |relevant settings|.
         1. Assert: |result|.\[[Type]] is <emu-const>throw</emu-const> or <emu-const>normal</emu-const>.
         1. If |result|.\[[Type]] is <emu-const>throw</emu-const>, then:
-            1. If |v| [=implements=] {{Exception}},
-                1. Let |type| be |v|.\[[Type]].
-                1. Let |payload| be |v|.\[[Payload]].
+            1. If |result| [=implements=] {{Exception}},
+                1. Let |type| be |result|.\[[Type]].
+                1. Let |payload| be |result|.\[[Payload]].
             1. Otherwise,
                 1. Let |type| be the [=JavaScript exception tag=].
-                1. Let |payload| be [=ToWebAssemblyValue=](|v|, [=externref=]).
+                1. Let |payload| be [=ToWebAssemblyValue=](|result|.\[[Payload]], [=externref=]).
             1. [=WebAssembly/Throw=] with |type| and |payload|.
         1. Otherwise, return |result|.\[[Value]].
     1. Let |store| be the [=surrounding agent=]'s [=associated store=].
@@ -1198,7 +1197,7 @@ interface Tag {
 };
 </pre>
 
-An {{Tag}} value represents a type of exception.
+A {{Tag}} value represents a type of exception.
 
 <div algorithm>
 
