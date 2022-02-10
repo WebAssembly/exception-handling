@@ -477,7 +477,7 @@ interface Tag {
 };
 
 dictionary ExceptionOptions {
-  optional boolean traceStack;
+  boolean traceStack = false;
 };
 
 [LegacyNamespace=WebAssembly, Exposed=(Window,Worker,Worklet)]
