@@ -467,6 +467,10 @@ More formally, the added interfaces look like the following:
 
 ```WebIDL
 [LegacyNamespace=WebAssembly, Exposed=(Window,Worker,Worklet)]
+dictionary TagType {
+  required sequence<ValueType> parameters;
+};
+
 interface Tag {
   constructor(TagType type);
   TagType type();
@@ -486,10 +490,10 @@ interface Exception {
 };
 ```
 
-Where `type TagType = {parameters: ValueType[]}`, following the format of the
-type reflection proposal (`TagType` corresponds to a `FunctionType` without a
-`results` property). `TagType` could be extended in the future for other
-proposals that require a richer type specification.
+`TagType` corresponds to a `FunctionType` in [the type reflection
+proposal](https://github.com/WebAssembly/js-types/blob/main/proposals/js-types/Overview.md),
+without a `results` property). `TagType` could be extended in the future for
+other proposals that require a richer type specification.
 
 ## Changes to the text format
 
