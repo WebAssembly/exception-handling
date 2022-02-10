@@ -466,17 +466,16 @@ string, which is propagated when caught by `catch` and rethrown by `rethrow`.
 More formally, the added interfaces look like the following:
 
 ```WebIDL
-[LegacyNamespace=WebAssembly, Exposed=(Window,Worker,Worklet)]
 dictionary TagType {
   required sequence<ValueType> parameters;
 };
 
+[LegacyNamespace=WebAssembly, Exposed=(Window,Worker,Worklet)]
 interface Tag {
   constructor(TagType type);
   TagType type();
 };
 
-[LegacyNamespace=WebAssembly, Exposed=(Window,Worker,Worklet)]
 dictionary ExceptionOptions {
   optional boolean traceStack;
 };
