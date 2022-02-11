@@ -4,6 +4,7 @@ Shortname: wasm-web-api
 Group: wasm
 Status: ED
 Level: 1
+TR: https://www.w3.org/TR/wasm-web-api-1/
 ED: https://webassembly.github.io/exception-handling/web-api/
 Editor: Ms2ger, Igalia
 Repository: WebAssembly/spec
