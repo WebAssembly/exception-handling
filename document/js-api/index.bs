@@ -4,6 +4,7 @@ Shortname: wasm-js-api
 Group: wasm
 Status: ED
 Level: 1
+TR: https://www.w3.org/TR/wasm-js-api-1/
 ED: https://webassembly.github.io/exception-handling/js-api/
 Editor: Ms2ger, Igalia
 Repository: WebAssembly/spec
