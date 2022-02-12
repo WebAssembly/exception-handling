@@ -443,7 +443,8 @@ The verification of WebAssembly type requirements is deferred to the
             1. Let [=external value|table=] |tableaddr| be |externval|.
             1. Let |table| be [=create a Table object|a new Table object=] created from |tableaddr|.
             1. Let |value| be |table|.
-        1. If |externtype| is of the form [=externtype/tag=] |attribute| <var ignore>tagtype</var>,
+        1. If |externtype| is of the form [=externtype/tag=] |attribute| <var ignore>functype</var>,
+            1. Assert: |attribute| is [=tagtype/attribute/exception=].
             1. Assert: |externval| is of the form [=external value/tag=] |tagaddr|.
             1. Let [=external value/tag=] |tagaddr| be |externval|.
             1. Let |tag| be [=create a Tag object|a new Tag object=] created from |tagaddr|.
