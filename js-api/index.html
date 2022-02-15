@@ -6,7 +6,7 @@
   <meta content="ED" name="w3c-status">
   <meta content="Bikeshed version 2e3c4c68b, updated Fri Jan 14 14:49:00 2022 -0800" name="generator">
   <link href="https://www.w3.org/TR/wasm-js-api-1/" rel="canonical">
-  <meta content="6321c21b2e929291bb3889e9ea61cf53946ca724" name="document-revision">
+  <meta content="539be03bb94400fffe413fcc379ba033a410acd6" name="document-revision">
 <style>
 emu-const {
     font-family: serif;
@@ -295,7 +295,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">WebAssembly JavaScript Interface: Exception Handling</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2022-02-11">11 February 2022</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2022-02-15">15 February 2022</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -759,9 +759,9 @@ The verification of WebAssembly type requirements is deferred to the
          <li data-md>
           <p>Let <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/exec/runtime.html#syntax-externval" id="ref-for-syntax-externval①⑧">tag</a> <var>tagaddr</var> be <var>externval</var>.</p>
          <li data-md>
-          <p>Let <var>exception</var> be <a data-link-type="dfn" href="#create-a-tag-object" id="ref-for-create-a-tag-object">a new Tag object</a> created from <var>tagaddr</var>.</p>
+          <p>Let <var>tag</var> be <a data-link-type="dfn" href="#create-a-tag-object" id="ref-for-create-a-tag-object">a new Tag object</a> created from <var>tagaddr</var>.</p>
          <li data-md>
-          <p>Let <var>value</var> be <var>exception</var>.</p>
+          <p>Let <var>value</var> be <var>tag</var>.</p>
         </ol>
        <li data-md>
         <p>Let <var>status</var> be ! <a data-link-type="dfn" href="https://tc39.github.io/ecma262/#sec-createdataproperty" id="ref-for-sec-createdataproperty">CreateDataProperty</a>(<var>exportsObject</var>, <var>name</var>, <var>value</var>).</p>
@@ -1793,6 +1793,8 @@ This slot holds a <a data-link-type="dfn" href="https://webassembly.github.io/ex
         <p>If <var>result</var>.[[Type]] is <emu-const>throw</emu-const>, then:</p>
         <ol>
          <li data-md>
+          <p>Let <var>v</var> be <var>result</var>.[[Value]].</p>
+         <li data-md>
           <p>If <var>v</var> <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#implements" id="ref-for-implements④">implements</a> <code class="idl"><a data-link-type="idl" href="#exception" id="ref-for-exception">Exception</a></code>,</p>
           <ol>
            <li data-md>
@@ -1962,7 +1964,7 @@ This slot holds a <a data-link-type="dfn" href="https://webassembly.github.io/ex
   <a data-link-type="idl-name" href="#dictdef-tagtype" id="ref-for-dictdef-tagtype①"><c- n>TagType</c-></a> <a class="idl-code" data-link-type="method" href="#dom-tag-type" id="ref-for-dom-tag-type"><c- g>type</c-></a>();
 };
 </pre>
-   <p>An <code class="idl"><a data-link-type="idl" href="#tag" id="ref-for-tag②">Tag</a></code> value represents a type of exception.</p>
+   <p>A <code class="idl"><a data-link-type="idl" href="#tag" id="ref-for-tag②">Tag</a></code> value represents a type of exception.</p>
    <div class="algorithm" data-algorithm="initialize a Tag object">
     <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="initialize-a-tag-object">initialize a Tag object</dfn> <var>tag</var> from a <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/exec/runtime.html#syntax-tagaddr" id="ref-for-syntax-tagaddr③">tag address</a> <var>tagAddress</var>, perform the following steps:</p>
     <ol>
