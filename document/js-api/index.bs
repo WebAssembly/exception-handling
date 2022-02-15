@@ -1107,7 +1107,7 @@ Note: Exported Functions do not have a \[[Construct]] method and thus it is not 
                 1. Let |payload| be |v|.\[[Payload]].
             1. Otherwise,
                 1. Let |type| be the [=JavaScript exception tag=].
-                1. Let |payload| be [=ToWebAssemblyValue=](|v|.\[[Payload]], [=externref=]).
+                1. Let |payload| be [=ToWebAssemblyValue=](|v|, [=externref=]).
             1. [=WebAssembly/Throw=] with |type| and |payload|.
         1. Otherwise, return |result|.\[[Value]].
     1. Let |store| be the [=surrounding agent=]'s [=associated store=].
