@@ -1,11 +1,11 @@
 <pre class='metadata'>
-Title: WebAssembly JavaScript Interface
+Title: WebAssembly JavaScript Interface: Exception Handling
 Shortname: wasm-js-api
 Group: wasm
 Status: ED
 Level: 1
 TR: https://www.w3.org/TR/wasm-js-api-1/
-ED: https://webassembly.github.io/spec/js-api/
+ED: https://webassembly.github.io/exception-handling/js-api/
 Editor: Ms2ger, Igalia
 Repository: WebAssembly/spec
 Markup Shorthands: css no, markdown yes
@@ -109,6 +109,7 @@ urlPrefix: https://webassembly.github.io/exception-handling/core/; spec: WebAsse
         text: i32.const
         text: f32.const
         text: f64.const
+        text: v128.const
         text: ref.null
         text: ref.func
         text: ref.extern
@@ -154,6 +155,7 @@ urlPrefix: https://webassembly.github.io/exception-handling/core/; spec: WebAsse
         text: i64
         text: f32
         text: f64
+        text: v128
     url: syntax/types.html#syntax-reftype
         text: reftype
         text: funcref
@@ -381,6 +383,8 @@ A {{Module}} object represents a single WebAssembly module. Each {{Module}} obje
                     1. Throw a {{LinkError}} exception.
                 1. If |valtype| is not [=i64=] and [=Type=](|v|) is BigInt,
                     1. Throw a {{LinkError}} exception.
+                1. If |valtype| is [=v128=],
+                    1. Throw a {{LinkError}} exception.
                 1. Let |value| be [=ToWebAssemblyValue=](|v|, |valtype|).
                 1. Let |store| be the [=surrounding agent=]'s [=associated store=].
                 1. Let (|store|, |globaladdr|) be [=global_alloc=](|store|, [=const=] |valtype|, |value|).
@@ -443,8 +447,8 @@ The verification of WebAssembly type requirements is deferred to the
             1. Assert: |attribute| is [=tagtype/attribute/exception=].
             1. Assert: |externval| is of the form [=external value/tag=] |tagaddr|.
             1. Let [=external value/tag=] |tagaddr| be |externval|.
-            1. Let |exception| be [=create a Tag object|a new Tag object=] created from |tagaddr|.
-            1. Let |value| be |exception|.
+            1. Let |tag| be [=create a Tag object|a new Tag object=] created from |tagaddr|.
+            1. Let |value| be |tag|.
         1. Let |status| be ! [=CreateDataProperty=](|exportsObject|, |name|, |value|).
         1. Assert: |status| is true.
 
@@ -862,6 +866,7 @@ enum ValueType {
   "i64",
   "f32",
   "f64",
+  "v128",
   "externref",
   "anyfunc",
 };
@@ -913,6 +918,7 @@ which can be simultaneously referenced by multiple {{Instance}} objects. Each
     1. If |s| equals "i64", return [=i64=].
     1. If |s| equals "f32", return [=f32=].
     1. If |s| equals "f64", return [=f64=].
+    1. If |s| equals "v128", return [=v128=].
     1. If |s| equals "anyfunc", return [=funcref=].
     1. If |s| equals "externref", return [=externref=].
     1. Assert: This step is not reached.
@@ -933,6 +939,8 @@ which can be simultaneously referenced by multiple {{Instance}} objects. Each
     The <dfn constructor for="Global">Global(|descriptor|, |v|)</dfn> constructor, when invoked, performs the following steps:
     1. Let |mutable| be |descriptor|["mutable"].
     1. Let |valuetype| be [=ToValueType=](|descriptor|["value"]).
+    1. If |valuetype| is [=v128=],
+        1. Throw a {{LinkError}} exception.
     1. If |v| is missing,
         1. Let |value| be [=DefaultValue=](|valuetype|).
     1. Otherwise,
@@ -948,6 +956,8 @@ which can be simultaneously referenced by multiple {{Instance}} objects. Each
     The algorithm <dfn>GetGlobalValue</dfn>({{Global}} |global|) performs the following steps:
     1. Let |store| be the current agent's [=associated store=].
     1. Let |globaladdr| be |global|.\[[Global]].
+    1. Let |globaltype| be [=global_type=](|store|, |globaladdr|).
+    1. If |globaltype| is of the form <var ignore>mut</var> [=v128=], throw a {{TypeError}}.
     1. Let |value| be [=global_read=](|store|, |globaladdr|).
     1. Return [=ToJSValue=](|value|).
 </div>
@@ -960,6 +970,7 @@ which can be simultaneously referenced by multiple {{Instance}} objects. Each
     1. Let |store| be the current agent's [=associated store=].
     1. Let |globaladdr| be **this**.\[[Global]].
     1. Let |mut| |valuetype| be [=global_type=](|store|, |globaladdr|).
+    1. If |valuetype| is [=v128=], throw a {{TypeError}}.
     1. If |mut| is [=const=], throw a {{TypeError}}.
     1. Let |value| be [=ToWebAssemblyValue=](**the given value**, |valuetype|).
     1. Let |store| be [=global_write=](|store|, |globaladdr|, |value|).
@@ -1018,6 +1029,9 @@ This slot holds a [=function address=] relative to the [=surrounding agent=]'s [
     1. Let |store| be the [=surrounding agent=]'s [=associated store=].
     1. Let |functype| be [=func_type=](|store|, |funcaddr|).
     1. Let [|parameters|] → [<var ignore>results</var>] be |functype|.
+    1. If |parameters| or |results| contain [=v128=], throw a {{TypeError}}.
+
+        Note: the above error is thrown each time the \[[Call]] method is invoked.
     1. Let |args| be « ».
     1. Let |i| be 0.
     1. [=list/iterate|For each=] |t| of |parameters|,
@@ -1053,6 +1067,7 @@ Note: Exported Functions do not have a \[[Construct]] method and thus it is not 
   To <dfn>run a host function</dfn> from the JavaScript object |func|, type |functype|, and [=list=] of [=WebAssembly values=] |arguments|, perform the following steps:
 
     1. Let [<var ignore>parameters</var>] → [|results|] be |functype|.
+    1. If |parameters| or |results| contain [=v128=], throw a {{TypeError}}.
     1. Let |jsArguments| be « ».
     1. [=list/iterate|For each=] |arg| of |arguments|,
         1. [=list/Append=] ! [=ToJSValue=](|arg|) to |jsArguments|.
@@ -1086,6 +1101,7 @@ Note: Exported Functions do not have a \[[Construct]] method and thus it is not 
         1. [=Clean up after running script=] with |relevant settings|.
         1. Assert: |result|.\[[Type]] is <emu-const>throw</emu-const> or <emu-const>normal</emu-const>.
         1. If |result|.\[[Type]] is <emu-const>throw</emu-const>, then:
+            1. Let |v| be |result|.\[[Value]].
             1. If |v| [=implements=] {{Exception}},
                 1. Let |type| be |v|.\[[Type]].
                 1. Let |payload| be |v|.\[[Payload]].
@@ -1103,6 +1119,7 @@ Note: Exported Functions do not have a \[[Construct]] method and thus it is not 
 <div algorithm>
 The algorithm <dfn>ToJSValue</dfn>(|w|) coerces a [=WebAssembly value=] to a JavaScript value by performing the following steps:
 
+1. Assert: |w| is not of  the form [=v128.const=] <var ignore>v128</var>.
 1. If |w| is of the form [=i64.const=] |i64|,
     1. Let |v| be [=signed_64=](|i64|).
     1. Return a [=BigInt=] representing the mathematical value |v|.
@@ -1129,6 +1146,7 @@ For <dfn>retrieving an extern value</dfn> from an [=extern address=] |externaddr
 <div algorithm>
 The algorithm <dfn>ToWebAssemblyValue</dfn>(|v|, |type|) coerces a JavaScript value to a [=WebAssembly value=] by performing the following steps:
 
+1. Assert: |type| is not [=v128=].
 1. If |type| is [=i64=],
     1. Let |i64| be ? [=ToBigInt64=](|v|).
     1. Return [=i64.const=] |i64|.
@@ -1181,7 +1199,7 @@ interface Tag {
 };
 </pre>
 
-An {{Tag}} value represents a type of exception.
+A {{Tag}} value represents a type of exception.
 
 <div algorithm>
 
@@ -1293,7 +1311,7 @@ The <dfn method for="Exception">getArg(|exceptionTag|, |index|)</dfn> method ste
     1. Throw a {{TypeError}}.
 1. Let |payload| be **this**.\[[Payload]].
 1. If |index| ≥ |payload|'s [=list/size=],
-    1. Throw a {{TypeError}}.
+    1. Throw a {{RangeError}}.
 1. Return [=ToJSValue=](|payload|[|index|]).
 
 </div>
