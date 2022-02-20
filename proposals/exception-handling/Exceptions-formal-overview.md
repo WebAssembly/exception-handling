@@ -36,14 +36,14 @@ mod ::= 'module' ... tag*
 
 ## Validation (Typing)
 
-#### Modification to Labels
+
+### Validation Contexts: Tagtypes and modified Labels
 
 To verify that the `rethrow l` instruction refers to a label surrounding the instructions of a catch block (call this a catch-label), we introduce a `kind` attribute to labels in the validation context, which is set to `catch` when the label is a catch-label and empty otherwise.
 
 ```
 labelkind ::= 'catch'
 labeltype ::= 'catch'? resulttype
-C ::= {..., 'labels' labeltype}
 ```
 
 The original notation `labels [t*]` is now an abbreviation for:
@@ -52,11 +52,11 @@ The original notation `labels [t*]` is now an abbreviation for:
 'labels' [t*] ::= 'labels' ε [t*]
 ```
 
-### Validation Contexts
+The `labels` entry of validation contexts is modified to use the above definition of labels.
+Moreover, validation contexts now hold a list of tag types, one for each tag known to them.
 
-Validation contexts now hold a list of tag types, one for each tag known to them.
 ```
-C ::= { ..., 'tags' tagtype*}
+C ::= { ..., 'labels' labeltype, 'tags' tagtype*}
 ```
 
 ### Validation Rules for Instructions
@@ -76,8 +76,8 @@ C ⊢ rethrow l : [t1*]→[t2*]
 C ⊢ bt : [t1*]→[t2*]
 C, labels [t2*] ⊢ instr* : [t1*]→[t2*]
 (C.tags[x] = [t*]→[] ∧
- C, labels catch [t2*] ⊢ instr'* : [t*]→[t2*])*
-(C, labels catch [t2*] ⊢ instr''* : []→[t2*])?
+ C, labels (catch [t2*]) ⊢ instr'* : [t*]→[t2*])*
+(C, labels (catch [t2*]) ⊢ instr''* : []→[t2*])?
 -----------------------------------------------------------------------------
 C ⊢ try bt instr* (catch x instr'*)* (catch_all instr''*)? end : [t1*]→[t2*]
 
@@ -200,7 +200,7 @@ S.tags[a].type = [t*]→[]
 S;C ⊢ throw a : [t1* t*]→[t2*]
 
 ((S.tags[a].type = [t'*]→[])?
- S;C, labels catch [t*] ⊢ instr'* : [t'*?]→[t*])*
+ S;C, labels (catch [t*]) ⊢ instr'* : [t'*?]→[t*])*
 S;C, labels [t*] ⊢ instr* : []→[t*]
 -----------------------------------------------------------
 S;C, labels [t*] ⊢ catch{a? instr'*}* instr* end : []→[t*]
@@ -212,7 +212,7 @@ S;C, labels [t*] ⊢ delegate{l} instr* end : []→[t*]
 
 S.tags[a].type = [t'*]→[]
 (val:t')*
-S;C, labels catch [t*] ⊢ instr* : []→[t*]
+S;C, labels (catch [t*]) ⊢ instr* : []→[t*]
 ----------------------------------------------------------
 S;C, labels [t*] ⊢ caught{a val^n} instr* end : []→[t*]
 ```
