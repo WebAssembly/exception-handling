@@ -83,7 +83,7 @@ C ⊢ try bt instr1* (catch x instr2*)* (catch_all instr3*)? end : [t1*]→[t2*]
 
 C ⊢ bt : [t1*]→[t2*]
 C, labels [t2*] ⊢ instr* : [t1*]→[t2*]
-C.labels[l] = [t*]
+|C.labels| ≥ l
 -------------------------------------------
 C ⊢ try bt instr* delegate l : [t1*]→[t2*]
 ```
@@ -209,7 +209,7 @@ S;C, labels [t2*] ⊢ instr1* : []→[t2*]
 S;C, labels [t2*] ⊢ catch{a? instr2*}* instr1* end : []→[t2*]
 
 S;C, labels [t*] ⊢ instr* : []→[t*]
-C.labels[l] = [t0*]
+|C.labels| ≥ l
 ------------------------------------------------------
 S;C, labels [t*] ⊢ delegate{l} instr* end : []→[t*]
 
