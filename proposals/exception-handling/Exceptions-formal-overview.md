@@ -36,7 +36,6 @@ mod ::= 'module' ... tag*
 
 ## Validation (Typing)
 
-
 ### Validation Contexts: Tagtypes and modified Labels
 
 To verify that the `rethrow l` instruction refers to a label surrounding the instructions of a catch block (call this a catch-label), we introduce a `kind` attribute to labels in the validation context, which is set to `catch` when the label is a catch-label and empty otherwise.
@@ -130,7 +129,7 @@ C^k ::= 'catch'{ tagaddr? instr* }* B^k 'end'
       | 'delegate'{ labelidx } B^k 'end'
 ```
 
-Note the `C` in `C^k` above stands for `control`, because the related administrative instructions are in some ways modelling [control frame opcodes](https://webassembly.github.io/spec/core/appendix/algorithm.html?highlight=control#data-structures) "on the stack".
+Note the `C` in `C^k` above stands for `control`, because the related administrative instructions are in some ways modeling [control frame opcodes](https://webassembly.github.io/spec/core/appendix/algorithm.html?highlight=control#data-structures) "on the stack".
 
 #### Throw Contexts
 
@@ -202,7 +201,7 @@ S ⊢ tag a : tag [t*]→[]
 -------------------------------
 S;C ⊢ throw a : [t1* t*]→[t2*]
 
-((S ⊢ tag a : tag [t*]→[])?
+((S ⊢ tag a : tag [t1*]→[])?
  S;C, labels (catch [t2*]) ⊢ instr2* : [t1*?]→[t2*])*
 S;C, labels [t2*] ⊢ instr1* : []→[t2*]
 -----------------------------------------------------------
