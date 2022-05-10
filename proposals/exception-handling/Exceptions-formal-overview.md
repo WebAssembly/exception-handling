@@ -173,7 +173,8 @@ catch{a1? instr*}{a0? instr0*}* T[val^n (throw a)] end
   ↪ catch{a0? instr0*}* T[val^n (throw a)] end
   (if a1? ≠ ε ∧ a1? ≠ a)
 
-catch T[val* (throw a)] end ↪  val* (throw a)
+catch T[val^n (throw a)] end ↪  val^n (throw a)
+  (if S.tags(a).type = [t^n]→[])
 
 
 F; val^n (try bt instr* delegate l)
