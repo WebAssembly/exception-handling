@@ -2632,7 +2632,7 @@ Control Instructions
    \begin{array}{l}
    F; \val^n~(\TRY~\X{bt}~\instr_1^\ast~(\CATCH~x~\instr_2^\ast)^\ast~(\CATCHALL~\instr_3^\ast)^?~\END
    \quad \stepto \\
-   \qquad F; \LABEL_m\{\}~(\CATCHadm\{a~\instr_2^\ast\}^\ast\{\epsilon~\instr_3\}^?~\val^n~\instr_1^\ast~\END)~\END \\
+   \qquad F; \LABEL_m\{\}~(\CATCHadm\{a~\instr_2^\ast\}^\ast\{\epsilon~\instr_3\ast\}^?~\val^n~\instr_1^\ast~\END)~\END \\
    (\iff \expand_F(\X{bt}) = [t_1^n] \to [t_2^m] \land (F.\AMODULE.\MITAGS[x]=a)^\ast)
    \end{array}
 
@@ -2983,8 +2983,7 @@ Entering an exception handler :math:`H`
 .. note::
    No formal reduction rule is needed for installing an exception :ref:`handler <syntax-handler>`
    because it is an :ref:`administrative instruction <syntax-instr-admin>`
-   that the :ref:`try <syntax-try>` instruction reduced to directly.
-
+   that the :ref:`try <syntax-try>` instruction reduces to directly.
 
 .. _exec-handler-exit:
 
@@ -3023,15 +3022,15 @@ Throwing an exception with :ref:`tag address <syntax-tagaddr>` :math:`a`
 
 .. math::
    \begin{array}{rcl}
-   \CATCHadm\{a_1^?~\instr^\ast\}\{a'^?~\instr'^\ast\}^\ast~\XT[\val^n~(\THROWadm~a)]~\END &\stepto&
-   \CATCHadm\{a'^?~\instr'^\ast\}^\ast~\XT[\val^n~(\THROWadm~a)]~\END  \\
+   \CATCHadm\{a_1^?~\instr^\ast\}\{a'^?~\instr'^\ast\}^\ast~\XT[(\THROWadm~a)]~\END &\stepto&
+   \CATCHadm\{a'^?~\instr'^\ast\}^\ast~\XT[(\THROWadm~a)]~\END  \\
    && (\iff a_1^? \neq \epsilon \land a_1^? \neq a) \\
    S;~\CATCHadm\{a_1^?~\instr^\ast\}\{a'^?~\instr'^\ast\}^\ast~\XT[\val^n~(\THROWadm~a)]~\END &\stepto&
    S;~\CAUGHTadm\{a~\val^n\}~(\val^n)?~\instr^\ast~\END \\
    && (\iff~(a_1^? = \epsilon \lor a_1^? = a)~\land\\
    && \ S.\STAGS[a].\TAGITYPE = [t^n]\to[]) \\
-   \LABEL_n\{\}~\XB^l[\DELEGATEadm\{l\}~\XT[\val^n~(\THROWadm~a)]~\END]~\END &\stepto&
-   \val^n~(\THROWadm~a)  \\
+   \LABEL_n\{\}~\XB^l[\DELEGATEadm\{l\}~\XT[(\THROWadm~a)]~\END]~\END &\stepto&
+   \XT[(\THROWadm~a)]  \\
    \end{array}
 
 .. _exec-caughtadm:

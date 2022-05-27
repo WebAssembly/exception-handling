@@ -68,7 +68,7 @@ More concretely, contexts are defined as :ref:`records <notation-record>` :math:
         & \CELEMS & \reftype^\ast, \\
         & \CDATAS & {\ok}^\ast, \\
         & \CLOCALS & \valtype^\ast, \\
-        & \CLABELS & \labelkind, \\
+        & \CLABELS & \labelkind^\ast, \\
         & \CRETURN & \resulttype^?, \\
         & \CREFS & \funcidx^\ast ~\} \\
      \end{array}

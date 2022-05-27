@@ -643,8 +643,8 @@ Instructions in this group affect the flow of control.
      \BLOCK~\blocktype~\instr^\ast~\END \\&&|&
      \LOOP~\blocktype~\instr^\ast~\END \\&&|&
      \IF~\blocktype~\instr^\ast~\ELSE~\instr^\ast~\END \\&&|&
-     \TRY~\blocktype~instr^\ast~(\CATCH~\tagidx~\instr^\ast)^\ast~(\CATCHALL~\instr^\ast)^?~\END \\ &&|&
-     \TRY~\blocktype~instr^\ast~\DELEGATE~\labelidx \\ &&|&
+     \TRY~\blocktype~\instr^\ast~(\CATCH~\tagidx~\instr^\ast)^\ast~(\CATCHALL~\instr^\ast)^?~\END \\ &&|&
+     \TRY~\blocktype~\instr^\ast~\DELEGATE~\labelidx \\ &&|&
      \THROW~\tagidx \\&&|&
      \RETHROW~\labelidx \\ &&|&
      \BR~\labelidx \\&&|&
@@ -666,9 +666,9 @@ and terminated with either an |END| or a |DELEGATE| pseudo-instruction.
 As the grammar prescribes, they must be well-nested.
 
 The instructions |TRY|, |THROW|, and |RETHROW|, are concerned with handling exceptions.
-The |TRY| instructions create try-blocks, and either may handle or rethrow exceptions in the case of |CATCH| and |CATCHALL|,
-or delegate exceptions to an outer potentially catching try-block in the case of |DELEGATE|.
-The |THROW| and |RETHROW| instructions alter control flow by searching for a matching handler in an enclosing catching-try block, if any.
+The |TRY| instruction installs an exception handler, and may either handle exceptions in the case of |CATCH| and |CATCHALL|,
+or rethrow them in an outer block in the case of |DELEGATE|.
+The |THROW| and |RETHROW| instructions alter control flow by searching for a matching handler in one of the enclosing |TRY| blocks, if any.
 
 A structured instruction can consume *input* and produce *output* on the operand stack according to its annotated *block type*.
 It is given either as a :ref:`type index <syntax-funcidx>` that refers to a suitable :ref:`function type <syntax-functype>`, or as an optional :ref:`value type <syntax-valtype>` inline, which is a shorthand for the function type :math:`[] \to [\valtype^?]`.

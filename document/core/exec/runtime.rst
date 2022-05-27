@@ -594,7 +594,7 @@ Administrative Instructions
 .. note::
    This section is only relevant for the :ref:`formal notation <exec-notation>`.
 
-In order to express the reduction of :ref:`traps <trap>`, :ref:`calls <syntax-call>`, :ref:`exception handling <exec-throwadm>`, and :ref:`control instructions <syntax-instr-control>`, the syntax of instructions is extended to include the following *administrative instructions*:
+In order to express the reduction of :ref:`traps <trap>`, :ref:`calls <syntax-call>`, :ref:`exception handling <syntax-handler>`, and :ref:`control instructions <syntax-instr-control>`, the syntax of instructions is extended to include the following *administrative instructions*:
 
 .. math::
    \begin{array}{llcl}
@@ -606,9 +606,9 @@ In order to express the reduction of :ref:`traps <trap>`, :ref:`calls <syntax-ca
      \INVOKE~\funcaddr \\ &&|&
      \THROWadm~\tagaddr \\ &&|&
      \LABEL_n\{\instr^\ast\}~\instr^\ast~\END \\ &&|&
-     \CATCHadm\{a^?~\instr^\ast\}^\ast~\instr^\ast~\END \\ &&|&
+     \CATCHadm\{\tagaddr^?~\instr^\ast\}^\ast~\instr^\ast~\END \\ &&|&
      \DELEGATEadm\{l\}~\instr^\ast~\END \\ &&|&
-     \CAUGHTadm\{a~\val^\ast\}~\instr^\ast~\END \\ &&|&
+     \CAUGHTadm\{\tagaddr~\val^\ast\}~\instr^\ast~\END \\ &&|&
      \FRAME_n\{\frame\}~\instr^\ast~\END \\
    \end{array}
 
@@ -622,7 +622,7 @@ It unifies the handling of different forms of calls.
 
 The |THROWadm| instruction represents the imminent throw of an exception based on a :ref:`tag instance <syntax-taginst>`, identified by its :ref:`address <syntax-tagaddr>`.
 The values it will consume depend on its :ref:`tag type <syntax-tagtype>`.
-It unifies the throwing of different forms of exceptions.
+It unifies the different forms of throwing exceptions.
 
 The |LABEL|, |FRAME|, |CATCHadm|, |DELEGATEadm|, and |CAUGHTadm| instructions model :ref:`labels <syntax-label>`, :ref:`frames <syntax-frame>`, active :ref:`catching exception handlers <syntax-try-catch>`, active :ref:`delegating exception handlers <syntax-try-delegate>`, and :ref:`caught exceptions <exec-throwadm>`, respectively, :ref:`"on the stack" <exec-notation>`.
 Moreover, the administrative syntax maintains the nesting structure of the original :ref:`structured control instruction <syntax-instr-control>` or :ref:`function body <syntax-func>` and their :ref:`instruction sequences <syntax-instr-seq>` with an |END| marker.
@@ -712,7 +712,7 @@ the following syntax of *throw contexts* is defined, as well as associated struc
    \production{(throw contexts)} & \XT &::=&
      \val^\ast~[\_]~\instr^\ast \\ &&|&
      \LABEL_n\{\instr^\ast\}~\XT~\END \\ &&|&
-     \CAUGHTadm\{a~\val^\ast\}~\XT~\END \\ &&|&
+     \CAUGHTadm\{\tagaddr~\val^\ast\}~\XT~\END \\ &&|&
      \FRAME_n\{F\}~\XT~\END \\
    \end{array}
 
@@ -733,7 +733,7 @@ Throw contexts allow matching the program context around a throw instruction up 
       \stepto & S;~F;~\LABEL_n\{\} (\CATCHadm\{a~\RETURN\}~~\val^n~\THROWadm~a~\END)~\END \\
       \end{array}
 
-   :ref:`Handling <exec-throwadm>` the thrown exception with tag address :math:`a` in the throw context
+   :ref:`Handling <syntax-handler>` the thrown exception with tag address :math:`a` in the throw context
    :math:`T=[\_]`, with the exception handler :math:`H=\CATCHadm\{a~\RETURN\}` gives:
 
    .. math::

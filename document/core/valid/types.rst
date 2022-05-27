@@ -165,9 +165,8 @@ Tag Types
 
 .. math::
    \frac{
-     \vdashfunctype [t^n] \to [] \ok
    }{
-     \vdashtagtype [t^n] \to [] \ok
+     \vdashtagtype [t^\ast] \to [] \ok
    }
 
 

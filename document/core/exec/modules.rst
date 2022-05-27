@@ -83,7 +83,7 @@ The following auxiliary typing rules specify this typing relation relative to a 
 .. math::
    \frac{
    }{
-     S \vdashexternval \EVTAG~a : \ETTAG~(S.\STAGS[a].\TAGITYPE)
+     S \vdashexternval \EVTAG~a : \ETTAG~S.\STAGS[a].\TAGITYPE
    }
 
 

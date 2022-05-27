@@ -89,11 +89,11 @@ However, the special case of a type use that is syntactically empty or consists 
      \text{try}~~I'{:}\Tlabel_I~~\X{bt}{:}\Tblocktype~~(\X{in}_1{:}\Tinstr_{I'})^\ast~~
        (\text{catch}~~\Tid_1^?~~x{:}\Ttagidx_I~~(\X{in}_2{:}\Tinstr_{I'})^\ast)^\ast~~
        \\ &&&\qquad\qquad (\text{catch\_all}~~\Tid_1^?~~(\X{in}_3{:}\Tinstr_{I'})^\ast)^?~~\text{end}~~\Tid_2^?
-       \\ &&&\qquad \Rightarrow\quad \TRY~\X{rt}~\X{in}_1^\ast~(\CATCH~x~\X{in}_2^\ast)^\ast~(\CATCHALL~\X{in}_3^\ast)^?~\END
+       \\ &&&\qquad \Rightarrow\quad \TRY~\X{bt}~\X{in}_1^\ast~(\CATCH~x~\X{in}_2^\ast)^\ast~(\CATCHALL~\X{in}_3^\ast)^?~\END
        \\ &&&\qquad\qquad (\iff \Tid_1^? = \epsilon \vee \Tid_1^? = \Tlabel, \Tid_2^? = \epsilon \vee \Tid_2^? = \Tlabel) \\ &&|&
      \text{try}~~I'{:}\Tlabel_I~~\X{bt}{:}\Tblocktype~~(\X{in}_1{:}\Tinstr_{I'})^\ast
        ~~\text{delegate}~~l{:}\Tlabelidx_I~~\X{l}{:}\Tlabelidx_I
-       \\ &&&\qquad \Rightarrow\quad \TRY~\X{rt}~\X{in}_1^\ast~\DELEGATE~l
+       \\ &&&\qquad \Rightarrow\quad \TRY~\X{bt}~\X{in}_1^\ast~\DELEGATE~l
        \qquad\quad~~ (\iff \Tid^? = \epsilon \vee \Tid^? = \Tlabel) \\
    \end{array}
 
@@ -932,15 +932,17 @@ Such a folded instruction can appear anywhere a regular instruction can.
        &\equiv\quad \text{loop}~~\Tlabel~~\Tblocktype~~\Tinstr^\ast~~\text{end} \\
    \end{array}\\
    \begin{array}{lr}
-     \text{(}~\text{if}~~\Tlabel~~\Tblocktype~~\Tfoldedinstr^\ast
+     \text{(}~\text{if}~~\Tlabel~~\Tblocktype~~\Tfoldedinstr^\ast~~
        \text{(}~\text{then}~~\Tinstr_1^\ast~\text{)}~~\text{(}~\text{else}~~\Tinstr_2^\ast~\text{)}^?~~\text{)}
        & \equiv \\
-       \qquad \Tfoldedinstr^\ast~~\text{if}~~\Tlabel~~\Tblocktype \Tinstr_1^\ast~~\text{else}~~(\Tinstr_2^\ast)^?~\text{end} &\\
+       \qquad \Tfoldedinstr^\ast~~\text{if}~~\Tlabel~~\Tblocktype~~\Tinstr_1^\ast~~\text{else}~~(\Tinstr_2^\ast)^?~~\text{end} &\\
      \text{(}~\text{try}~~\Tlabel~~\Tblocktype~~\text{(}~\text{do}~~\Tinstr_1^\ast~~\text{)}
-       \qquad (\text{(}~\text{catch}~~\Tinstr_2^\ast~\text{)})^\ast &\\
-       \qquad\qquad (\text{(}~\text{catch_all}~~\Tinstr_3^\ast~\text{)})^?~\text{)} & \equiv \\
-     \text{try}~~\Tlabel~~\Tblocktype~~\Tinstr^\ast (\text{delegate}~~\Tlabelidx & \equiv \\
-       \text{(}~\text{try}~~\Tlabel~~\Tblocktype~~\text{(}~\text{delegate}~~l~\text{)} &\\
++     \text{(}~\text{try}~~\Tlabel~~\Tblocktype~~\text{(}~\text{do}~~\Tinstr_1^\ast~~\text{)}~~
++       (\text{(}~\text{catch}~~\Tinstr_2^\ast~\text{)})^\ast &\\
++       \qquad\qquad(\text{(}~\text{catch\_all}~~\Tinstr_3^\ast~\text{)})^?~\text{)} & \equiv \\
++       \qquad\text{try}~~\Tlabel~~\Tblocktype~~\Tinstr_1^\ast~~(\text{catch}~~\Tinstr_2^\ast)^\ast~~(\text{catch\_all}~~\Tinstr_3^\ast)^?~~\text{end} &\\
++     \text{(}~\text{try}~~\Tlabel~~\Tblocktype~~\text{(}~\text{delegate}~~l~\text{)} & \equiv \\
++       \qquad\text{try}~~\Tlabel~~\Tblocktype~~\Tinstr^\ast~~\text{delegate}~~\Tlabelidx &\\
    \end{array}
 
 .. note::

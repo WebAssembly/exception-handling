@@ -21,7 +21,7 @@ The only exception are :ref:`structured control instructions <binary-instr-contr
 Control Instructions
 ~~~~~~~~~~~~~~~~~~~~
 
-:ref:`Control instructions <syntax-instr-control>` have varying encodings. For structured instructions, the instruction sequences forming nested blocks are  separated or terminated with explicit opcodes for |END|, |ELSE|, |CATCH|, |CATCHALL|, and |DELEGATE|.
+:ref:`Control instructions <syntax-instr-control>` have varying encodings. For structured instructions, the instruction sequences forming nested blocks are separated or terminated with explicit opcodes for |END|, |ELSE|, |CATCH|, |CATCHALL|, and |DELEGATE|.
 
 :ref:`Block types <syntax-blocktype>` are encoded in special compressed form, by either the byte :math:`\hex{40}` indicating the empty type, as a single :ref:`value type <binary-valtype>`, or as a :ref:`type index <binary-typeidx>` encoded as a positive :ref:`signed integer <binary-sint>`.
 

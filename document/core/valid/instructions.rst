@@ -1378,7 +1378,7 @@ Control Instructions
      (C,\CLABELS\,(\catch~[t_2^\ast]) \vdashinstrseq \instr_3^\ast : []\to[t_2^\ast])^?
    \end{array}
    }{
-   C \vdashinstr \TRY~\blocktype~\instr^\ast (\CATCH~x~\instr_2^\ast)^\ast (\CATCHALL~\instr_3^\ast)^? end : [t_1^\ast]\to[t_2^\ast]
+   C \vdashinstr \TRY~\blocktype~\instr^\ast (\CATCH~x~\instr_2^\ast)^\ast (\CATCHALL~\instr_3^\ast)^? \END : [t_1^\ast]\to[t_2^\ast]
    }
 
 
@@ -1437,7 +1437,7 @@ Control Instructions
 
 .. math::
    \frac{
-     C.\CLABELS[l] = (\catch [t^\ast])
+     C.\CLABELS[l] = \catch~[t^\ast]
    }{
      C \vdashinstr \RETHROW~l : [t_1^\ast] \to [t_2^\ast]
    }

@@ -237,7 +237,7 @@ Tag Types
    \production{tag type} &\tagtype &::=& \functype \\
    \end{array}
 
-Currently tags are only used for categorising exceptions.
+Currently tags are only used for categorizing exceptions.
 The parameters of |functype| define the list of values associated with the exception thrown with this tag.
 Furthermore, it is an invariant of the semantics that every |functype| in a :ref:`valid <valid-tagtype>` tag type for an exception has an empty result type.
 

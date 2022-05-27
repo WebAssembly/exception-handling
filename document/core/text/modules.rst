@@ -428,7 +428,7 @@ Tags can be defined as :ref:`imports <text-import>` or :ref:`exports <text-expor
        \text{(}~\text{export}~~\Tname~~\text{(}~\text{tag}~~\Tid'~\text{)}~\text{)}~~
        \text{(}~\text{tag}~~\Tid'~~\dots~\text{)}
        \\ & \qquad\qquad
-       (\iff \Tid' = \Tid^? \neq \epsilon \vee \Tid' \idfresh) \\
+       (\iff \Tid^? \neq \epsilon \wedge \Tid' = \Tid^? \vee \Tid^? = \epsilon \wedge \Tid' \idfresh) \\
    \end{array}
 
 The latter abbreviation can be applied repeatedly, with ":math:`\dots`" containing another import or export.

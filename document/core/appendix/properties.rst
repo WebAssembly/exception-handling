@@ -618,7 +618,7 @@ To that end, all previous typing judgements :math:`C \vdash \X{prop}` are genera
      S; C,\CLABELS\,[t^\ast] \vdashinstrseq \instr^\ast : [] \to [t^\ast] \\
    \end{array}
    }{
-     S; C,\CLABELS\,[t^\ast] \vdashadmininstr \CATCHadm\{\tagaddr^?~\instr'^\ast\}^\ast~\instr^\ast~\END : [] \to [t^\ast]
+     S; C,\CLABELS\,[t^\ast] \vdashadmininstr \CATCHadm\{\tagaddr^?~{\instr'}^\ast\}^\ast~\instr^\ast~\END : [] \to [t^\ast]
    }
 
 
@@ -650,7 +650,7 @@ To that end, all previous typing judgements :math:`C \vdash \X{prop}` are genera
    \frac{
      S \vdashexternval \EVTAG~\tagaddr : \ETTAG~[t'^\ast]\to[]
      \qquad
-     (val:t')^\ast
+     (val : t')^\ast
      \qquad
      S; C,\CLABELS\,(\catch~[t^\ast]) \vdashinstrseq \instr^\ast : [] \to [t^\ast]
    }{
