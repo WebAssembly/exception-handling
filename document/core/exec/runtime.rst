@@ -83,7 +83,8 @@ It is either a sequence of :ref:`values <syntax-val>` or a :ref:`trap <syntax-tr
      \TRAP
    \end{array}
 
-**TODO: add a result value for an unhandled exception** (e.g., |EXCEPTION|)
+.. todo::
+   Add a result value for an unhandled exception.
 
 .. note::
    In the current version of WebAssembly, a result can consist of at most one value.
@@ -543,18 +544,20 @@ to their associated branch *targets*, each of which is expressed syntactically a
 :ref:`instructions <syntax-instr>` possibly following a :ref:`tag address <syntax-tagaddr>`.
 If there is no :ref:`tag address <syntax-tagaddr>`, the instructions of that target correspond to a |CATCHALL| clause.
 
-**TODO: add prose** for delegating handlers.
+.. todo::
+   Add prose for delegating handlers.
 
 .. math::
    \begin{array}{llllll}
-     \production{(handler)} & \X{handler} &::=& \CATCHadm\{a^?~\instr^\ast\}^\ast &|& \DELEGATEadm\{l\}
+     \production{(handler)} & \handler &::=& \CATCHadm\{\tagaddr^?~\instr^\ast\}^\ast &|& \DELEGATEadm\{l\}
    \end{array}
 
-Intuitively, :math:`\CATCHadm\{a^?~\instr^\ast\}^\ast` maps exception tag addreses to possible *continuations* to execute
-when the handler catches a thrown exception.
+Intuitively, for each target :math:`\{\tagaddr^?~\instr^\ast\}` of a |CATCHadm|, :math:`\instr^\ast` is the *continuation* to execute
+when the handler catches a thrown exception with tag |tagaddr|, or for any exception, when a target specifies no tag address.
 If this list of targets is empty, or if the tag address of the thrown exception is not in the handler's mapping and there is no |CATCHALL| clause, then the exception will be rethrown.
 
-**TODO: add prose** with intuition on delegating handlers.
+.. todo::
+   Add prose with intuition on delegating handlers.
 
 
 .. _exec-expand:
@@ -722,7 +725,7 @@ Throw contexts allow matching the program context around a throw instruction up 
    Contrary to block contexts, throw contexts don't skip over handlers.
 
    Since handlers are not included above, there is always a unique maximal throw context to match the reduction rules.
-   This basically means that :math:`\CAUGHTadm {..} instr^\ast \END` is not a potential catching block for exceptions thrown by :math:`\instr^\ast`, since it is inside a |handler|'s block.
+   This basically means that :math:`\CAUGHTadm {\dots} instr^\ast \END` is not a potential catching block for exceptions thrown by :math:`\instr^\ast`, since these are instructions in the scope of a |CATCH| or a |CATCHALL|.
 
 .. note::
    For example, catching a simple :ref:`throw <exec-throw>` in a :ref:`try block <exec-try-catch>` would be as follows.
@@ -746,7 +749,11 @@ Throw contexts allow matching the program context around a throw instruction up 
 
    In this particular case, the exception is caught by the exception handler :math:`H` and its values are returned.
 
-   **TODO: add administrative values to describe unresolved throws:** e.g., |EXCEPTION|
+.. todo::
+   Include a more complex example using a throw context other then `T=[\_]`
+
+.. todo::
+   Add administrative values to describe unresolved throws.
 
 
 .. index:: ! configuration, ! thread, store, frame, instruction, module instruction
@@ -804,7 +811,8 @@ Finally, the following definition of *evaluation context* and associated structu
 Reduction terminates when a thread's instruction sequence has been reduced to a :ref:`result <syntax-result>`,
 that is, either a sequence of :ref:`values <syntax-val>` or to a |TRAP|.
 
-**TODO: add rules to deal with unresolved** :math:`\THROWadm~\tagaddr`, **and extend results to include such situations.** (e.g., |EXCEPTION|)
+.. todo::
+   Add rules to deal with unresolved :math:`\THROWadm~\tagaddr`, and extend results to include such situations.
 
 .. note::
    The restriction on evaluation contexts rules out contexts like :math:`[\_]` and :math:`\epsilon~[\_]~\epsilon` for which :math:`E[\TRAP] = \TRAP`.

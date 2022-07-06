@@ -685,7 +685,9 @@ The exact effect depends on that control construct.
 In case of |BLOCK| or |IF| it is a *forward jump*,
 resuming execution after the matching |END|.
 In case of |LOOP| it is a *backward jump* to the beginning of the loop.
-**TODO: add prose** - for try-delegate's jump.
+
+.. todo::
+   Add prose for try-delegate's jump.
 
 .. note::
    This enforces *structured control flow*.

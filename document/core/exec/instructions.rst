@@ -2625,7 +2625,8 @@ Control Instructions
 :math:`\TRY~\blocktype~\instr_1^\ast~(\CATCH~x~\instr_2^\ast)^\ast~(\CATCHALL~\instr_3^\ast)^?~\END`
 ....................................................................................................
 
-**TODO: Add prose**
+.. todo::
+   Add prose for the |TRY| - |CATCH| - |CATCHALL| execution step.
 
 .. math::
    ~\\[-1ex]
@@ -2642,7 +2643,8 @@ Control Instructions
 :math:`\TRY~\blocktype~\instr^\ast~\DELEGATE~l`
 ...............................................
 
-**TODO: Add prose**
+.. todo::
+   Add prose for the |TRY| - |DELEGATE| execution step.
 
 .. math::
    ~\\[-1ex]
@@ -2652,10 +2654,6 @@ Control Instructions
    && (\iff \expand_F(\X{bt}) = [t_1^n] \to [t_2^m])
    \end{array}
 
-.. note::
-   Note that the last reduction step above is similar to the :ref:`reduction <exec-br>` of :math:`\BR~l`, but also doing a throw after it breaks.
-
-   There is a subtle difference though. The instruction :math:`\BR~l` searches for the :math:`l+1` surrounding block and breaks out after that block. Because :math:`\DELEGATEadm\{l\}` is always wrapped in its own label, with the :ref:`same lookup <exec-br>` as for :math:`\BR~l` we end up breaking inside the :math:`l+1` surrounding block and throwing there. So if that :math:`l+1` surrounding block is a try, we end up throwing in its "try code", and thus correctly getting delegated to that try's handlers.
 
 .. _exec-throw:
 
@@ -2682,7 +2680,8 @@ Control Instructions
 :math:`\RETHROW~l`
 ..................
 
-**TODO: Add prose**
+.. todo::
+   Add prose for the |RETHROW| execution step.
 
 .. math::
    ~\\[-1ex]
@@ -3017,7 +3016,8 @@ When the end of a :ref:`try <syntax-try>` instruction is reached without a jump,
 Throwing an exception with :ref:`tag address <syntax-tagaddr>` :math:`a`
 ........................................................................
 
-**TODO: add prose**
+.. todo::
+   Add prose for the following execution steps.
 
 
 .. math::
@@ -3033,12 +3033,17 @@ Throwing an exception with :ref:`tag address <syntax-tagaddr>` :math:`a`
    \XT[(\THROWadm~a)]  \\
    \end{array}
 
+
+.. todo::
+   Add explainer note.
+
 .. _exec-caughtadm:
 
 Holding a caught exception with |CAUGHTadm|
 ...........................................
 
-**TODO: add prose describing the administrative** |CAUGHTadm|
+.. todo::
+   Add prose describing the administrative |CAUGHTadm| execution step.
 
 .. math::
    \begin{array}{rcl}

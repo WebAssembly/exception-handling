@@ -894,11 +894,8 @@
 
 .. |ok| mathdef:: \mathrel{\mbox{ok}}
 .. |const| mathdef:: \xref{valid/instructions}{valid-constant}{\mathrel{\mbox{const}}}
-.. |catch| mathdef:: \xref{valid/conventions}{valid-labelkind}{\mathrel{\mbox{catch}}}
 
-.. |labelkind| mathdef:: \xref{valid/conventions}{valid-labelkind}{\mathrel{\X{labelkind}}}
-
-.. Contexts
+.. Contexts, terminals
 
 .. |CTYPES| mathdef:: \xref{valid/conventions}{context}{\K{types}}
 .. |CFUNCS| mathdef:: \xref{valid/conventions}{context}{\K{funcs}}
@@ -912,6 +909,11 @@
 .. |CLABELS| mathdef:: \xref{valid/conventions}{context}{\K{labels}}
 .. |CRETURN| mathdef:: \xref{valid/conventions}{context}{\K{return}}
 .. |CREFS| mathdef:: \xref{valid/conventions}{context}{\K{refs}}
+.. |LCATCH| mathdef:: \xref{valid/conventions}{valid-labeltype}{\mathrel{\K{catch}}}
+
+.. Contexts, non-terminals
+
+.. |labeltype| mathdef:: \xref{valid/conventions}{valid-labeltype}{\mathrel{\X{labeltype}}}
 
 
 .. Judgments
@@ -1316,5 +1318,3 @@
 
 .. |error| mathdef:: \xref{appendix/embedding}{embed-error}{\X{error}}
 .. |ERROR| mathdef:: \xref{appendix/embedding}{embed-error}{\K{error}}
-.. |exception| mathdef:: \xref{appendix/embedding}{embed-exception}{\X{exception}}
-.. |EXCEPTION| mathdef:: \xref{appendix/embedding}{embed-exception}{\K{exception}}

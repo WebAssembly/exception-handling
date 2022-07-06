@@ -937,12 +937,12 @@ Such a folded instruction can appear anywhere a regular instruction can.
        & \equiv \\
        \qquad \Tfoldedinstr^\ast~~\text{if}~~\Tlabel~~\Tblocktype~~\Tinstr_1^\ast~~\text{else}~~(\Tinstr_2^\ast)^?~~\text{end} &\\
      \text{(}~\text{try}~~\Tlabel~~\Tblocktype~~\text{(}~\text{do}~~\Tinstr_1^\ast~~\text{)}
-+     \text{(}~\text{try}~~\Tlabel~~\Tblocktype~~\text{(}~\text{do}~~\Tinstr_1^\ast~~\text{)}~~
-+       (\text{(}~\text{catch}~~\Tinstr_2^\ast~\text{)})^\ast &\\
-+       \qquad\qquad(\text{(}~\text{catch\_all}~~\Tinstr_3^\ast~\text{)})^?~\text{)} & \equiv \\
-+       \qquad\text{try}~~\Tlabel~~\Tblocktype~~\Tinstr_1^\ast~~(\text{catch}~~\Tinstr_2^\ast)^\ast~~(\text{catch\_all}~~\Tinstr_3^\ast)^?~~\text{end} &\\
-+     \text{(}~\text{try}~~\Tlabel~~\Tblocktype~~\text{(}~\text{delegate}~~l~\text{)} & \equiv \\
-+       \qquad\text{try}~~\Tlabel~~\Tblocktype~~\Tinstr^\ast~~\text{delegate}~~\Tlabelidx &\\
+      \text{(}~\text{try}~~\Tlabel~~\Tblocktype~~\text{(}~\text{do}~~\Tinstr_1^\ast~~\text{)}~~
+        (\text{(}~\text{catch}~~\Tinstr_2^\ast~\text{)})^\ast &\\
+        \qquad\qquad(\text{(}~\text{catch\_all}~~\Tinstr_3^\ast~\text{)})^?~\text{)} & \equiv \\
+        \qquad\text{try}~~\Tlabel~~\Tblocktype~~\Tinstr_1^\ast~~(\text{catch}~~\Tinstr_2^\ast)^\ast~~(\text{catch\_all}~~\Tinstr_3^\ast)^?~~\text{end} &\\
+      \text{(}~\text{try}~~\Tlabel~~\Tblocktype~~\text{(}~\text{delegate}~~l~\text{)} & \equiv \\
+        \qquad\text{try}~~\Tlabel~~\Tblocktype~~\Tinstr^\ast~~\text{delegate}~~\Tlabelidx &\\
    \end{array}
 
 .. note::

@@ -201,7 +201,7 @@ Tag Types
      \hex{00}~~ft{:}\Bfunctype &\Rightarrow& ft \\
    \end{array}
 
-The |Bfunctype| of a tag must have an empty result, and it is used to characterise exceptions.
+The |Bfunctype| of a tag is used to characterise exceptions.
 The :math:`\hex{00}` bit signifies an exception and is currently the only allowed value.
 
 .. note::

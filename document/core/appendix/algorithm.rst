@@ -247,7 +247,8 @@ Other instructions are checked in a similar manner.
          pop_vals(label_types(ctrls[m]))
          unreachable()
 
-
+.. todo::
+   Add a case for :code:`throw`.
 
 .. note::
    It is an invariant under the current WebAssembly instruction set that an operand of :code:`Unknown` type is never duplicated on the stack.

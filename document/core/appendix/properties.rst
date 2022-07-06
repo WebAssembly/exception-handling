@@ -608,13 +608,14 @@ To that end, all previous typing judgements :math:`C \vdash \X{prop}` are genera
 :math:`\CATCHadm\{\tagaddr^?~\instr'^\ast\}^\ast~\instr^\ast~\END`
 ..................................................................
 
-**TODO: add prose**
-
+.. todo::
+   Add prose.
 
 .. math::
    \frac{
      \begin{array}{c}
-     ((S \vdashexternval \EVTAG~\tagaddr : \ETTAG~[t'^\ast]\to[])^?~~\land~~S; C,\CLABELS\,(\catch~[t^\ast]) \vdashinstrseq \instr'^\ast : [(t'^\ast)^?] \to [t^\ast])^\ast \\
+     ((S \vdashexternval \EVTAG~\tagaddr : \ETTAG~[t'^\ast]\to[])^? \\
+     ~~S; C,\CLABELS\,(\LCATCH~[t^\ast]) \vdashinstrseq \instr'^\ast : [(t'^\ast)^?] \to [t^\ast])^\ast \\
      S; C,\CLABELS\,[t^\ast] \vdashinstrseq \instr^\ast : [] \to [t^\ast] \\
    \end{array}
    }{
@@ -627,7 +628,8 @@ To that end, all previous typing judgements :math:`C \vdash \X{prop}` are genera
 :math:`\DELEGATEadm\{l\}~\instr^\ast~\END`
 ..........................................
 
-**TODO: add prose**
+.. todo::
+   Add prose.
 
 .. math::
    \frac{
@@ -644,7 +646,8 @@ To that end, all previous typing judgements :math:`C \vdash \X{prop}` are genera
 :math:`\CAUGHTadm\{\tagaddr~\val^\ast\}~\instr^\ast~\END`
 .........................................................
 
-**TODO: add prose**
+.. todo::
+   Add prose.
 
 .. math::
    \frac{
@@ -652,7 +655,7 @@ To that end, all previous typing judgements :math:`C \vdash \X{prop}` are genera
      \qquad
      (val : t')^\ast
      \qquad
-     S; C,\CLABELS\,(\catch~[t^\ast]) \vdashinstrseq \instr^\ast : [] \to [t^\ast]
+     S; C,\CLABELS\,(\LCATCH~[t^\ast]) \vdashinstrseq \instr^\ast : [] \to [t^\ast]
    }{
      S; C,\CLABELS\,[t^\ast] \vdashadmininstr \CAUGHTadm\{\tagaddr~\val^\ast\}~\instr^\ast~\END : [] \to [t^\ast]
    }
