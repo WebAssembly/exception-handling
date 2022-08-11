@@ -554,6 +554,7 @@ If there is no :ref:`tag address <syntax-tagaddr>`, the instructions of that tar
 
 Intuitively, for each target :math:`\{\tagaddr^?~\instr^\ast\}` of a |CATCHadm|, :math:`\instr^\ast` is the *continuation* to execute
 when the handler catches a thrown exception with tag |tagaddr|, or for any exception, when a target specifies no tag address.
+In that case, we say that the exception is handled by the exception handler |CATCHadm|.
 If this list of targets is empty, or if the tag address of the thrown exception is not in the handler's mapping and there is no |CATCHALL| clause, then the exception will be rethrown.
 
 .. todo::
@@ -730,27 +731,34 @@ Throw contexts allow matching the program context around a throw instruction up 
 .. note::
    For example, catching a simple :ref:`throw <exec-throw>` in a :ref:`try block <exec-try-catch>` would be as follows.
 
+   Assume that :math:`\expand_F(bt) = [t1^n] \to [t2^m]`, for some :math:`n > m` such that :math:`t1^n[(n-m):n] = t2^m`,
+   and that the tag address `a` of :math:`x` corresponds to the tag type :math:`[t2^m] \to []`.
+
    .. math::
       \begin{array}{ll}
-      & \hspace{-5ex} S;~F;~\val^n~(\TRY~\X{bt}~\THROW~x~\CATCH~x~\RETURN~\END) \\
-      \stepto & S;~F;~\LABEL_n\{\} (\CATCHadm\{a~\RETURN\}~~\val^n~\THROWadm~a~\END)~\END \\
+      & \hspace{-5ex} S;~F;~\val^n~(\TRY~\X{bt}~(\THROW~x)~\CATCH~x~\RETURN~\END) \\
+      \stepto & S;~F;~\LABEL_m\{\} (\CATCHadm\{a~\RETURN\}~\val^n~(\THROW~x)~\END)~\END \\
       \end{array}
 
-   :ref:`Handling <syntax-handler>` the thrown exception with tag address :math:`a` in the throw context
-   :math:`T=[\_]`, with the exception handler :math:`H=\CATCHadm\{a~\RETURN\}` gives:
+   Denote :math:`\val^n = \val^{n-m} val^m`.
+   :ref:`Handling the thrown exception <exec-throwadm>` with tag address :math:`a` in the throw context
+   :math:`T=[val^{n-m}\_]`, with the exception handler :math:`H=\CATCHadm\{a~\RETURN\}` gives:
 
    .. math::
       \begin{array}{lll}
-      \stepto & S;~F;~\LABEL_n\{\}~(\CAUGHTadm\{a~\val^n\}~\val^n~\RETURN~\END)~\END & \hspace{9ex}\ \\
-      \stepto & \val^n & \\
+      \stepto & S;~F;~\LABEL_m\{\}~(\CAUGHTadm\{a~\val^m\}~\val^m~\RETURN~\END)~\END & \hspace{9ex}\ \\
+      \stepto & \val^m & \\
       \end{array}
 
-   When a throw occurs, execution halts until that throw is the continuation of a throw context in a catching try block.
+   When a throw occurs, we pop the values :math:`val^m:[t^m]` and append them to the tag address :math:`a` into
+   a |CAUGHTadm| instruction. We then search for the maximal surrounding throw context `T`, which means we pop
+   any other values, labels, frames, and |CAUGHTadm| instructions, until we find an exception handler
+   (corresponding to a try block) that :ref:`handles the exception <syntax-handler>`.
+
+   In other words, when a throw occurs, normal execution halts and exceptional execution begins, until the throw
+   is the continuation (i.e., in the place of a :math:`\_`) of a throw context in a catching try block.
 
    In this particular case, the exception is caught by the exception handler :math:`H` and its values are returned.
-
-.. todo::
-   Include a more complex example using a throw context other then `T=[\_]`
 
 .. todo::
    Add administrative values to describe unresolved throws.

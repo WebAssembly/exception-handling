@@ -1402,7 +1402,7 @@ Control Instructions
      \qquad
      C,\CLABELS\,[t_2^\ast] \vdashinstrseq \instr^\ast : [t_1^\ast]\to[t_2^\ast]
      \qquad
-     |C.\CLABELS| \ge l
+     C.\CLABELS[l] = [t^\ast]
    }{
    C \vdashinstrseq \TRY~\blocktype~\instr^\ast~\DELEGATE~l : [t_1^\ast]\to[t_2^\ast]
    }

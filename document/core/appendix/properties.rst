@@ -613,7 +613,7 @@ To that end, all previous typing judgements :math:`C \vdash \X{prop}` are genera
 
 .. math::
    \frac{
-     \begin{array}{c}
+     \begin{array}{@{}c@{}}
      ((S \vdashexternval \EVTAG~\tagaddr : \ETTAG~[t'^\ast]\to[])^? \\
      ~~S; C,\CLABELS\,(\LCATCH~[t^\ast]) \vdashinstrseq \instr'^\ast : [(t'^\ast)^?] \to [t^\ast])^\ast \\
      S; C,\CLABELS\,[t^\ast] \vdashinstrseq \instr^\ast : [] \to [t^\ast] \\
@@ -635,7 +635,7 @@ To that end, all previous typing judgements :math:`C \vdash \X{prop}` are genera
    \frac{
      S; C,\CLABELS\,[t^\ast] \vdashinstrseq \instr^\ast : [] \to [t^\ast]
      \qquad
-     |C.\CLABELS| \ge l
+     C.\CLABELS[l] = [t_0^\ast]
    }{
      S; C,\CLABELS\,[t^\ast] \vdashadmininstr \DELEGATEadm\{l\}~\instr^\ast~\END : [] \to [t^\ast]
    }
