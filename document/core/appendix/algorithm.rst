@@ -217,8 +217,8 @@ Other instructions are checked in a similar manner.
        case (catch)
          let frame = pop_ctrl()
          error_if(frame.opcode =/= try || frame.opcode =/= catch)
-         let tagparams = tags[x].type.params
-         push_ctrl(catch, tagparams , frame.end_types)
+         let params = tags[x].type.params
+         push_ctrl(catch, params , frame.end_types)
 
        case (catch_all)
          let frame = pop_ctrl()
