@@ -929,20 +929,24 @@ Such a folded instruction can appear anywhere a regular instruction can.
      \text{(}~\text{block}~~\Tlabel~~\Tblocktype~~\Tinstr^\ast~\text{)}
        &\equiv\quad \text{block}~~\Tlabel~~\Tblocktype~~\Tinstr^\ast~~\text{end} \\ &
      \text{(}~\text{loop}~~\Tlabel~~\Tblocktype~~\Tinstr^\ast~\text{)}
-       &\equiv\quad \text{loop}~~\Tlabel~~\Tblocktype~~\Tinstr^\ast~~\text{end} \\
-   \end{array}\\
-   \begin{array}{lr}
-     \text{(}~\text{if}~~\Tlabel~~\Tblocktype~~\Tfoldedinstr^\ast~~
-       \text{(}~\text{then}~~\Tinstr_1^\ast~\text{)}~~\text{(}~\text{else}~~\Tinstr_2^\ast~\text{)}^?~~\text{)}
-       & \equiv \\
-       \qquad \Tfoldedinstr^\ast~~\text{if}~~\Tlabel~~\Tblocktype~~\Tinstr_1^\ast~~\text{else}~~(\Tinstr_2^\ast)^?~~\text{end} &\\
-      \text{(}~\text{try}~~\Tlabel~~\Tblocktype~~\text{(}~\text{do}~~\Tinstr_1^\ast~~\text{)}~~
-        (\text{(}~\text{catch}~~\Tinstr_2^\ast~\text{)})^\ast &\\
-        \qquad\qquad(\text{(}~\text{catch\_all}~~\Tinstr_3^\ast~\text{)})^?~\text{)} & \equiv \\
-        \qquad\text{try}~~\Tlabel~~\Tblocktype~~\Tinstr_1^\ast~~(\text{catch}~~\Tinstr_2^\ast)^\ast~~(\text{catch\_all}~~\Tinstr_3^\ast)^?~~\text{end} &\\
-      \text{(}~\text{try}~~\Tlabel~~\Tblocktype~~\text{(}~\text{delegate}~~l~\text{)} & \equiv \\
-        \qquad\text{try}~~\Tlabel~~\Tblocktype~~\Tinstr^\ast~~\text{delegate}~~\Tlabelidx &\\
+       &\equiv\quad \text{loop}~~\Tlabel~~\Tblocktype~~\Tinstr^\ast~~\text{end} \\ &
+     \text{(}~\text{if}~~\Tlabel~~\Tblocktype~~\Tfoldedinstr^\ast
+       &\hspace{-1ex} \text{(}~\text{then}~~\Tinstr_1^\ast~\text{)}~~(\text{(}~\text{else}~~\Tinstr_2^\ast~\text{)})^?~~\text{)}
+       \quad\equiv \\ &\qquad
+       \Tfoldedinstr^\ast~~\text{if}~~\Tlabel
+       &\hspace{-12ex} \Tblocktype~~\Tinstr_1^\ast~~\text{else}~~(\Tinstr_2^\ast)^?~\text{end} \\ &
+     \text{(}~\text{try}~~\Tlabel~~\Tblocktype~~\text{(}~\text{do} &\hspace{-8ex} \Tinstr_1^\ast~\text{)}~~
+       (\text{(}~\text{catch}~~x{:}\Ttagidx_I~~\Tinstr_2^\ast~\text{)})^\ast \\ &\quad
+       (\text{(}~\text{catch\_all}~~\Tinstr_3^\ast~\text{)})^?~\text{)}
+       \quad\equiv \\ &\qquad
+         \text{try}~~\Tlabel~~\Tblocktype~~\Tinstr_1^\ast
+       &\hspace{-5ex} (\text{catch}~~x{:}\Ttagidx_I~~\Tinstr_2^\ast)^\ast~~(\text{catch\_all}~~\Tinstr_3^\ast)^?~~\text{end} \\ &
+      \text{(}~\text{try}~~\Tlabel~~\Tblocktype
+       &\hspace{-15ex} \text{(}~\text{delegate}~~l{:}\Tlabelidx~~\Tinstr^\ast~~\text{)}~\text{)}
+       \quad\equiv \\ &\qquad
+         \text{try}~~\Tlabel~~\Tblocktype~~\Tinstr^\ast &\hspace{-5ex} \text{delegate}~~l{:}\Tlabelidx \\
    \end{array}
+
 
 .. note::
    For example, the instruction sequence
