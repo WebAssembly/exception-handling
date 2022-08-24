@@ -683,7 +683,7 @@ In order to be able to break jumping over exception handlers and caught exceptio
 
 .. math::
    \begin{array}{llll}
-   \production{(block contexts)} & \XC^{k} &::=& \handler~\XB^k~\END \\
+   \production{(control contexts)} & \XC^{k} &::=& \handler~\XB^k~\END \\
    & & | & \CAUGHTadm~\{\tagaddr~\val^\ast\}~\XB^k~\END \\
    \production{(block contexts)} & \XB^0 &::=& \dots ~|~  \val^\ast~\XC^0~\instr^\ast\\
    \production{(block contexts)} & \XB^{k+1} &::=& \dots ~|~ \val^\ast~\XC^{k+1}~\instr^\ast \\
@@ -726,7 +726,8 @@ Throw contexts allow matching the program context around a throw instruction up 
    Contrary to block contexts, throw contexts don't skip over handlers.
 
    Since handlers are not included above, there is always a unique maximal throw context to match the reduction rules.
-   This basically means that :math:`\CAUGHTadm {\dots} instr^\ast \END` is not a potential catching block for exceptions thrown by :math:`\instr^\ast`, since these are instructions in the scope of a |CATCH| or a |CATCHALL|.
+
+   CAUGHTadm blocks do not represent active handlers. Instead, they delimit the continuation of a handler that has already been selected. Their sole purpose is to record the exception that has been caught, such that |RETHROW| can access it inside such a block.
 
 .. note::
    For example, catching a simple :ref:`throw <exec-throw>` in a :ref:`try block <exec-try-catch>` would be as follows.
