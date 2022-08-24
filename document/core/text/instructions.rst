@@ -941,8 +941,8 @@ Such a folded instruction can appear anywhere a regular instruction can.
        \quad\equiv \\ &\qquad
          \text{try}~~\Tlabel~~\Tblocktype~~\Tinstr_1^\ast
        &\hspace{-5ex} (\text{catch}~~x{:}\Ttagidx_I~~\Tinstr_2^\ast)^\ast~~(\text{catch\_all}~~\Tinstr_3^\ast)^?~~\text{end} \\ &
-      \text{(}~\text{try}~~\Tlabel~~\Tblocktype
-       &\hspace{-15ex} \text{(}~\text{delegate}~~l{:}\Tlabelidx~~\Tinstr^\ast~~\text{)}~\text{)}
++     \text{(}~\text{try}~~\Tlabel~~\Tblocktype~~\text{(}~\text{do} &\hspace{-8ex} \Tinstr^\ast~\text{)}~~
++       \text{(}~\text{delegate}~~l{:}\Tlabelidx~~\text{)}
        \quad\equiv \\ &\qquad
          \text{try}~~\Tlabel~~\Tblocktype~~\Tinstr^\ast &\hspace{-5ex} \text{delegate}~~l{:}\Tlabelidx \\
    \end{array}
