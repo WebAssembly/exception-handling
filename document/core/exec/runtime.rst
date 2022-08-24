@@ -727,7 +727,7 @@ Throw contexts allow matching the program context around a throw instruction up 
 
    Since handlers are not included above, there is always a unique maximal throw context to match the reduction rules.
 
-   CAUGHTadm blocks do not represent active handlers. Instead, they delimit the continuation of a handler that has already been selected. Their sole purpose is to record the exception that has been caught, such that |RETHROW| can access it inside such a block.
+   |CAUGHTadm| blocks do not represent active handlers. Instead, they delimit the continuation of a handler that has already been selected. Their sole purpose is to record the exception that has been caught, such that |RETHROW| can access it inside such a block.
 
 .. note::
    For example, catching a simple :ref:`throw <exec-throw>` in a :ref:`try block <exec-try-catch>` would be as follows.
@@ -751,10 +751,12 @@ Throw contexts allow matching the program context around a throw instruction up 
       \stepto & \val^m & \\
       \end{array}
 
-   When a throw occurs, we pop the values :math:`val^m:[t^m]` and append them to the tag address :math:`a` into
-   a |CAUGHTadm| instruction. We then search for the maximal surrounding throw context `T`, which means we pop
-   any other values, labels, frames, and |CAUGHTadm| instructions, until we find an exception handler
-   (corresponding to a try block) that :ref:`handles the exception <syntax-handler>`.
+
+
+   When a throw of the form :math:`val^m (throw a)` occurs, we search for the maximal surrounding throw context :math:`T`,
+   which means we pop any other values, labels, frames, and |CAUGHTadm| instructions surrounding the throw :math:`val^m (throw a)`,
+   until we find an exception handler (corresponding to a try block) that :ref:`handles the exception <syntax-handler>`.
+   We then append the values :math:`val^m:[t^m]` to the tag address :math:`a` into a new |CAUGHTadm| instruction which we push on the stack.
 
    In other words, when a throw occurs, normal execution halts and exceptional execution begins, until the throw
    is the continuation (i.e., in the place of a :math:`\_`) of a throw context in a catching try block.
