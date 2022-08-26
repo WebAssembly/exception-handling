@@ -113,8 +113,8 @@
 <tr class="row-even"><td><p><a class="reference internal" href="../valid/types.html#valid-memtype"><span class="std std-ref">Memory type</span></a></p></td>
 <td><p><span class="math notranslate nohighlight">\(\href{../valid/types.html#valid-memtype}{\vdash} \href{../syntax/types.html#syntax-memtype}{\mathit{memtype}} \mathrel{\mbox{ok}}\)</span></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../valid/types.html#valid-exntype"><span class="std std-ref">Exception type</span></a></p></td>
-<td><p><span class="math notranslate nohighlight">\(\href{../valid/types.html#valid-exntype}{\vdash} \href{../syntax/types.html#syntax-exntype}{\mathit{exntype}} \mathrel{\mbox{ok}}\)</span></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../valid/types.html#valid-tagtype"><span class="std std-ref">Tag type</span></a></p></td>
+<td><p><span class="math notranslate nohighlight">\(\href{../valid/types.html#valid-tagtype}{\vdash} \href{../syntax/types.html#syntax-tagtype}{\mathit{tagtype}} \mathrel{\mbox{ok}}\)</span></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="../valid/types.html#valid-globaltype"><span class="std std-ref">Global type</span></a></p></td>
 <td><p><span class="math notranslate nohighlight">\(\href{../valid/types.html#valid-globaltype}{\vdash} \href{../syntax/types.html#syntax-globaltype}{\mathit{globaltype}} \mathrel{\mbox{ok}}\)</span></p></td>
@@ -140,8 +140,8 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="../valid/modules.html#valid-mem"><span class="std std-ref">Memory</span></a></p></td>
 <td><p><span class="math notranslate nohighlight">\(C \href{../valid/modules.html#valid-mem}{\vdash} \href{../syntax/modules.html#syntax-mem}{\mathit{mem}} : \href{../syntax/types.html#syntax-memtype}{\mathit{memtype}}\)</span></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../valid/modules.html#valid-exn"><span class="std std-ref">Exception</span></a></p></td>
-<td><p><span class="math notranslate nohighlight">\(C \href{../valid/modules.html#valid-exn}{\vdash} \href{../syntax/modules.html#syntax-exn}{\mathit{exn}} : \href{../syntax/types.html#syntax-exntype}{\mathit{exntype}}\)</span></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../valid/modules.html#valid-tag"><span class="std std-ref">Tag</span></a></p></td>
+<td><p><span class="math notranslate nohighlight">\(C \href{../valid/modules.html#valid-tag}{\vdash} \href{../syntax/modules.html#syntax-tag}{\mathit{tag}} : \href{../syntax/types.html#syntax-tagtype}{\mathit{tagtype}}\)</span></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../valid/modules.html#valid-global"><span class="std std-ref">Global</span></a></p></td>
 <td><p><span class="math notranslate nohighlight">\(C \href{../valid/modules.html#valid-global}{\vdash} \href{../syntax/modules.html#syntax-global}{\mathit{global}} : \href{../syntax/types.html#syntax-globaltype}{\mathit{globaltype}}\)</span></p></td>
@@ -210,8 +210,8 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="properties.html#valid-meminst"><span class="std std-ref">Memory instance</span></a></p></td>
 <td><p><span class="math notranslate nohighlight">\(S \href{../appendix/properties.html#valid-meminst}{\vdash} \href{../exec/runtime.html#syntax-meminst}{\mathit{meminst}} : \href{../syntax/types.html#syntax-memtype}{\mathit{memtype}}\)</span></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="properties.html#valid-exninst"><span class="std std-ref">Exception instance</span></a></p></td>
-<td><p><span class="math notranslate nohighlight">\(S \href{../appendix/properties.html#valid-exninst}{\vdash} \href{../exec/runtime.html#syntax-exninst}{\mathit{exninst}} : \href{../syntax/types.html#syntax-exntype}{\mathit{exntype}}\)</span></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="properties.html#valid-taginst"><span class="std std-ref">Tag instance</span></a></p></td>
+<td><p><span class="math notranslate nohighlight">\(S \href{../appendix/properties.html#valid-taginst}{\vdash} \href{../exec/runtime.html#syntax-taginst}{\mathit{taginst}} : \href{../syntax/types.html#syntax-tagtype}{\mathit{tagtype}}\)</span></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="properties.html#valid-globalinst"><span class="std std-ref">Global instance</span></a></p></td>
 <td><p><span class="math notranslate nohighlight">\(S \href{../appendix/properties.html#valid-globalinst}{\vdash} \href{../exec/runtime.html#syntax-globalinst}{\mathit{globalinst}} : \href{../syntax/types.html#syntax-globaltype}{\mathit{globaltype}}\)</span></p></td>
@@ -309,8 +309,8 @@
 <tr class="row-even"><td><p><a class="reference internal" href="properties.html#extend-meminst"><span class="std std-ref">Memory instance</span></a></p></td>
 <td><p><span class="math notranslate nohighlight">\(\href{../appendix/properties.html#extend-meminst}{\vdash} \href{../exec/runtime.html#syntax-meminst}{\mathit{meminst}}_1 \href{../appendix/properties.html#extend}{\preceq} \href{../exec/runtime.html#syntax-meminst}{\mathit{meminst}}_2\)</span></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="properties.html#extend-exninst"><span class="std std-ref">Exception instance</span></a></p></td>
-<td><p><span class="math notranslate nohighlight">\(\href{../appendix/properties.html#extend-exninst}{\vdash} \href{../exec/runtime.html#syntax-exninst}{\mathit{exninst}}_1 \href{../appendix/properties.html#extend}{\preceq} \href{../exec/runtime.html#syntax-exninst}{\mathit{exninst}}_2\)</span></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="properties.html#extend-taginst"><span class="std std-ref">Tag instance</span></a></p></td>
+<td><p><span class="math notranslate nohighlight">\(\href{../appendix/properties.html#extend-taginst}{\vdash} \href{../exec/runtime.html#syntax-taginst}{\mathit{taginst}}_1 \href{../appendix/properties.html#extend}{\preceq} \href{../exec/runtime.html#syntax-taginst}{\mathit{taginst}}_2\)</span></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="properties.html#extend-globalinst"><span class="std std-ref">Global instance</span></a></p></td>
 <td><p><span class="math notranslate nohighlight">\(\href{../appendix/properties.html#extend-globalinst}{\vdash} \href{../exec/runtime.html#syntax-globalinst}{\mathit{globalinst}}_1 \href{../appendix/properties.html#extend}{\preceq} \href{../exec/runtime.html#syntax-globalinst}{\mathit{globalinst}}_2\)</span></p></td>

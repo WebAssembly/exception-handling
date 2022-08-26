@@ -140,7 +140,7 @@ If it does, the post conditions are guaranteed by the semantics.</p>
 </ol>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{array}{lclll}
-\mathrm{store\_init}() &amp;=&amp; \{ \href{../exec/runtime.html#syntax-store}{\mathsf{funcs}}~\epsilon,~ \href{../exec/runtime.html#syntax-store}{\mathsf{mems}}~\epsilon, ~\href{../exec/runtime.html#syntax-store}{\mathsf{exceptions}}~\epsilon,~ \href{../exec/runtime.html#syntax-store}{\mathsf{tables}}~\epsilon,~ \href{../exec/runtime.html#syntax-store}{\mathsf{globals}}~\epsilon \} \\
+\mathrm{store\_init}() &amp;=&amp; \{ \href{../exec/runtime.html#syntax-store}{\mathsf{funcs}}~\epsilon,~ \href{../exec/runtime.html#syntax-store}{\mathsf{mems}}~\epsilon, ~\href{../exec/runtime.html#syntax-store}{\mathsf{tags}}~\epsilon,~ \href{../exec/runtime.html#syntax-store}{\mathsf{tables}}~\epsilon,~ \href{../exec/runtime.html#syntax-store}{\mathsf{globals}}~\epsilon \} \\
 \end{array}\end{split}\]</div>
 </section>
 </section>
@@ -498,18 +498,18 @@ If it does, the post conditions are guaranteed by the semantics.</p>
 \end{array}\end{split}\]</div>
 </section>
 </section>
-<section id="exceptions">
-<span id="embed-exn"></span><span id="index-15"></span><h2>Exceptions<a class="headerlink" href="#exceptions" title="Permalink to this headline">¶</a></h2>
-<section id="mathrm-exn-alloc-xref-exec-runtime-syntax-store-mathit-store-xref-syntax-types-syntax-exntype-mathit-exntype-xref-exec-runtime-syntax-store-mathit-store-xref-exec-runtime-syntax-exnaddr-mathit-exnaddr">
-<span id="embedd-exn-alloc"></span><h3><span class="math notranslate nohighlight">\(\mathrm{exn\_alloc}(\href{../exec/runtime.html#syntax-store}{\mathit{store}}, \href{../syntax/types.html#syntax-exntype}{\mathit{exntype}}) : (\href{../exec/runtime.html#syntax-store}{\mathit{store}}, \href{../exec/runtime.html#syntax-exnaddr}{\mathit{exnaddr}})\)</span><a class="headerlink" href="#mathrm-exn-alloc-xref-exec-runtime-syntax-store-mathit-store-xref-syntax-types-syntax-exntype-mathit-exntype-xref-exec-runtime-syntax-store-mathit-store-xref-exec-runtime-syntax-exnaddr-mathit-exnaddr" title="Permalink to this headline">¶</a></h3>
+<section id="tags">
+<span id="embed-tag"></span><span id="index-15"></span><h2>Tags<a class="headerlink" href="#tags" title="Permalink to this headline">¶</a></h2>
+<section id="mathrm-tag-alloc-xref-exec-runtime-syntax-store-mathit-store-xref-syntax-types-syntax-tagtype-mathit-tagtype-xref-exec-runtime-syntax-store-mathit-store-xref-exec-runtime-syntax-tagaddr-mathit-tagaddr">
+<span id="embedd-tag-alloc"></span><h3><span class="math notranslate nohighlight">\(\mathrm{tag\_alloc}(\href{../exec/runtime.html#syntax-store}{\mathit{store}}, \href{../syntax/types.html#syntax-tagtype}{\mathit{tagtype}}) : (\href{../exec/runtime.html#syntax-store}{\mathit{store}}, \href{../exec/runtime.html#syntax-tagaddr}{\mathit{tagaddr}})\)</span><a class="headerlink" href="#mathrm-tag-alloc-xref-exec-runtime-syntax-store-mathit-store-xref-syntax-types-syntax-tagtype-mathit-tagtype-xref-exec-runtime-syntax-store-mathit-store-xref-exec-runtime-syntax-tagaddr-mathit-tagaddr" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic simple">
-<li><p>Pre-condition: <span class="math notranslate nohighlight">\(exntype\)</span> is <a class="reference internal" href="../valid/types.html#valid-exntype"><span class="std std-ref">valid</span></a>.</p></li>
-<li><p>Let <span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-exnaddr}{\mathit{exnaddr}}\)</span> be the result of <a class="reference internal" href="../exec/modules.html#alloc-exn"><span class="std std-ref">allocating an exception</span></a> in <span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-store}{\mathit{store}}\)</span> with <a class="reference internal" href="../syntax/types.html#syntax-exntype"><span class="std std-ref">exception type</span></a> <span class="math notranslate nohighlight">\(\href{../syntax/types.html#syntax-exntype}{\mathit{exntype}}\)</span>.</p></li>
-<li><p>Return the new store paired with <span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-exnaddr}{\mathit{exnaddr}}\)</span>.</p></li>
+<li><p>Pre-condition: <span class="math notranslate nohighlight">\(tagtype\)</span> is <a class="reference internal" href="../valid/types.html#valid-tagtype"><span class="std std-ref">valid</span></a>.</p></li>
+<li><p>Let <span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-tagaddr}{\mathit{tagaddr}}\)</span> be the result of <a class="reference internal" href="../exec/modules.html#alloc-tag"><span class="std std-ref">allocating a tag</span></a> in <span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-store}{\mathit{store}}\)</span> with <a class="reference internal" href="../syntax/types.html#syntax-tagtype"><span class="std std-ref">tag type</span></a> <span class="math notranslate nohighlight">\(\href{../syntax/types.html#syntax-tagtype}{\mathit{tagtype}}\)</span>.</p></li>
+<li><p>Return the new store paired with <span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-tagaddr}{\mathit{tagaddr}}\)</span>.</p></li>
 </ol>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{array}{lclll}
-\mathrm{exn\_alloc}(S, \mathit{et}) &amp;=&amp; (S', \mathit{a}) &amp;&amp; (\mathrel{\mbox{if}} \href{../exec/modules.html#alloc-exn}{\mathrm{allocexn}}(S, \mathit{et}) = S', \mathit{a}) \\
+\mathrm{tag\_alloc}(S, \mathit{tt}) &amp;=&amp; (S', \mathit{a}) &amp;&amp; (\mathrel{\mbox{if}} \href{../exec/modules.html#alloc-tag}{\mathrm{alloctag}}(S, \mathit{tt}) = S', \mathit{a}) \\
 \end{array}\end{split}\]</div>
 </section>
 </section>

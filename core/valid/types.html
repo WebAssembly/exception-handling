@@ -85,7 +85,7 @@
   <section id="types">
 <h1>Types<a class="headerlink" href="#types" title="Permalink to this headline">¶</a></h1>
 <p>Most <a class="reference internal" href="../syntax/types.html#syntax-type"><span class="std std-ref">types</span></a> are universally valid.
-However, restrictions apply to <a class="reference internal" href="../syntax/types.html#syntax-exntype"><span class="std std-ref">exception types</span></a> and to <a class="reference internal" href="../syntax/types.html#syntax-limits"><span class="std std-ref">limits</span></a>, which must be checked during validation.
+However, restrictions apply to <a class="reference internal" href="../syntax/types.html#syntax-tagtype"><span class="std std-ref">exception tag types</span></a> and to <a class="reference internal" href="../syntax/types.html#syntax-limits"><span class="std std-ref">limits</span></a>, which must be checked during validation.
 Moreover, <a class="reference internal" href="../syntax/instructions.html#syntax-blocktype"><span class="std std-ref">block types</span></a> are converted to plain <a class="reference internal" href="../syntax/types.html#syntax-functype"><span class="std std-ref">function types</span></a> for ease of processing.</p>
 <section id="limits">
 <span id="valid-limits"></span><span id="index-0"></span><h2>Limits<a class="headerlink" href="#limits" title="Permalink to this headline">¶</a></h2>
@@ -189,20 +189,19 @@ Moreover, <a class="reference internal" href="../syntax/instructions.html#syntax
 }\]</div>
 </section>
 </section>
-<section id="exception-types">
-<span id="valid-exntype"></span><span id="index-5"></span><h2>Exception Types<a class="headerlink" href="#exception-types" title="Permalink to this headline">¶</a></h2>
+<section id="tag-types">
+<span id="valid-tagtype"></span><span id="index-5"></span><h2>Tag Types<a class="headerlink" href="#tag-types" title="Permalink to this headline">¶</a></h2>
 <section id="id1">
 <h3><span class="math notranslate nohighlight">\([t_1^n] \href{../syntax/types.html#syntax-functype}{\rightarrow} [t_2^m]\)</span><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>The <a class="reference internal" href="../syntax/types.html#syntax-functype"><span class="std std-ref">function type</span></a> <span class="math notranslate nohighlight">\([t_1^n] \href{../syntax/types.html#syntax-functype}{\rightarrow} [t_2^m]\)</span> must be <a class="reference internal" href="#valid-functype"><span class="std std-ref">valid</span></a>.</p></li>
 <li><p>The type sequence <span class="math notranslate nohighlight">\(t_2^m\)</span> must be empty.</p></li>
-<li><p>Then the exception type is valid.</p></li>
+<li><p>Then the tag type is valid.</p></li>
 </ul>
 <div class="math notranslate nohighlight">
 \[\frac{
-  \href{../valid/types.html#valid-functype}{\vdash} [t^n] \href{../syntax/types.html#syntax-functype}{\rightarrow} [] \mathrel{\mbox{ok}}
 }{
-  \href{../valid/types.html#valid-exntype}{\vdash} [t^n] \href{../syntax/types.html#syntax-functype}{\rightarrow} [] \mathrel{\mbox{ok}}
+  \href{../valid/types.html#valid-tagtype}{\vdash} [t^\ast] \href{../syntax/types.html#syntax-functype}{\rightarrow} [] \mathrel{\mbox{ok}}
 }\]</div>
 </section>
 </section>
@@ -261,17 +260,17 @@ Moreover, <a class="reference internal" href="../syntax/instructions.html#syntax
   \href{../valid/types.html#valid-externtype}{\vdash} \href{../syntax/types.html#syntax-externtype}{\mathsf{mem}}~\href{../syntax/types.html#syntax-memtype}{\mathit{memtype}} \mathrel{\mbox{ok}}
 }\]</div>
 </section>
-<section id="xref-syntax-types-syntax-externtype-mathsf-exception-xref-syntax-types-syntax-exntype-mathit-exntype">
-<h3><span class="math notranslate nohighlight">\(\href{../syntax/types.html#syntax-externtype}{\mathsf{exception}}~\href{../syntax/types.html#syntax-exntype}{\mathit{exntype}}\)</span><a class="headerlink" href="#xref-syntax-types-syntax-externtype-mathsf-exception-xref-syntax-types-syntax-exntype-mathit-exntype" title="Permalink to this headline">¶</a></h3>
+<section id="xref-syntax-types-syntax-tagtype-mathsf-tag-xref-syntax-types-syntax-tagtype-mathit-tagtype">
+<h3><span class="math notranslate nohighlight">\(\href{../syntax/types.html#syntax-tagtype}{\mathsf{tag}}~\href{../syntax/types.html#syntax-tagtype}{\mathit{tagtype}}\)</span><a class="headerlink" href="#xref-syntax-types-syntax-tagtype-mathsf-tag-xref-syntax-types-syntax-tagtype-mathit-tagtype" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><p>The <a class="reference internal" href="../syntax/types.html#syntax-exntype"><span class="std std-ref">exception type</span></a> <span class="math notranslate nohighlight">\(\href{../syntax/types.html#syntax-exntype}{\mathit{exntype}}\)</span> must be <a class="reference internal" href="#valid-exntype"><span class="std std-ref">valid</span></a>.</p></li>
+<li><p>The <a class="reference internal" href="../syntax/types.html#syntax-tagtype"><span class="std std-ref">tag type</span></a> <span class="math notranslate nohighlight">\(\href{../syntax/types.html#syntax-tagtype}{\mathit{tagtype}}\)</span> must be <a class="reference internal" href="#valid-tagtype"><span class="std std-ref">valid</span></a>.</p></li>
 <li><p>Then the external type is valid.</p></li>
 </ul>
 <div class="math notranslate nohighlight">
 \[\frac{
-  \href{../valid/types.html#valid-exntype}{\vdash} \href{../syntax/types.html#syntax-exntype}{\mathit{exntype}} \mathrel{\mbox{ok}}
+  \href{../valid/types.html#valid-tagtype}{\vdash} \href{../syntax/types.html#syntax-tagtype}{\mathit{tagtype}} \mathrel{\mbox{ok}}
 }{
-  \href{../valid/types.html#valid-externtype}{\vdash} \href{../syntax/types.html#syntax-externtype}{\mathsf{exception}}~\href{../syntax/types.html#syntax-exntype}{\mathit{exntype}} \mathrel{\mbox{ok}}
+  \href{../valid/types.html#valid-externtype}{\vdash} \href{../syntax/types.html#syntax-tagtype}{\mathsf{tag}}~\href{../syntax/types.html#syntax-tagtype}{\mathit{tagtype}} \mathrel{\mbox{ok}}
 }\]</div>
 </section>
 <section id="xref-syntax-types-syntax-externtype-mathsf-global-xref-syntax-types-syntax-globaltype-mathit-globaltype">
@@ -366,16 +365,16 @@ In some cases, this allows for a simple form of subtyping, as defined here.</p>
   \href{../exec/modules.html#match-externtype}{\vdash} \href{../syntax/types.html#syntax-externtype}{\mathsf{mem}}~\href{../syntax/types.html#syntax-limits}{\mathit{limits}}_1 \href{../exec/modules.html#match-externtype}{\leq} \href{../syntax/types.html#syntax-externtype}{\mathsf{mem}}~\href{../syntax/types.html#syntax-limits}{\mathit{limits}}_2
 }\]</div>
 </section>
-<section id="exceptions">
-<span id="match-exntype"></span><span id="index-13"></span><h3>Exceptions<a class="headerlink" href="#exceptions" title="Permalink to this headline">¶</a></h3>
-<p>An <a class="reference internal" href="../syntax/types.html#syntax-externtype"><span class="std std-ref">external type</span></a> <span class="math notranslate nohighlight">\(\href{../syntax/types.html#syntax-externtype}{\mathsf{exception}}~\href{../syntax/types.html#syntax-exntype}{\mathit{exntype}}_1\)</span> matches <span class="math notranslate nohighlight">\(\href{../syntax/types.html#syntax-externtype}{\mathsf{exception}}~\href{../syntax/types.html#syntax-exntype}{\mathit{exntype}}_2\)</span>  if and only if:</p>
+<section id="tags">
+<span id="match-tagtype"></span><span id="index-13"></span><h3>Tags<a class="headerlink" href="#tags" title="Permalink to this headline">¶</a></h3>
+<p>An <a class="reference internal" href="../syntax/types.html#syntax-externtype"><span class="std std-ref">external type</span></a> <span class="math notranslate nohighlight">\(\href{../syntax/types.html#syntax-tagtype}{\mathsf{tag}}~\href{../syntax/types.html#syntax-tagtype}{\mathit{tagtype}}_1\)</span> matches <span class="math notranslate nohighlight">\(\href{../syntax/types.html#syntax-tagtype}{\mathsf{tag}}~\href{../syntax/types.html#syntax-tagtype}{\mathit{tagtype}}_2\)</span>  if and only if:</p>
 <ul class="simple">
-<li><p>Both <span class="math notranslate nohighlight">\(\href{../syntax/types.html#syntax-externtype}{\mathsf{exception}}~\href{../syntax/types.html#syntax-exntype}{\mathit{exntype}}_1\)</span> and <span class="math notranslate nohighlight">\(\href{../syntax/types.html#syntax-externtype}{\mathsf{exception}}~\href{../syntax/types.html#syntax-exntype}{\mathit{exntype}}_2\)</span> are the same.</p></li>
+<li><p>Both <span class="math notranslate nohighlight">\(\href{../syntax/types.html#syntax-tagtype}{\mathsf{tag}}~\href{../syntax/types.html#syntax-tagtype}{\mathit{tagtype}}_1\)</span> and <span class="math notranslate nohighlight">\(\href{../syntax/types.html#syntax-tagtype}{\mathsf{tag}}~\href{../syntax/types.html#syntax-tagtype}{\mathit{tagtype}}_2\)</span> are the same.</p></li>
 </ul>
 <div class="math notranslate nohighlight">
 \[\frac{
 }{
-  \href{../exec/modules.html#match-externtype}{\vdash} \href{../syntax/types.html#syntax-externtype}{\mathsf{exception}}~\href{../syntax/types.html#syntax-exntype}{\mathit{exntype}} \href{../exec/modules.html#match-externtype}{\leq} \href{../syntax/types.html#syntax-externtype}{\mathsf{exception}}~\href{../syntax/types.html#syntax-exntype}{\mathit{exntype}}
+  \href{../exec/modules.html#match-externtype}{\vdash} \href{../syntax/types.html#syntax-tagtype}{\mathsf{tag}}~\href{../syntax/types.html#syntax-tagtype}{\mathit{tagtype}} \href{../exec/modules.html#match-externtype}{\leq} \href{../syntax/types.html#syntax-tagtype}{\mathsf{tag}}~\href{../syntax/types.html#syntax-tagtype}{\mathit{tagtype}}
 }\]</div>
 </section>
 <section id="globals">
