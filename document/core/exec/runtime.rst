@@ -741,7 +741,7 @@ Throw contexts allow matching the program context around a throw instruction up 
       \stepto & S;~F;~\LABEL_m\{\} (\CATCHadm\{a~\RETURN\}~\val^n~(\THROW~x)~\END)~\END \\
       \end{array}
 
-   Denote :math:`\val^n = \val^{n-m} val^m`.
+   Denote :math:`\val^n = \val^{n-m} \val^m`.
    :ref:`Handling the thrown exception <exec-throwadm>` with tag address :math:`a` in the throw context
    :math:`T=[val^{n-m}\_]`, with the exception handler :math:`H=\CATCHadm\{a~\RETURN\}` gives:
 
@@ -753,8 +753,8 @@ Throw contexts allow matching the program context around a throw instruction up 
 
 
 
-   When a throw of the form :math:`val^m (throw a)` occurs, we search for the maximal surrounding throw context :math:`T`,
-   which means we pop any other values, labels, frames, and |CAUGHTadm| instructions surrounding the throw :math:`val^m (throw a)`,
+   When a throw of the form :math:`val^m (\THROWadm~a)` occurs, we search for the maximal surrounding throw context :math:`T`,
+   which means we pop any other values, labels, frames, and |CAUGHTadm| instructions surrounding the throw :math:`val^m (\THROWadm~a)`,
    until we find an exception handler (corresponding to a try block) that :ref:`handles the exception <syntax-handler>`.
    We then append the values :math:`val^m:[t^m]` to the tag address :math:`a` into a new |CAUGHTadm| instruction which we push on the stack.
 
