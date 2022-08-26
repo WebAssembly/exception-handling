@@ -210,10 +210,10 @@ S;C, labels [t2*] ⊢ instr1* : []→[t2*]
 -----------------------------------------------------------
 S;C, labels [t2*] ⊢ catch{a? instr2*}* instr1* end : []→[t2*]
 
-S;C, labels [t*] ⊢ instr* : []→[t*]
+S;C ⊢ instr* : []→[t*]
 C.labels[l+1] = [t0*]
 ------------------------------------------------------
-S;C, labels [t*] ⊢ delegate{l} instr* end : []→[t*]
+S;C ⊢ delegate{l} instr* end : []→[t*]
 
 S ⊢ tag a : tag [t0*]→[]
 (val:t0)*
