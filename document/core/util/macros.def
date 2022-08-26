@@ -909,11 +909,11 @@
 .. |CLABELS| mathdef:: \xref{valid/conventions}{context}{\K{labels}}
 .. |CRETURN| mathdef:: \xref{valid/conventions}{context}{\K{return}}
 .. |CREFS| mathdef:: \xref{valid/conventions}{context}{\K{refs}}
-.. |LCATCH| mathdef:: \xref{valid/conventions}{context}{\mathrel{\K{catch}}}
+.. |LCATCH| mathdef:: \xref{valid/conventions}{context}{\K{catch}}
 
 .. Contexts, non-terminals
 
-.. |labeltype| mathdef:: \xref{valid/conventions}{context}{\mathrel{\X{labeltype}}}
+.. |labeltype| mathdef:: \xref{valid/conventions}{context}{\X{labeltype}}
 
 
 .. Judgments

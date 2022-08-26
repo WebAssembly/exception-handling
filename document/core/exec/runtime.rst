@@ -741,7 +741,7 @@ Throw contexts allow matching the program context around a throw instruction up 
       \stepto & S;~F;~\LABEL_m\{\} (\CATCHadm\{a~\RETURN\}~\val^n~(\THROW~x)~\END)~\END \\
       \end{array}
 
-   Denote :math:`\val^n = \val^{n-m} \val^m`.
+   We denote :math:`\val^n = \val^{n-m} \val^m`.
    :ref:`Handling the thrown exception <exec-throwadm>` with tag address :math:`a` in the throw context
    :math:`T=[val^{n-m}\_]`, with the exception handler :math:`H=\CATCHadm\{a~\RETURN\}` gives:
 
