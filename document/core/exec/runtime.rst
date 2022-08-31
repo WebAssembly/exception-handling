@@ -732,23 +732,24 @@ Throw contexts allow matching the program context around a throw instruction up 
 .. note::
    For example, catching a simple :ref:`throw <exec-throw>` in a :ref:`try block <exec-try-catch>` would be as follows.
 
-   Assume that :math:`\expand_F(bt) = [t1^n] \to [t2^m]`, for some :math:`n > m` such that :math:`t1^n[(n-m):n] = t2^m`,
-   and that the tag address `a` of :math:`x` corresponds to the tag type :math:`[t2^m] \to []`.
+   Assume that :math:`\expand_F(bt) = [i32 f32 i64] \to [f32 i64]`,
+   and that the tag address `a` of :math:`x` corresponds to the tag type :math:`[f32 i64] \to []`.
+   Let :math:`\val_{i32}`, :math:`\val_{f32}`, and :math:`\val_{i64}` be values of type |i32|, |f32|, and |i64| respectively.
 
    .. math::
       \begin{array}{ll}
-      & \hspace{-5ex} S;~F;~\val^n~(\TRY~\X{bt}~(\THROW~x)~\CATCH~x~\RETURN~\END) \\
-      \stepto & S;~F;~\LABEL_m\{\} (\CATCHadm\{a~\RETURN\}~\val^n~(\THROW~x)~\END)~\END \\
+      & \hspace{-5ex} F;~\val_{i32}~\val_{f32}~\val_{i64}~(\TRY~\X{bt}~(\THROW~x)~\CATCH~x~\END) \\
+      \stepto & F;~\LABEL_2\{\} (\CATCHadm\{a~\epsilon}~\val_{i32}~\val_{f32}~\val_{i64}~(\THROW~x)~\END)~\END \\
       \end{array}
 
-   We denote :math:`\val^n = \val^{n-m} \val^m`.
    :ref:`Handling the thrown exception <exec-throwadm>` with tag address :math:`a` in the throw context
-   :math:`T=[val^{n-m}\_]`, with the exception handler :math:`H=\CATCHadm\{a~\RETURN\}` gives:
+   :math:`T=[val_{i32}\_]`, with the exception handler :math:`H=\CATCHadm\{a~\epsilon\}` gives:
 
    .. math::
       \begin{array}{lll}
-      \stepto & S;~F;~\LABEL_m\{\}~(\CAUGHTadm\{a~\val^m\}~\val^m~\RETURN~\END)~\END & \hspace{9ex}\ \\
-      \stepto & \val^m & \\
+      \stepto & F;~\LABEL_2\{\}~(\CAUGHTadm\{a~\val_{f32}~\val_{i64}\}~\val_{f32}~\val_{i64}~\END)~\END & \hspace{9ex}\ \\
+      \stepto & F;~\LABEL_2\{\}~\val_{f32}~\val_{i64}~\END & \hspace{9ex}\ \\
+      \stepto & \val_{f32}~\val_{i64} & \\
       \end{array}
 
 
