@@ -236,7 +236,7 @@ let rec step (c : config) : config =
         let n1 = Lib.List32.length ts1 in
         let n2 = Lib.List32.length ts2 in
         let args, vs' = take n1 vs e.at, drop n1 vs e.at in
-        vs', [Label (n2, [], ([], [Delegate (x.it, (args, List.map plain es')) @@ e.at])) @@ e.at]
+        vs', [Delegate (x.it, (args, [Label (n2, [], ([], List.map plain es')) @@ e.at])) @@ e.at]
 
       | Drop, v :: vs' ->
         vs', []
@@ -639,7 +639,10 @@ let rec step (c : config) : config =
     | Rethrowing _, _ ->
       Crash.error e.at "undefined catch label"
 
-    | Delegating _, _ ->
+    | Delegating (0l, a, vs0), vs ->
+      vs, [Throwing (a, vs0) @@ e.at]
+
+    | Delegating (k,_, _),  _ ->
       Crash.error e.at "undefined delegate label"
 
     | Label (n, es0, (vs', [])), vs ->

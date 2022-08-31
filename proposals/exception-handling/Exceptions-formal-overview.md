@@ -180,21 +180,22 @@ catch T[val^n (throw a)] end ↪  val^n (throw a)
 
 
 F; val^n (try bt instr* delegate l)
-  ↪ F; label_m{} (delegate{l} val^n instr* end) end
+  ↪ F; delegate{l} (label_m{} val^n instr* end) end
   (if expand_F(bt) = [t1^n]→[t2^m])
 
 delegate{l} val* end ↪ val*
 
-label_m{} B^l[ delegate{l} T[val^n (throw a)] end ] end
+B^l[ delegate{l} T[val^n (throw a)] end ]
   ↪ val^n (throw a)
 ```
 
 Note that the last reduction step above is similar to the reduction of `br l` [1], if we look at the entire `delegate{l}...end` as the `br l`, but also doing a throw after it breaks.
 
-There is a subtle difference though. The instruction `br l` searches for the `l+1`th surrounding block and breaks out after that block. Because `delegate{l}` is always wrapped in its own `label_n{} ... end` [2], with the same lookup as for `br l` we end up breaking inside the `l+1`th surrounding block, and throwing there. So if that `l+1`th surrounding block is a try, we end up throwing in its "try code", and thus correctly getting delegated to that try's catches.
+There is a subtle difference though. The instruction `br l` searches for the `l+1` surrounding block and breaks out after that block.
+On the contrary, `delegate{l}` should "break and throw" _inside_ the `l+1` label, so we should break one label earlier.
+This is why the reduction step for `delegate{l}` has one label less.
 
 - [1] [The execution step for `br l`](https://webassembly.github.io/spec/core/exec/instructions.html#xref-syntax-instructions-syntax-instr-control-mathsf-br-l)
-- [2] The label that always wraps `delegate{l}...end` can be thought of as "level -1" and cannot be referred to by the delegate's label index `l`.
 
 ### Typing Rules for Administrative Instructions
 
@@ -210,9 +211,9 @@ S;C, labels [t2*] ⊢ instr1* : []→[t2*]
 -----------------------------------------------------------
 S;C, labels [t2*] ⊢ catch{a? instr2*}* instr1* end : []→[t2*]
 
-S;C ⊢ instr* : []→[t*]
-C.labels[l+1] = [t0*]
-------------------------------------------------------
+S;C, labels [t*] ⊢ instr* : []→[t*]
+C.labels[l] = [t0*]
+---------------------------------------
 S;C ⊢ delegate{l} instr* end : []→[t*]
 
 S ⊢ tag a : tag [t0*]→[]
