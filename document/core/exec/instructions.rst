@@ -2625,8 +2625,21 @@ Control Instructions
 :math:`\TRY~\blocktype~\instr_1^\ast~(\CATCH~x~\instr_2^\ast)^\ast~(\CATCHALL~\instr_3^\ast)^?~\END`
 ....................................................................................................
 
-.. todo::
-   Add prose for the |TRY| - |CATCH| - |CATCHALL| execution step.
+1. Assert: due to :ref:`validation <valid-blocktype>`, :math:`\expand_F(\blocktype)` is defined.
+
+2. Let :math:`[t_1^n] \to [t_2^m]` be the :ref:`function type <syntax-functype>` :math:`\expand_F(\blocktype)`.
+
+3. Assert: due to :ref:`validation <valid-try-catch>`, there are at least :math:`n` values on the top of the stack.
+
+4. Pop the values :math:`\val^n` from the stack.
+
+5. Let :math:`L` be the label whose arity is :math:`m` and whose continuation is the end of the |TRY| instruction.
+
+6. Let :math:`H` be the :ref:`catching exception handler <syntax-handler>` :math:`\CATCHadm\{a_x~instr_2^\ast\}^\ast\{\epsilon~\instr_3^\ast\}^?`, whose mapping from tag addresses to branch targets corresponds to the |CATCH| and |CATCHALL| clauses, where :math:`a_x` is the tag address of each tag :math:`x`.
+
+7. :ref:`Enter <exec-instr-seq-enter>` the block :math:`H~(\val^n~\instr_1^\ast)~\END` with label :math:`L`.
+
+8. :ref:`Enter <exec-handler-enter>` the exception handler `H`.
 
 .. math::
    ~\\[-1ex]
