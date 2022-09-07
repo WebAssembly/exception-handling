@@ -3016,26 +3016,104 @@ When the end of a :ref:`try <syntax-try>` instruction is reached without a jump,
 Throwing an exception with :ref:`tag address <syntax-tagaddr>` :math:`a`
 ........................................................................
 
-.. todo::
-   Add prose for the following execution steps.
+When an administrative throw occurs, then values, labels, |CAUGHTadm| instructions,
+and call frames are popped if necessary, until an appropriate exception handler is found
+on the top of the stack.
 
+ 1. Assert: due to validation, :math:`S.\STAGS[a]` exists.
+
+ 2. Let :math:`[t^n] \to []` be the :ref:`tag type <syntax-tagtype>` :math:`S.\STAGS[a].\TAGITYPE`.
+
+ 3. Assert: due to :ref:`validation <valid-throw>`, there are :math:`n` values on the top of the stack.
+
+ 4. Pop the :math:`n` values :math:`\val^n` from the stack.
+
+ 5. While the stack is not empty and the top of the stack is not an :ref:`exception handler <syntax-handler>`, do:
+
+    a. Pop the top element from the stack, prepending it to the :ref:`throw context <syntax-ctxt-throw>` of the exception: :math:`\XT[\val^n~(\THROWadm~a)]`.
+
+ 6. Assert: The stack is now either empty, or there is an exception handler on the top of the stack.
+
+ 7. If the stack is empty, then:
+
+    a. **TODO** *Return a result value representing the uncaught exception (will probably just be the same as 11.a.i. below).*
+
+.. todo::
+   After PR #221 is resolved, this step should be filled in with a PR to specify uncaught exception results.
+
+8. Else there is an :ref:`exception handler <syntax-handler>` :math:`H` on the top of the stack.
+
+9. Pop the exception handler :math:`H` from the stack.
+
+10. Assert: :math:`H` is either of the form :math:`\CATCHadm\{a^?~\instr^\ast\}^k` or :math:`\DELEGATEadm\{l\}.`
+
+11. If :math:`H` is of the form :math:`\CATCHadm\{a^?~\instr^\ast\}^k`, then:
+
+    a. If :math:`k = 0`, then:
+
+       i. Push the throw context that we collected so far :math:`\XT[\val^n~(\THROWadm~a)]` onto the stack.
+
+    b. Else :math:`H` is of the form :math:`\CATCHadm\{a_1^?~\instr^\ast\}\{a'^?~\instr'^\ast\}^\ast`.
+
+    c. If :math:`a_1^? = \epsilon`, then:
+
+       i. Push :math:`\CAUGHTadm\{a~\val^n\}` onto the stack.
+
+       ii. Jump to the start of the instruction sequence :math:`\instr^\ast`.
+
+    d. Else if :math:`a_1 = a`, then:
+
+       i. Push :math:`\CAUGHTadm\{a~\val^n\}` onto the stack.
+
+       ii. Push the values :math:`\val^n` back to the stack.
+
+       iii. Jump to the start of the instruction sequence :math:`\instr^\ast`.
+
+    e. Else, repeat step 11 for :math:`H = \CATCHadm\{a'^?~\instr'^\ast\}^\ast`.
+
+12. Else the handler :math:`H` has the form :math:`\DELEGATEadm\{l\}`.
+
+13. Assert: due to :ref:`validation <valid-delegate-admin>`, the stack contains at least :math:`l+1` labels.
+
+14. Let :math:`L` be the :math:`l`-th label appearing on the stack, starting from the top and counting from zero.
+
+15. Repeat :math:`l+1` times:
+
+    a. While the instruction on the top of the stack is not a label, do:
+
+       i. Pop the instruction from the stack, without pushing it to |XT|.
+
+   b. Assert: due to :ref:`validation <valid-delegate-admin>`, the top of the stack now is a label.
+
+   c. Pop the label from the stack.
+
+16. Push the throw context that we collected so far :math:`\XT[\val^n~(\THROWadm~a)]` onto the stack.
+
+17. Jump to the continuation of :math:`L`.
 
 .. math::
    \begin{array}{rcl}
-   \CATCHadm\{a_1^?~\instr^\ast\}\{a'^?~\instr'^\ast\}^\ast~\XT[(\THROWadm~a)]~\END &\stepto&
-   \CATCHadm\{a'^?~\instr'^\ast\}^\ast~\XT[(\THROWadm~a)]~\END  \\
+   \CATCHadm~\XT[\val^n~(\THROWadm~a)]~\END &\stepto&
+   \XT[\val^n~(\THROWadm~a)] \\
+   \CATCHadm\{a_1^?~\instr^\ast\}\{a'^?~\instr'^\ast\}^\ast~\XT[\val^n~(\THROWadm~a)]~\END &\stepto&
+   \CATCHadm\{a'^?~\instr'^\ast\}^\ast~\XT[\val^n~(\THROWadm~a)]~\END  \\
    && (\iff a_1^? \neq \epsilon \land a_1^? \neq a) \\
    S;~\CATCHadm\{a_1^?~\instr^\ast\}\{a'^?~\instr'^\ast\}^\ast~\XT[\val^n~(\THROWadm~a)]~\END &\stepto&
    S;~\CAUGHTadm\{a~\val^n\}~(\val^n)?~\instr^\ast~\END \\
    && (\iff~(a_1^? = \epsilon \lor a_1^? = a)~\land\\
    && \ S.\STAGS[a].\TAGITYPE = [t^n]\to[]) \\
-   \LABEL_n\{\}~\XB^l[\DELEGATEadm\{l\}~\XT[(\THROWadm~a)]~\END]~\END &\stepto&
-   \XT[(\THROWadm~a)]  \\
+   \LABEL_n\{\}~\XB^l[\DELEGATEadm\{l\}~\XT[\val^n~(\THROWadm~a)]~\END]~\END &\stepto&
+   \XT[\val^n~(\THROWadm~a)]  \\
    \end{array}
 
+.. note::
+   Note that the reduction step resulting in a |CAUGHTadm| instruction is the only one that does not preserve the throw context.
+   While a |THROWadm| propagates through the stack, the throw context |XT| is collected
+   until the exception is caught inside a |CAUGHTadm| instruction, in which point it's discarded.
 
 .. todo::
-   Add explainer note.
+   Add explainer note for the reduction of |DELEGATEadm|, when PR #221 is settled.
+
 
 .. _exec-caughtadm:
 
