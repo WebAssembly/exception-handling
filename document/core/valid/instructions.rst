@@ -1375,17 +1375,17 @@ Control Instructions
      C \vdashblocktype \blocktype : [t_1^\ast] \to [t_2^\ast]
      \qquad
      C,\CLABELS\,[t_2^\ast] \vdashinstrseq \instr_1^\ast : [t_1^\ast] \to [t_2^\ast] \\
-     (C.\CTAGS[x] = [t^\ast]\to[] \\
-     C,\CLABELS\,(\LCATCH [t_2^\ast]) \vdashinstrseq \instr_2^\ast : [t^\ast]\to[t_2^\ast])\ast \\
-     (C,\CLABELS\,(\LCATCH~[t_2^\ast]) \vdashinstrseq \instr_3^\ast : []\to[t_2^\ast])^?
+     (C.\CTAGS[x] = [t^\ast] \to [] \\
+     C,\CLABELS\,(\LCATCH~[t_2^\ast]) \vdashinstrseq \instr_2^\ast : [t^\ast] \to [t_2^\ast])^\ast \\
+     (C,\CLABELS\,(\LCATCH~[t_2^\ast]) \vdashinstrseq \instr_3^\ast : [] \to [t_2^\ast])^?
    \end{array}
    }{
-   C \vdashinstr \TRY~\blocktype~\instr^\ast (\CATCH~x~\instr_2^\ast)^\ast (\CATCHALL~\instr_3^\ast)^? \END : [t_1^\ast]\to[t_2^\ast]
+   C \vdashinstr \TRY~\blocktype~\instr_1^\ast~(\CATCH~x~\instr_2^\ast)^\ast~(\CATCHALL~\instr_3^\ast)^?~\END : [t_1^\ast] \to [t_2^\ast]
    }
 
 
 .. note::
-   The :ref:`notation <notation-extend>` :math:`C,\CLABELS\,(\LCATCH^? [t^\ast])` inserts the new label type at index :math:`0`, shifting all others.
+   The :ref:`notation <notation-extend>` :math:`C,\CLABELS\,(\LCATCH^?~[t^\ast])` inserts the new label type at index :math:`0`, shifting all others.
 
 
 .. _valid-try-delegate:
