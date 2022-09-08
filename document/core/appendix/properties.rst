@@ -605,21 +605,38 @@ To that end, all previous typing judgements :math:`C \vdash \X{prop}` are genera
 
 .. index:: catch, throw context
 
-:math:`\CATCHadm\{\tagaddr^?~\instr'^\ast\}^\ast~\instr^\ast~\END`
-..................................................................
+:math:`\CATCHadm\{\tagaddr^?~\instr_2^\ast\}^\ast~\instr_1^\ast~\END`
+.....................................................................
 
-.. todo::
-   Add prose.
+* Let :math:`C'` be the same :ref:`context <context>` as :math:`C`, but with the label :math:`[t_2^\ast]` prepended to the |CLABELS| vector.
+
+* Under context :math:`C'`,
+  the instruction sequence :math:`\instr_1^\ast` must be :ref:`valid <valid-instr-seq>` with type :math:`[] \to [t_2^\ast]`.
+
+* Let :math:`C''` be the same :ref:`context <context>` as :math:`C`, but with the label :math:`(\LCATCH~[t_2^\ast])` prepended to the |CLABELS| vector.
+
+* Under context :math:`C''`,
+  for every :math:`\tagaddr^?` and associated instruction sequence :math:`\instr_2^\ast`:
+
+  * If :math:`\tagaddr^? = \epsilon` then :math:`\instr_2^\ast` must be :ref:`valid <valid-instr-seq>` with type :math:`[] \to [t_2^\ast]`.
+
+  * Else:
+
+    * The :ref:`external tag value <syntax-externval>` :math:`\EVTAG~\tagaddr` must be :ref:`valid <valid-externval-tag>` with some :ref:`external tag type <syntax-externtype>` :math:`\ETTAG~[t_1^\ast] \to []`.
+
+    * The instruction sequence :math:`\instr_2^\ast` must be :ref:`valid <valid-instr-seq>` with type :math:`[t_1^\ast] \to [t_2^\ast]`.
+
+* Then the compound instruction is valid under context :math:`C'` with type :math:`[] \to [t_2^\ast]`.
 
 .. math::
    \frac{
      \begin{array}{@{}c@{}}
-     ((S \vdashexternval \EVTAG~\tagaddr : \ETTAG~[t'^\ast]\to[])^? \\
-     ~~S; C,\CLABELS\,(\LCATCH~[t^\ast]) \vdashinstrseq \instr'^\ast : [(t'^\ast)^?] \to [t^\ast])^\ast \\
-     S; C,\CLABELS\,[t^\ast] \vdashinstrseq \instr^\ast : [] \to [t^\ast] \\
+     ((S \vdashexternval \EVTAG~\tagaddr : \ETTAG~[t_1^\ast]\to[])^? \\
+     ~~S; C,\CLABELS\,(\LCATCH~[t_2^\ast]) \vdashinstrseq \instr_2^\ast : [(t_1^\ast)^?] \to [t_2^\ast])^\ast \\
+     S; C,\CLABELS\,[t_2^\ast] \vdashinstrseq \instr_1^\ast : [] \to [t_2^\ast] \\
    \end{array}
    }{
-     S; C,\CLABELS\,[t^\ast] \vdashadmininstr \CATCHadm\{\tagaddr^?~{\instr'}^\ast\}^\ast~\instr^\ast~\END : [] \to [t^\ast]
+     S; C,\CLABELS\,[t_2^\ast] \vdashadmininstr \CATCHadm\{\tagaddr^?~{\instr_2}^\ast\}^\ast~\instr_1^\ast~\END : [] \to [t_2^\ast]
    }
 
 
