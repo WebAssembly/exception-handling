@@ -225,9 +225,10 @@ S;C, labels [t*] ⊢ caught{a val^n} instr* end : []→[t*]
 
 ## Uncaught Exceptions
 
-To describe uncaught exceptions we add a new terminal value.
+A new [result](https://webassembly.github.io/spec/core/exec/runtime.html#syntax-result) value is added to describe uncaught exceptions.
 
 ```
-result ::= ... | T[val* (throw tagaddr)]
+result ::= val* | trap
+         | T[val* (throw tagaddr)]
 ```
 
