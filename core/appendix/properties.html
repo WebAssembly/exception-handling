@@ -581,15 +581,20 @@ To that end, all previous typing judgements <span class="math notranslate nohigh
 </section>
 <section id="xref-exec-runtime-syntax-caughtadm-mathsf-caught-xref-exec-runtime-syntax-tagaddr-mathit-tagaddr-xref-exec-runtime-syntax-val-mathit-val-ast-xref-syntax-instructions-syntax-instr-mathit-instr-ast-xref-syntax-instructions-syntax-instr-control-mathsf-end">
 <span id="index-24"></span><h3><span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-caughtadm}{\mathsf{caught}}\{\href{../exec/runtime.html#syntax-tagaddr}{\mathit{tagaddr}}~\href{../exec/runtime.html#syntax-val}{\mathit{val}}^\ast\}~\href{../syntax/instructions.html#syntax-instr}{\mathit{instr}}^\ast~\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{end}}\)</span><a class="headerlink" href="#xref-exec-runtime-syntax-caughtadm-mathsf-caught-xref-exec-runtime-syntax-tagaddr-mathit-tagaddr-xref-exec-runtime-syntax-val-mathit-val-ast-xref-syntax-instructions-syntax-instr-mathit-instr-ast-xref-syntax-instructions-syntax-instr-control-mathsf-end" title="Permalink to this headline">¶</a></h3>
-<div class="admonition-todo admonition" id="id5">
-<p class="admonition-title">Todo</p>
-<p>Add prose.</p>
-</div>
+<ul class="simple">
+<li><p>The <a class="reference internal" href="../exec/runtime.html#syntax-externval"><span class="std std-ref">external tag value</span></a> <span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-externval}{\mathsf{tag}}~\href{../exec/runtime.html#syntax-tagaddr}{\mathit{tagaddr}}\)</span> must be <a class="reference internal" href="../exec/modules.html#valid-externval-tag"><span class="std std-ref">valid</span></a> with some <a class="reference internal" href="../syntax/types.html#syntax-externtype"><span class="std std-ref">external tag type</span></a> <span class="math notranslate nohighlight">\(\href{../syntax/types.html#syntax-tagtype}{\mathsf{tag}}~[t_0^\ast] \href{../syntax/types.html#syntax-functype}{\rightarrow} []\)</span>.</p></li>
+<li><p>The <a class="reference internal" href="../exec/runtime.html#syntax-val"><span class="std std-ref">values</span></a> <span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-val}{\mathit{val}}^\ast\)</span> must be of type <span class="math notranslate nohighlight">\([t_0^\ast]\)</span>.</p></li>
+<li><p>Let <span class="math notranslate nohighlight">\(C'\)</span> be the same <a class="reference internal" href="../valid/conventions.html#context"><span class="std std-ref">context</span></a> as <span class="math notranslate nohighlight">\(C\)</span>, but with the label <span class="math notranslate nohighlight">\((\href{../valid/conventions.html#context}{\mathsf{catch}}~[t^\ast])\)</span> prepended to the <span class="math notranslate nohighlight">\(\href{../valid/conventions.html#context}{\mathsf{labels}}\)</span> vector.</p></li>
+<li><p>Under context <span class="math notranslate nohighlight">\(C'\)</span>,
+the instruction sequence <span class="math notranslate nohighlight">\(\href{../syntax/instructions.html#syntax-instr}{\mathit{instr}}^\ast\)</span> must be <a class="reference internal" href="../valid/instructions.html#valid-instr-seq"><span class="std std-ref">valid</span></a> with type <span class="math notranslate nohighlight">\([] \href{../syntax/types.html#syntax-functype}{\rightarrow} [t^\ast]\)</span>.</p></li>
+<li><p>Let <span class="math notranslate nohighlight">\(C''\)</span> be the same <a class="reference internal" href="../valid/conventions.html#context"><span class="std std-ref">context</span></a> as <span class="math notranslate nohighlight">\(C\)</span>, but with the label <span class="math notranslate nohighlight">\([t^\ast]\)</span> prepended to the <span class="math notranslate nohighlight">\(\href{../valid/conventions.html#context}{\mathsf{labels}}\)</span> vector.</p></li>
+<li><p>Then the compound instruction is valid under context <span class="math notranslate nohighlight">\(C''\)</span> with type <span class="math notranslate nohighlight">\([] \href{../syntax/types.html#syntax-functype}{\rightarrow} [t^\ast]\)</span>.</p></li>
+</ul>
 <div class="math notranslate nohighlight">
 \[\frac{
-  S \href{../exec/modules.html#valid-externval}{\vdash} \href{../exec/runtime.html#syntax-externval}{\mathsf{tag}}~\href{../exec/runtime.html#syntax-tagaddr}{\mathit{tagaddr}} : \href{../syntax/types.html#syntax-tagtype}{\mathsf{tag}}~[t'^\ast]\href{../syntax/types.html#syntax-functype}{\rightarrow}[]
+  S \href{../exec/modules.html#valid-externval}{\vdash} \href{../exec/runtime.html#syntax-externval}{\mathsf{tag}}~\href{../exec/runtime.html#syntax-tagaddr}{\mathit{tagaddr}} : \href{../syntax/types.html#syntax-tagtype}{\mathsf{tag}}~[t_0^\ast]\href{../syntax/types.html#syntax-functype}{\rightarrow}[]
   \qquad
-  (val : t')^\ast
+  (val : t_0)^\ast
   \qquad
   S; C,\href{../valid/conventions.html#context}{\mathsf{labels}}\,(\href{../valid/conventions.html#context}{\mathsf{catch}}~[t^\ast]) \href{../valid/instructions.html#valid-instr-seq}{\vdash} \href{../syntax/instructions.html#syntax-instr}{\mathit{instr}}^\ast : [] \href{../syntax/types.html#syntax-functype}{\rightarrow} [t^\ast]
 }{
@@ -656,7 +661,7 @@ a store state <span class="math notranslate nohighlight">\(S'\)</span> extends s
 <p>Extension does not imply that the new store is valid, which is defined separately <a class="reference internal" href="#valid-store"><span class="std std-ref">above</span></a>.</p>
 </div>
 <section id="extend-store">
-<span id="index-29"></span><span id="id6"></span><h3><a class="reference internal" href="../exec/runtime.html#syntax-store"><span class="std std-ref">Store</span></a> <span class="math notranslate nohighlight">\(S\)</span><a class="headerlink" href="#extend-store" title="Permalink to this headline">¶</a></h3>
+<span id="index-29"></span><span id="id5"></span><h3><a class="reference internal" href="../exec/runtime.html#syntax-store"><span class="std std-ref">Store</span></a> <span class="math notranslate nohighlight">\(S\)</span><a class="headerlink" href="#extend-store" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>The length of <span class="math notranslate nohighlight">\(S.\href{../exec/runtime.html#syntax-store}{\mathsf{funcs}}\)</span> must not shrink.</p></li>
 <li><p>The length of <span class="math notranslate nohighlight">\(S.\href{../exec/runtime.html#syntax-store}{\mathsf{tables}}\)</span> must not shrink.</p></li>
@@ -792,7 +797,7 @@ a store state <span class="math notranslate nohighlight">\(S'\)</span> extends s
 <section id="theorems">
 <span id="soundness-statement"></span><span id="index-37"></span><h2>Theorems<a class="headerlink" href="#theorems" title="Permalink to this headline">¶</a></h2>
 <p>Given the definition of <a class="reference internal" href="#valid-config"><span class="std std-ref">valid configurations</span></a>,
-the standard soundness theorems hold. <a class="footnote-reference brackets" href="#cite-cpp2018" id="id7">2</a></p>
+the standard soundness theorems hold. <a class="footnote-reference brackets" href="#cite-cpp2018" id="id6">2</a></p>
 <p><strong>Theorem (Preservation).</strong>
 If a <a class="reference internal" href="../exec/runtime.html#syntax-config"><span class="std std-ref">configuration</span></a> <span class="math notranslate nohighlight">\(S;T\)</span> is <a class="reference internal" href="#valid-config"><span class="std std-ref">valid</span></a> with <a class="reference internal" href="../syntax/types.html#syntax-resulttype"><span class="std std-ref">result type</span></a> <span class="math notranslate nohighlight">\([t^\ast]\)</span> (i.e., <span class="math notranslate nohighlight">\(\href{../appendix/properties.html#valid-config}{\vdash} S;T : [t^\ast]\)</span>),
 and steps to <span class="math notranslate nohighlight">\(S';T'\)</span> (i.e., <span class="math notranslate nohighlight">\(S;T \href{../exec/conventions.html#formal-notation}{\hookrightarrow} S';T'\)</span>),
@@ -816,7 +821,7 @@ Consequently, given a <a class="reference internal" href="#valid-store"><span cl
 <dd><p>The formalization and theorems are derived from the following article:
 Andreas Haas, Andreas Rossberg, Derek Schuff, Ben Titzer, Dan Gohman, Luke Wagner, Alon Zakai, JF Bastien, Michael Holman. <a class="reference external" href="https://dl.acm.org/citation.cfm?doid=3062341.3062363">Bringing the Web up to Speed with WebAssembly</a>. Proceedings of the 38th ACM SIGPLAN Conference on Programming Language Design and Implementation (PLDI 2017). ACM 2017.</p>
 </dd>
-<dt class="label" id="cite-cpp2018"><span class="brackets"><a class="fn-backref" href="#id7">2</a></span></dt>
+<dt class="label" id="cite-cpp2018"><span class="brackets"><a class="fn-backref" href="#id6">2</a></span></dt>
 <dd><p>A machine-verified version of the formalization and soundness proof is described in the following article:
 Conrad Watt. <a class="reference external" href="https://dl.acm.org/citation.cfm?id=3167082">Mechanising and Verifying the WebAssembly Specification</a>. Proceedings of the 7th ACM SIGPLAN Conference on Certified Programs and Proofs (CPP 2018). ACM 2018.</p>
 </dd>
