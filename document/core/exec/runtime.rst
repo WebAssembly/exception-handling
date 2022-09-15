@@ -734,22 +734,22 @@ Throw contexts allow matching the program context around a throw instruction up 
 
    Assume that :math:`\expand_F(bt) = [\I32~\F32~\I64] \to [\F32~\I64]`,
    and that the tag address `a` of :math:`x` corresponds to the tag type :math:`[\F32~\I64] \to []`.
-   Let :math:`val_{i32}`, :math:`val_{f32}`, and :math:`val_{i64}` be values of type |I32|, |F32|, and |I64| respectively.
+   Let :math:`\val_{i32}`, :math:`\val_{f32}`, and :math:`\val_{i64}` be values of type |I32|, |F32|, and |I64| respectively.
 
    .. math::
       \begin{array}{ll}
-      & \hspace{-5ex} F;~val_{i32}~val_{f32}~val_{i64}~(\TRY~\X{bt}~(\THROW~x)~\CATCH~x~\END) \\
-      \stepto & F;~\LABEL_2\{\} (\CATCHadm\{a~\epsilon\}~val_{i32}~val_{f32}~val_{i64}~(\THROW~x)~\END)~\END \\
+      & \hspace{-5ex} F;~\val_{i32}~\val_{f32}~\val_{i64}~(\TRY~\X{bt}~(\THROW~x)~\CATCH~x~\END) \\
+      \stepto & F;~\LABEL_2\{\} (\CATCHadm\{a~\epsilon\}~\val_{i32}~\val_{f32}~\val_{i64}~(\THROW~x)~\END)~\END \\
       \end{array}
 
    :ref:`Handling the thrown exception <exec-throwadm>` with tag address :math:`a` in the throw context
-   :math:`T=[val_{i32}\_]`, with the exception handler :math:`H=\CATCHadm\{a~\epsilon\}` gives:
+   :math:`T=[\val_{i32}\_]`, with the exception handler :math:`H=\CATCHadm\{a~\epsilon\}` gives:
 
    .. math::
       \begin{array}{lll}
-      \stepto & F;~\LABEL_2\{\}~(\CAUGHTadm\{a~val_{f32}~val_{i64}\}~val_{f32}~val_{i64}~\END)~\END & \hspace{9ex}\ \\
-      \stepto & F;~\LABEL_2\{\}~val_{f32}~val_{i64}~\END & \hspace{9ex}\ \\
-      \stepto & val_{f32}~val_{i64} & \\
+      \stepto & F;~\LABEL_2\{\}~(\CAUGHTadm\{a~\val_{f32}~\val_{i64}\}~\val_{f32}~\val_{i64}~\END)~\END & \hspace{9ex}\ \\
+      \stepto & F;~\LABEL_2\{\}~\val_{f32}~\val_{i64}~\END & \hspace{9ex}\ \\
+      \stepto & \val_{f32}~\val_{i64} & \\
       \end{array}
 
 
@@ -759,8 +759,8 @@ Throw contexts allow matching the program context around a throw instruction up 
    until we find an exception handler (corresponding to a try block) that :ref:`handles the exception <syntax-handler>`.
    We then append the values :math:`\val^m:[t^m]` to the tag address :math:`a` into a new |CAUGHTadm| instruction which we push on the stack.
 
-   In other words, when a throw occurs, normal execution halts and exceptional execution begins, until the throw
-   is the continuation (i.e., in the place of a :math:`\_`) of a throw context in a catching try block.
+   In other words, a thrown exception is caught when it's the continuation of a throw context in a catching try block,
+   i.e., it's inside a catching try block, which is the innermost with respect to the throw.
 
    In this particular case, the exception is caught by the exception handler :math:`H` and its values are returned.
 
