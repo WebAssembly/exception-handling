@@ -2639,7 +2639,7 @@ Control Instructions
 
 7. :ref:`Enter <exec-instr-seq-enter>` the block :math:`H~(\val^m~\instr_1^\ast)~\END` with label :math:`L`.
 
-8. :ref:`Enter <exec-handler-enter>` the exception handler `H`.
+8. :ref:`Install <exec-handler-enter>` the exception handler `H` which contains `\val^m~\instr_1^\ast`.
 
 .. math::
    ~\\[-1ex]
@@ -2987,8 +2987,8 @@ The following auxiliary rules define the semantics of entering and exiting :ref:
 
 .. _exec-handler-enter:
 
-Entering an exception handler :math:`H`
-.......................................
+Installing an exception handler :math:`H`
+.........................................
 
 1. Push :math:`H` onto the stack.
 
