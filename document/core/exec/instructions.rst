@@ -3020,7 +3020,7 @@ When an administrative throw occurs, then values, labels, |CAUGHTadm| instructio
 and call frames are popped if necessary, until an appropriate exception handler is found
 on the top of the stack.
 
- 1. Assert: due to validation, :math:`S.\STAGS[a]` exists.
+ 1. Assert: due to :ref:`validation <valid-throw>`,, :math:`S.\STAGS[a]` exists.
 
  2. Let :math:`[t^n] \to []` be the :ref:`tag type <syntax-tagtype>` :math:`S.\STAGS[a].\TAGITYPE`.
 
@@ -3061,7 +3061,7 @@ on the top of the stack.
 
        ii. Jump to the start of the instruction sequence :math:`\instr^\ast`.
 
-    d. Else if :math:`a_1 = a`, then:
+    d. Else if :math:`a_1^? = a`, then:
 
        i. Push :math:`\CAUGHTadm\{a~\val^n\}` onto the stack.
 
