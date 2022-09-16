@@ -2987,10 +2987,13 @@ The following auxiliary rules define the semantics of entering and exiting :ref:
 
 .. _exec-handler-enter:
 
-Installing an exception handler :math:`H`
-.........................................
+Installing an exception handler :math:`H` containing :math:`\instr^\ast`
+........................................................................
 
 1. Push :math:`H` onto the stack.
+
+2. Jump to the start of the instruction sequence :math:`\instr^\ast`.
+
 
 .. note::
    No formal reduction rule is needed for installing an exception :ref:`handler <syntax-handler>`
