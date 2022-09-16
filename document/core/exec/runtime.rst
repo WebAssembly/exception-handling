@@ -754,8 +754,8 @@ Throw contexts allow matching the program context around a throw instruction up 
 
    When a throw of the form :math:`val^m (\THROWadm~a)` occurs, search for the maximal surrounding throw context :math:`T` is performed,
    which means any other values, labels, frames, and |CAUGHTadm| instructions surrounding the throw :math:`val^m (\THROWadm~a)` are popped,
-   until an exception handler (corresponding to a try block) that :ref:`handles the exception <syntax-handler>` is found.
-   Then the values :math:`val^m:[t^m]` are appended to the tag address :math:`a` into a new |CAUGHTadm| instruction, which is pushed onto the stack.
+   until a :ref:`handler <syntax-handler>` for the exception is found.
+   Then a new |CAUGHTadm| instruction, containing the tag address :math:`a` and the values :math:`\val^m`, is pushed onto the stack.
 
 
    In other words, when a throw occurs, normal execution halts and exceptional execution begins, until the throw
