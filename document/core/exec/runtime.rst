@@ -752,14 +752,12 @@ Throw contexts allow matching the program context around a throw instruction up 
       \stepto & \val_{f32}~\val_{i64} & \\
       \end{array}
 
-
-
    When a throw of the form :math:`\val^m (\THROWadm~a)` occurs, we search for the maximal surrounding throw context :math:`T`,
    which means we pop any other values, labels, frames, and |CAUGHTadm| instructions surrounding the throw :math:`\val^m (\THROWadm~a)`,
    until we find an exception handler (corresponding to a try block) that :ref:`handles the exception <syntax-handler>`.
    We then append the values :math:`\val^m:[t^m]` to the tag address :math:`a` into a new |CAUGHTadm| instruction which we push on the stack.
 
-   In other words, a thrown exception is caught when it's the continuation of a throw context in a catching try block,
+   In other words, an exception throw is caught when it is the continuation of a throw context in a catching try block,
    i.e., it is inside a catching try block, which is the innermost with respect to the throw.
 
    In this particular case, the exception is caught by the exception handler :math:`H` and its values are returned.
