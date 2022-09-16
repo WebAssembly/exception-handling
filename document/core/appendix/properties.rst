@@ -608,17 +608,17 @@ To that end, all previous typing judgements :math:`C \vdash \X{prop}` are genera
 :math:`\CATCHadm\{\tagaddr^?~\instr_2^\ast\}^\ast~\instr_1^\ast~\END`
 .....................................................................
 
-* Let :math:`C'` be the same :ref:`context <context>` as :math:`C`, but with the label :math:`[t_2^\ast]` prepended to the |CLABELS| vector.
+* Let :math:`C'` be the same :ref:`context <context>` as :math:`C`, but with the :ref:`label type <syntax-labeltype>` :math:`[t_2^\ast]` prepended to the |CLABELS| vector.
 
 * Under context :math:`C'`,
   the instruction sequence :math:`\instr_1^\ast` must be :ref:`valid <valid-instr-seq>` with type :math:`[] \to [t_2^\ast]`.
 
-* Let :math:`C''` be the same :ref:`context <context>` as :math:`C`, but with the label :math:`(\LCATCH~[t_2^\ast])` prepended to the |CLABELS| vector.
+* Let :math:`C''` be the same :ref:`context <context>` as :math:`C`, but with the :ref:`label type <syntax-labeltype>` :math:`(\LCATCH~[t_2^\ast])` prepended to the |CLABELS| vector.
 
 * Under context :math:`C''`,
   for every :math:`\tagaddr^?` and associated instruction sequence :math:`\instr_2^\ast`:
 
-  * If :math:`\tagaddr^? = \epsilon` then :math:`\instr_2^\ast` must be :ref:`valid <valid-instr-seq>` with type :math:`[] \to [t_2^\ast]`.
+  * If :math:`\tagaddr^? = \epsilon`, then :math:`\instr_2^\ast` must be :ref:`valid <valid-instr-seq>` with type :math:`[] \to [t_2^\ast]`.
 
   * Else:
 
