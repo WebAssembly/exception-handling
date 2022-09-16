@@ -628,8 +628,11 @@ To that end, all previous typing judgements :math:`C \vdash \X{prop}` are genera
 :math:`\DELEGATEadm\{l\}~\instr^\ast~\END`
 ..........................................
 
-.. todo::
-   Prose for typing of |DELEGATEadm|.
+* The instruction sequence :math:`\instr^\ast` must be :ref:`valid <valid-instr-seq>` with some type :math:`[]\to[t^\ast]`.
+
+* The label :math:`C.\CLABELS[l+1]` must be defined in the context.
+
+* Then the compound instruction is valid with type :math:`[] \to [t^\ast]`.
 
 .. math::
    \frac{
