@@ -634,11 +634,11 @@ To that end, all previous typing judgements :math:`C \vdash \X{prop}` are genera
 
 .. math::
    \frac{
-     S; C \vdashinstrseq \instr^\ast : [] \to [t^\ast]
+     S; C,\CLABELS\,[t^\ast] \vdashinstrseq \instr^\ast : [] \to [t^\ast]
      \qquad
-     C.\CLABELS[l+1] = [t_0^\ast]
+     C.\CLABELS[l] = [t_0^\ast]
    }{
-     S; C \vdashadmininstr \DELEGATEadm\{l\}~\instr^\ast~\END : [] \to [t^\ast]
+     S; C,\CLABELS\,[t^\ast] \vdashadmininstr \DELEGATEadm\{l\}~\instr^\ast~\END : [] \to [t^\ast]
    }
 
 
