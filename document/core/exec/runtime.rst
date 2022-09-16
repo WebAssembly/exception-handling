@@ -730,10 +730,10 @@ Throw contexts allow matching the program context around a throw instruction up 
    |CAUGHTadm| blocks do not represent active handlers. Instead, they delimit the continuation of a handler that has already been selected. Their sole purpose is to record the exception that has been caught, such that |RETHROW| can access it inside such a block.
 
 .. note::
-   For example, catching a simple :ref:`throw <exec-throw>` in a :ref:`try block <exec-try-catch>` would be as follows.
+   For example, catching a simple :ref:`throw <syntax-throw>` in a :ref:`try block <syntax-try-catch>` would be as follows.
 
    Assume that :math:`\expand_F(bt) = [\I32~\F32~\I64] \to [\F32~\I64]`,
-   and that the tag address `a` of :math:`x` corresponds to the tag type :math:`[\F32~\I64] \to []`.
+   and that the tag address `a` of :math:`x` has tag type :math:`[\F32~\I64] \to []`.
    Let :math:`\val_{i32}`, :math:`\val_{f32}`, and :math:`\val_{i64}` be values of type |I32|, |F32|, and |I64| respectively.
 
    .. math::
@@ -760,7 +760,7 @@ Throw contexts allow matching the program context around a throw instruction up 
    We then append the values :math:`\val^m:[t^m]` to the tag address :math:`a` into a new |CAUGHTadm| instruction which we push on the stack.
 
    In other words, a thrown exception is caught when it's the continuation of a throw context in a catching try block,
-   i.e., it's inside a catching try block, which is the innermost with respect to the throw.
+   i.e., it is inside a catching try block, which is the innermost with respect to the throw.
 
    In this particular case, the exception is caught by the exception handler :math:`H` and its values are returned.
 
