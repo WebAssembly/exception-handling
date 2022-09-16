@@ -2635,11 +2635,14 @@ Control Instructions
 
 5. Pop the values :math:`\val^m` from the stack.
 
-6. Let :math:`H` be the :ref:`catching exception handler <syntax-handler>` :math:`\CATCHadm\{a_x~instr_2^\ast\}^\ast\{\epsilon~\instr_3^\ast\}^?`, whose mapping from tag addresses to branch targets corresponds to the |CATCH| and |CATCHALL| clauses, where :math:`a_x` is the tag address of each tag :math:`x`.
+6. Let :math:`H` be the :ref:`catching exception handler <syntax-handler>` :math:`\CATCHadm\{a_x~instr_2^\ast\}^\ast\{\epsilon~\instr_3^\ast\}^?`, whose mapping from tag addresses to catch bodies corresponds to the |CATCH| and |CATCHALL| clauses, where :math:`a_x` is the tag address of each tag :math:`x`.
+
+   .. todo::
+       Step 6 needs proper writing out into a loop over x*, which looks up each corresponding a_x in the store.
 
 7. :ref:`Enter <exec-instr-seq-enter>` the block :math:`H~(\val^m~\instr_1^\ast)~\END` with label :math:`L`.
 
-8. :ref:`Install <exec-handler-enter>` the exception handler `H` which contains `\val^m~\instr_1^\ast`.
+8. :ref:`Enter <exec-handler-enter>` the block :math:`\val^m~\instr_1^\ast` with exception handler :math:`H`.
 
 .. math::
    ~\\[-1ex]
@@ -2987,8 +2990,8 @@ The following auxiliary rules define the semantics of entering and exiting :ref:
 
 .. _exec-handler-enter:
 
-Installing an exception handler :math:`H` containing :math:`\instr^\ast`
-........................................................................
+Entering :math:`\instr` with exception handler :math:`H`
+........................................................
 
 1. Push :math:`H` onto the stack.
 
