@@ -2715,7 +2715,7 @@ Control Instructions
 :math:`\RETHROW~l`
 ..................
 
-1. Assert: due to :ref:`validation <valid-rethrow>`, the stack contans at least :math:`l+1` labels.
+1. Assert: due to :ref:`validation <valid-rethrow>`, the stack contains at least :math:`l+1` labels.
 
 2. Let :math:`L` be the :math:`l`-th label appearing on the stack, starting from the top and counting from zero.
 
@@ -2723,7 +2723,7 @@ Control Instructions
 
 4. Repeat :math:`l+1` times:
 
-   a. While the instruction at the top of the stack is a value, a |handler|, or a |CAUGHTadm| instruction, do:
+   a. While the top of the stack is a value, a |handler|, or a |CAUGHTadm| instruction, do:
 
       i. Pop the instruction from the stack.
 
