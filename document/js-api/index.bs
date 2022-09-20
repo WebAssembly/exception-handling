@@ -1044,10 +1044,10 @@ This slot holds a [=function address=] relative to the [=surrounding agent=]'s [
     1. Set the [=surrounding agent=]'s [=associated store=] to |store|.
     1. If |ret| is [=error=], throw an exception. This exception should be a WebAssembly {{RuntimeError}} exception, unless otherwise indicated by <a href="#errors">the WebAssembly error mapping</a>.
     1. If |ret| is exception |exntag| |payload| |opaqueData|, then
-        1. If |exntag| is the [=JavaScript exception tag=], then
-            1. Let « [=ref.extern=] |externaddr| » be |payload|.
+        1. If |opaqueData| is not [=ref.null=] [=externref=],
+            1. Let « [=ref.extern=] |externaddr| » be |opaqueData|.
             1. Throw the result of [=retrieving an extern value=] from |externaddr|.
-        1. Let |exception| be [=create an Exception object|a new Exception=] for |exntag|, |payload| and |opaqueData|.
+        1. Let |exception| be [=create an Exception object|a new Exception=] for |exntag| and |payload|.
         1. Throw |exception|.
     1. Let |outArity| be the [=list/size=] of |ret|.
     1. If |outArity| is 0, return undefined.
@@ -1105,15 +1105,10 @@ Note: Exported Functions do not have a \[[Construct]] method and thus it is not 
             1. If |v| [=implements=] {{Exception}},
                 1. Let |type| be |v|.\[[Type]].
                 1. Let |payload| be |v|.\[[Payload]].
-                1. If |v|.\[[Stack]] is undefined,
-                    1. Let |opaqueData| be [=ref.null=] [=externref=].
-                1. Otherwise,
-                    1. Assert: [=Type=](|v|.\[[Stack]]) is String.
-                    1. Let |opaqueData| be [=ToWebAssemblyValue=](|v|.\[[Stack]], [=externref=])
             1. Otherwise,
                 1. Let |type| be the [=JavaScript exception tag=].
-                1. Let |payload| be [=ToWebAssemblyValue=](|v|, [=externref=]).
-                1. Let |opaqueData| be [=ref.null=] [=externref=].
+                1. Let |payload| be « ».
+            1. Let |opaqueData| be [=ToWebAssemblyValue=](|v|, [=externref=])
             1. [=WebAssembly/Throw=] with |type|, |payload| and |opaqueData|.
         1. Otherwise, return |result|.\[[Value]].
     1. Let |store| be the [=surrounding agent=]'s [=associated store=].
@@ -1281,8 +1276,8 @@ An {{Exception}} value represents an exception.
 
 <div algorithm>
 
-To <dfn>create an Exception object</dfn> from a [=tag address=] |tagAddress|, [=list=] of
-WebAssembly values |payload|, and [=externref=] |opaqueData|, perform the following steps:
+To <dfn>create an Exception object</dfn> from a [=tag address=] |tagAddress| and a [=list=] of
+WebAssembly values |payload|, perform the following steps:
 
 1. Let |store| be the [=surrounding agent=]'s [=associated store=].
 1. Let |types| be [=tag_parameters=](|store|, |tagAddress|).
@@ -1292,12 +1287,7 @@ WebAssembly values |payload|, and [=externref=] |opaqueData|, perform the follow
 1. Let |exception| be a [=new=] {{Exception}}.
 1. Set |exception|.\[[Type]] to |tagAddress|.
 1. Set |exception|.\[[Payload]] to |payload|.
-1. If |opaqueData| is [=ref.null=] [=externref=],
-    1. Set |exception|.\[[Stack]] to undefined.
-1. Otherwise,
-    1. Let |stack| be the result of [=retrieving an extern value=] from |opaqueData|.
-    1. Assert: [=Type=](|stack|) is String.
-    1. Set |exception|.\[[Stack]] to |stack|.
+1. Set |exception|.\[[Stack]] to undefined.
 1. Return |exception|.
 
 </div>
@@ -1361,9 +1351,7 @@ The <dfn>JavaScript exception tag</dfn> is a [=tag address=] reserved by this
 specification to distinguish exceptions originating from JavaScript.
 
 For any [=associated store=] |store|, the result of
-[=tag_parameters=](|store|, [=JavaScript exception tag=]) must be « [=externref=] ».
-
- Issue: Should it be possible for `catch <JS-exception-tag>` to extract the payload from an exception with this tag?
+[=tag_parameters=](|store|, [=JavaScript exception tag=]) must be « ».
 
 <div algorithm>
 
