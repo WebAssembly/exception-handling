@@ -132,26 +132,23 @@ it is the respective value <span class="math notranslate nohighlight">\(0\)</spa
 <section id="results">
 <span id="syntax-result"></span><span id="index-2"></span><h2>Results<a class="headerlink" href="#results" title="Permalink to this headline">¶</a></h2>
 <p>A <em>result</em> is the outcome of a computation.
-It is either a sequence of <a class="reference internal" href="#syntax-val"><span class="std std-ref">values</span></a> or a <a class="reference internal" href="#syntax-trap"><span class="std std-ref">trap</span></a>.</p>
+It is either a sequence of <a class="reference internal" href="#syntax-val"><span class="std std-ref">values</span></a>, a <a class="reference internal" href="#syntax-trap"><span class="std std-ref">trap</span></a>, or an uncaught exception wrapped in its throw context.</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{array}{llcl}
 \def\mathdef2162#1{{}}\mathdef2162{(result)} &amp; \href{../exec/runtime.html#syntax-result}{\mathit{result}} &amp;::=&amp;
   \href{../exec/runtime.html#syntax-val}{\mathit{val}}^\ast \\&amp;&amp;|&amp;
-  \href{../exec/runtime.html#syntax-trap}{\mathsf{trap}}
+  \href{../exec/runtime.html#syntax-trap}{\mathsf{trap}}  \\&amp;&amp;|&amp;
+  \href{../exec/runtime.html#syntax-ctxt-throw}{T}[\href{../exec/runtime.html#syntax-val}{\mathit{val}}^\ast~(\href{../exec/runtime.html#syntax-throwadm}{\mathsf{throw}}~\href{../exec/runtime.html#syntax-tagaddr}{\mathit{tagaddr}})]
 \end{array}\end{split}\]</div>
-<div class="admonition-todo admonition" id="id1">
-<p class="admonition-title">Todo</p>
-<p>Add a result value for an unhandled exception.</p>
-</div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>In the current version of WebAssembly, a result can consist of at most one value.</p>
 </div>
 </section>
 <section id="store">
-<span id="syntax-store"></span><span id="index-3"></span><span id="id2"></span><h2>Store<a class="headerlink" href="#store" title="Permalink to this headline">¶</a></h2>
+<span id="syntax-store"></span><span id="index-3"></span><span id="id1"></span><h2>Store<a class="headerlink" href="#store" title="Permalink to this headline">¶</a></h2>
 <p>The <em>store</em> represents all global state that can be manipulated by WebAssembly programs.
-It consists of the runtime representation of all <em>instances</em> of <a class="reference internal" href="#syntax-funcinst"><span class="std std-ref">functions</span></a>, <a class="reference internal" href="#syntax-tableinst"><span class="std std-ref">tables</span></a>, <a class="reference internal" href="#syntax-meminst"><span class="std std-ref">memories</span></a>, <a class="reference internal" href="#syntax-taginst"><span class="std std-ref">tags</span></a>, and <a class="reference internal" href="#syntax-globalinst"><span class="std std-ref">globals</span></a>, <a class="reference internal" href="#syntax-eleminst"><span class="std std-ref">element segments</span></a>, and <a class="reference internal" href="#syntax-datainst"><span class="std std-ref">data segments</span></a> that have been <a class="reference internal" href="modules.html#alloc"><span class="std std-ref">allocated</span></a> during the life time of the abstract machine. <a class="footnote-reference brackets" href="#gc" id="id3">1</a></p>
+It consists of the runtime representation of all <em>instances</em> of <a class="reference internal" href="#syntax-funcinst"><span class="std std-ref">functions</span></a>, <a class="reference internal" href="#syntax-tableinst"><span class="std std-ref">tables</span></a>, <a class="reference internal" href="#syntax-meminst"><span class="std std-ref">memories</span></a>, <a class="reference internal" href="#syntax-taginst"><span class="std std-ref">tags</span></a>, and <a class="reference internal" href="#syntax-globalinst"><span class="std std-ref">globals</span></a>, <a class="reference internal" href="#syntax-eleminst"><span class="std std-ref">element segments</span></a>, and <a class="reference internal" href="#syntax-datainst"><span class="std std-ref">data segments</span></a> that have been <a class="reference internal" href="modules.html#alloc"><span class="std std-ref">allocated</span></a> during the life time of the abstract machine. <a class="footnote-reference brackets" href="#gc" id="id2">1</a></p>
 <p>It is an invariant of the semantics that no element or data instance is <a class="reference internal" href="#syntax-addr"><span class="std std-ref">addressed</span></a> from anywhere else but the owning module instances.</p>
 <p>Syntactically, the store is defined as a <a class="reference internal" href="../syntax/conventions.html#notation-record"><span class="std std-ref">record</span></a> listing the existing instances of each category:</p>
 <div class="math notranslate nohighlight">
@@ -168,14 +165,14 @@ It consists of the runtime representation of all <em>instances</em> of <a class=
   \end{array}
 \end{array}\end{split}\]</div>
 <dl class="footnote brackets">
-<dt class="label" id="gc"><span class="brackets"><a class="fn-backref" href="#id3">1</a></span></dt>
+<dt class="label" id="gc"><span class="brackets"><a class="fn-backref" href="#id2">1</a></span></dt>
 <dd><p>In practice, implementations may apply techniques like garbage collection to remove objects from the store that are no longer referenced.
 However, such techniques are not semantically observable,
 and hence outside the scope of this specification.</p>
 </dd>
 </dl>
-<section id="id4">
-<h3>Convention<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<section id="id3">
+<h3>Convention<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>The meta variable <span class="math notranslate nohighlight">\(S\)</span> ranges over stores where clear from context.</p></li>
 </ul>
@@ -373,7 +370,7 @@ It filters out entries of a specific kind in an order-preserving fashion:</p>
 </section>
 </section>
 <section id="stack">
-<span id="handler"></span><span id="label"></span><span id="frame"></span><span id="syntax-label"></span><span id="syntax-frame"></span><span id="index-15"></span><span id="id5"></span><h2>Stack<a class="headerlink" href="#stack" title="Permalink to this headline">¶</a></h2>
+<span id="handler"></span><span id="label"></span><span id="frame"></span><span id="syntax-label"></span><span id="syntax-frame"></span><span id="index-15"></span><span id="id4"></span><h2>Stack<a class="headerlink" href="#stack" title="Permalink to this headline">¶</a></h2>
 <p>Besides the <a class="reference internal" href="#store"><span class="std std-ref">store</span></a>, most <a class="reference internal" href="../syntax/instructions.html#syntax-instr"><span class="std std-ref">instructions</span></a> interact with an implicit <em>stack</em>.
 The stack contains three kinds of entries:</p>
 <ul class="simple">
@@ -390,8 +387,8 @@ Stack entries are described by abstract syntax as follows.</p>
 However, because the stacks are interdependent, additional book keeping about associated stack heights would be required.
 For the purpose of this specification, an interleaved representation is simpler.</p>
 </div>
-<section id="id6">
-<h3>Values<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<section id="id5">
+<h3>Values<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <p>Values are represented by <a class="reference internal" href="#syntax-val"><span class="std std-ref">themselves</span></a>.</p>
 </section>
 <section id="labels">
@@ -436,7 +433,7 @@ and a reference to the function’s own <a class="reference internal" href="#syn
 to their associated branch <em>targets</em>, each of which is expressed syntactically as a possibly empty sequence of
 <a class="reference internal" href="../syntax/instructions.html#syntax-instr"><span class="std std-ref">instructions</span></a> possibly following a <a class="reference internal" href="#syntax-tagaddr"><span class="std std-ref">tag address</span></a>.
 If there is no <a class="reference internal" href="#syntax-tagaddr"><span class="std std-ref">tag address</span></a>, the instructions of that target correspond to a <span class="math notranslate nohighlight">\(\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{catch\_all}}\)</span> clause.</p>
-<div class="admonition-todo admonition" id="id7">
+<div class="admonition-todo admonition" id="id6">
 <p class="admonition-title">Todo</p>
 <p>Add prose for delegating handlers.</p>
 </div>
@@ -448,13 +445,13 @@ If there is no <a class="reference internal" href="#syntax-tagaddr"><span class=
 when the handler catches a thrown exception with tag <span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-tagaddr}{\mathit{tagaddr}}\)</span>, or for any exception, when a target specifies no tag address.
 In that case, we say that the exception is handled by the exception handler <span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-catchadm}{\mathsf{catch}}\)</span>.
 If this list of targets is empty, or if the tag address of the thrown exception is not in the handler’s mapping and there is no <span class="math notranslate nohighlight">\(\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{catch\_all}}\)</span> clause, then the exception will be rethrown.</p>
-<div class="admonition-todo admonition" id="id8">
+<div class="admonition-todo admonition" id="id7">
 <p class="admonition-title">Todo</p>
 <p>Add prose with intuition on delegating handlers.</p>
 </div>
 </section>
 <section id="exec-expand">
-<span id="id9"></span><h3>Conventions<a class="headerlink" href="#exec-expand" title="Permalink to this headline">¶</a></h3>
+<span id="id8"></span><h3>Conventions<a class="headerlink" href="#exec-expand" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>The meta variable <span class="math notranslate nohighlight">\(L\)</span> ranges over labels where clear from context.</p></li>
 <li><p>The meta variable <span class="math notranslate nohighlight">\(F\)</span> ranges over frames where clear from context.</p></li>
@@ -552,12 +549,13 @@ the following syntax of <em>throw contexts</em> is defined, as well as associate
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{array}{llll}
 \def\mathdef2162#1{{}}\mathdef2162{(throw contexts)} &amp; \href{../exec/runtime.html#syntax-ctxt-throw}{T} &amp;::=&amp;
-  \href{../exec/runtime.html#syntax-val}{\mathit{val}}^\ast~[\_]~\href{../syntax/instructions.html#syntax-instr}{\mathit{instr}}^\ast \\ &amp;&amp;|&amp;
+  [\_] | \href{../exec/runtime.html#syntax-val}{\mathit{val}}^\ast~\href{../exec/runtime.html#syntax-ctxt-throw}{T}~\href{../syntax/instructions.html#syntax-instr}{\mathit{instr}}^\ast \\ &amp;&amp;|&amp;
   \href{../exec/runtime.html#syntax-label}{\mathsf{label}}_n\{\href{../syntax/instructions.html#syntax-instr}{\mathit{instr}}^\ast\}~\href{../exec/runtime.html#syntax-ctxt-throw}{T}~\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{end}} \\ &amp;&amp;|&amp;
   \href{../exec/runtime.html#syntax-caughtadm}{\mathsf{caught}}\{\href{../exec/runtime.html#syntax-tagaddr}{\mathit{tagaddr}}~\href{../exec/runtime.html#syntax-val}{\mathit{val}}^\ast\}~\href{../exec/runtime.html#syntax-ctxt-throw}{T}~\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{end}} \\ &amp;&amp;|&amp;
   \href{../exec/runtime.html#syntax-frame}{\mathsf{frame}}_n\{F\}~\href{../exec/runtime.html#syntax-ctxt-throw}{T}~\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{end}} \\
 \end{array}\end{split}\]</div>
-<p>Throw contexts allow matching the program context around a throw instruction up to the innermost enclosing <span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-catchadm}{\mathsf{catch}}\)</span> or <span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-delegateadm}{\mathsf{delegate}}\)</span>, thereby selecting the exception <span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-handler}{\mathit{handler}}\)</span> responsible for an exception, if one exists.</p>
+<p>Throw contexts allow matching the program context around a throw instruction up to the innermost enclosing <span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-catchadm}{\mathsf{catch}}\)</span> or <span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-delegateadm}{\mathsf{delegate}}\)</span>, thereby selecting the exception <span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-handler}{\mathit{handler}}\)</span> responsible for an exception, if one exists.
+If no exception <a class="reference internal" href="#syntax-handler"><span class="std std-ref">handler that catches the exception</span></a> is found, the computation <a class="reference internal" href="#syntax-result"><span class="std std-ref">results</span></a> in an uncaught exception result value, which contains the exception’s entire throw context.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Contrary to block contexts, throw contexts don’t skip over handlers.</p>
@@ -589,10 +587,6 @@ We then append the values <span class="math notranslate nohighlight">\(val^m:[t^
 <p>In other words, when a throw occurs, normal execution halts and exceptional execution begins, until the throw
 is the continuation (i.e., in the place of a <span class="math notranslate nohighlight">\(\_\)</span>) of a throw context in a catching try block.</p>
 <p>In this particular case, the exception is caught by the exception handler <span class="math notranslate nohighlight">\(H\)</span> and its values are returned.</p>
-</div>
-<div class="admonition-todo admonition" id="id10">
-<p class="admonition-title">Todo</p>
-<p>Add administrative values to describe unresolved throws.</p>
 </div>
 </section>
 <section id="configurations">
@@ -634,11 +628,7 @@ S; F; E[\href{../exec/runtime.html#syntax-trap}{\mathsf{trap}}] &amp;\href{../ex
 S; F; \href{../exec/runtime.html#syntax-frame}{\mathsf{frame}}_n\{F'\}~\href{../exec/runtime.html#syntax-trap}{\mathsf{trap}}~\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{end}} &amp;\href{../exec/conventions.html#formal-notation}{\hookrightarrow}&amp; S; F; \href{../exec/runtime.html#syntax-trap}{\mathsf{trap}} \\
 \end{array}\end{split}\]</div>
 <p>Reduction terminates when a thread’s instruction sequence has been reduced to a <a class="reference internal" href="#syntax-result"><span class="std std-ref">result</span></a>,
-that is, either a sequence of <a class="reference internal" href="#syntax-val"><span class="std std-ref">values</span></a> or to a <span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-trap}{\mathsf{trap}}\)</span>.</p>
-<div class="admonition-todo admonition" id="id11">
-<p class="admonition-title">Todo</p>
-<p>Add rules to deal with unresolved <span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-throwadm}{\mathsf{throw}}~\href{../exec/runtime.html#syntax-tagaddr}{\mathit{tagaddr}}\)</span>, and extend results to include such situations.</p>
-</div>
+that is, either a sequence of <a class="reference internal" href="#syntax-val"><span class="std std-ref">values</span></a>, to an uncaught exception, or to a <span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-trap}{\mathsf{trap}}\)</span>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The restriction on evaluation contexts rules out contexts like <span class="math notranslate nohighlight">\([\_]\)</span> and <span class="math notranslate nohighlight">\(\epsilon~[\_]~\epsilon\)</span> for which <span class="math notranslate nohighlight">\(E[\href{../exec/runtime.html#syntax-trap}{\mathsf{trap}}] = \href{../exec/runtime.html#syntax-trap}{\mathsf{trap}}\)</span>.</p>

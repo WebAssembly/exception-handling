@@ -119,7 +119,7 @@ in which case the entire computation is aborted and no further modifications to 
 <li><p>The execution of an instruction may also end in a <em>jump</em> to a designated target,
 which defines the next instruction to execute.</p></li>
 <li><p>Execution can <em>enter</em> and <em>exit</em> <a class="reference internal" href="../syntax/instructions.html#syntax-instr-seq"><span class="std std-ref">instruction sequences</span></a> that form <a class="reference internal" href="../syntax/instructions.html#syntax-instr-control"><span class="std std-ref">blocks</span></a>.</p></li>
-<li><p><a class="reference internal" href="../syntax/instructions.html#syntax-instr-seq"><span class="std std-ref">Instruction sequences</span></a> are implicitly executed in order, unless a trap or jump occurs.</p></li>
+<li><p><a class="reference internal" href="../syntax/instructions.html#syntax-instr-seq"><span class="std std-ref">Instruction sequences</span></a> are implicitly executed in order, unless a trap or jump occurs, or an exception is thrown.</p></li>
 <li><p>In various places the rules contain <em>assertions</em> expressing crucial invariants about the program state.</p></li>
 </ul>
 </section>
@@ -160,7 +160,7 @@ This can be interpreted as popping two value off the stack and pushing the resul
 <p>The order of reduction is determined by the definition of an appropriate <a class="reference internal" href="runtime.html#syntax-ctxt-eval"><span class="std std-ref">evaluation context</span></a>.</p>
 <p>Reduction <em>terminates</em> when no more reduction rules are applicable.
 <a class="reference internal" href="../appendix/properties.html#soundness"><span class="std std-ref">Soundness</span></a> of the WebAssembly <a class="reference internal" href="../valid/conventions.html#type-system"><span class="std std-ref">type system</span></a> guarantees that this is only the case when the original instruction sequence has either been reduced to a sequence of <span class="math notranslate nohighlight">\(\href{../syntax/instructions.html#syntax-instr-numeric}{\mathsf{const}}\)</span> instructions, which can be interpreted as the <a class="reference internal" href="runtime.html#syntax-val"><span class="std std-ref">values</span></a> of the resulting operand stack,
-or if a <a class="reference internal" href="runtime.html#syntax-trap"><span class="std std-ref">trap</span></a> occurred.</p>
+or if a <a class="reference internal" href="runtime.html#syntax-trap"><span class="std std-ref">trap</span></a> or an uncaught exception occurred.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>For example, the following instruction sequence,</p>
