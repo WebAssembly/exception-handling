@@ -817,7 +817,7 @@ Finally, the following definition of *evaluation context* and associated structu
    \end{array}
 
 Reduction terminates when a thread's instruction sequence has been reduced to a :ref:`result <syntax-result>`,
-that is, either a sequence of :ref:`values <syntax-val>`, to an unresolved thrown exception or to a |TRAP|.
+that is, either a sequence of :ref:`values <syntax-val>`, to an uncaught exception, or to a |TRAP|.
 
 .. note::
    The restriction on evaluation contexts rules out contexts like :math:`[\_]` and :math:`\epsilon~[\_]~\epsilon` for which :math:`E[\TRAP] = \TRAP`.
