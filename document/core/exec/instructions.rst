@@ -2642,7 +2642,7 @@ Control Instructions
 
 7. :ref:`Enter <exec-instr-seq-enter>` the block :math:`H~(\val^m~\instr_1^\ast)~\END` with label :math:`L`.
 
-8. :ref:`Enter <exec-handler-enter>` the block :math:`\val^m~\instr_1^\ast` with exception handler :math:`H`.
+8. :ref:`Enter <exec-handler-enter>` :math:`\val^m~\instr_1^\ast` with exception handler :math:`H`.
 
 .. math::
    ~\\[-1ex]
