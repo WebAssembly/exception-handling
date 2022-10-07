@@ -211,7 +211,7 @@ S;C, labels [t2*] ⊢ instr1* : []→[t2*]
 -----------------------------------------------------------
 S;C, labels [t2*] ⊢ catch{a? instr2*}* instr1* end : []→[t2*]
 
-S;C, labels [t*] ⊢ instr* : []→[t*]
+S;C ⊢ instr* : []→[t*]
 C.labels[l] = [t0*]
 ---------------------------------------
 S;C ⊢ delegate{l} instr* end : []→[t*]
