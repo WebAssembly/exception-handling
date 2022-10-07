@@ -2999,7 +2999,7 @@ Entering :math:`\instr` with exception handler :math:`H`
 
 
 .. note::
-   No formal reduction rule is needed for installing an exception :ref:`handler <syntax-handler>`
+   No formal reduction rule is needed for entering an exception :ref:`handler <syntax-handler>`
    because it is an :ref:`administrative instruction <syntax-instr-admin>`
    that the :ref:`try <syntax-try>` instruction reduces to directly.
 
