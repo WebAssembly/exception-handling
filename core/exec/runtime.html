@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Runtime Structure &#8212; WebAssembly 1.1 (Draft 2022-10-07)</title>
+    <title>Runtime Structure &#8212; WebAssembly 1.1 (Draft 2022-10-08)</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
@@ -443,7 +443,7 @@ If there is no <a class="reference internal" href="#syntax-tagaddr"><span class=
 \end{array}\]</div>
 <p>Intuitively, for each target <span class="math notranslate nohighlight">\(\{\href{../exec/runtime.html#syntax-tagaddr}{\mathit{tagaddr}}^?~\href{../syntax/instructions.html#syntax-instr}{\mathit{instr}}^\ast\}\)</span> of a <span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-catchadm}{\mathsf{catch}}\)</span>, <span class="math notranslate nohighlight">\(\href{../syntax/instructions.html#syntax-instr}{\mathit{instr}}^\ast\)</span> is the <em>continuation</em> to execute
 when the handler catches a thrown exception with tag <span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-tagaddr}{\mathit{tagaddr}}\)</span>, or for any exception, when a target specifies no tag address.
-In that case, we say that the exception is handled by the exception handler <span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-catchadm}{\mathsf{catch}}\)</span>.
+In that case, the exception is handled by the exception handler <span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-catchadm}{\mathsf{catch}}\)</span>.
 If this list of targets is empty, or if the tag address of the thrown exception is not in the handler’s mapping and there is no <span class="math notranslate nohighlight">\(\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{catch\_all}}\)</span> clause, then the exception will be rethrown.</p>
 <div class="admonition-todo admonition" id="id7">
 <p class="admonition-title">Todo</p>
@@ -522,7 +522,7 @@ When <span class="math notranslate nohighlight">\(\href{../syntax/instructions.h
   \href{../exec/runtime.html#syntax-val}{\mathit{val}}^\ast~\href{../exec/runtime.html#syntax-label}{\mathsf{label}}_n\{\href{../syntax/instructions.html#syntax-instr}{\mathit{instr}}^\ast\}~\href{../exec/runtime.html#syntax-ctxt-block}{B}^k~\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{end}}~\href{../syntax/instructions.html#syntax-instr}{\mathit{instr}}^\ast \\
 \end{array}\end{split}\]</div>
 <p>This definition allows to index active labels surrounding a <a class="reference internal" href="../syntax/instructions.html#syntax-br"><span class="std std-ref">branch</span></a> or <a class="reference internal" href="../syntax/instructions.html#syntax-return"><span class="std std-ref">return</span></a> instruction.</p>
-<p>In order to be able to break jumping over exception handlers and caught exceptions, we must allow for these new structured administrative control instructions to appear after labels in block contexts, by extending block context as follows.</p>
+<p>In order to be able to break jumping over exception handlers and caught exceptions, these new structured administrative control instructions are allowed to appear after labels in block contexts, by extending block context as follows.</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{array}{llll}
 \def\mathdef2162#1{{}}\mathdef2162{(control contexts)} &amp; \href{../exec/runtime.html#syntax-ctxt-block}{C}^{k} &amp;::=&amp; \href{../exec/runtime.html#syntax-handler}{\mathit{handler}}~\href{../exec/runtime.html#syntax-ctxt-block}{B}^k~\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{end}} \\
@@ -572,7 +572,7 @@ and that the tag address <cite>a</cite> of <span class="math notranslate nohighl
 &amp; \hspace{-5ex} S;~F;~\href{../exec/runtime.html#syntax-val}{\mathit{val}}^n~(\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{try}}~\mathit{bt}~(\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{throw}}~x)~\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{catch}}~x~\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{return}}~\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{end}}) \\
 \href{../exec/conventions.html#formal-notation}{\hookrightarrow} &amp; S;~F;~\href{../exec/runtime.html#syntax-label}{\mathsf{label}}_m\{\} (\href{../exec/runtime.html#syntax-catchadm}{\mathsf{catch}}\{a~\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{return}}\}~\href{../exec/runtime.html#syntax-val}{\mathit{val}}^n~(\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{throw}}~x)~\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{end}})~\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{end}} \\
 \end{array}\end{split}\]</div>
-<p>We denote <span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-val}{\mathit{val}}^n = \href{../exec/runtime.html#syntax-val}{\mathit{val}}^{n-m} \href{../exec/runtime.html#syntax-val}{\mathit{val}}^m\)</span>.
+<p>Let <span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-val}{\mathit{val}}^n\)</span> be <span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-val}{\mathit{val}}^{n-m} \href{../exec/runtime.html#syntax-val}{\mathit{val}}^m\)</span>.
 <a class="reference internal" href="instructions.html#exec-throwadm"><span class="std std-ref">Handling the thrown exception</span></a> with tag address <span class="math notranslate nohighlight">\(a\)</span> in the throw context
 <span class="math notranslate nohighlight">\(T=[val^{n-m}\_]\)</span>, with the exception handler <span class="math notranslate nohighlight">\(H=\href{../exec/runtime.html#syntax-catchadm}{\mathsf{catch}}\{a~\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{return}}\}\)</span> gives:</p>
 <div class="math notranslate nohighlight">
@@ -580,10 +580,10 @@ and that the tag address <cite>a</cite> of <span class="math notranslate nohighl
 \href{../exec/conventions.html#formal-notation}{\hookrightarrow} &amp; S;~F;~\href{../exec/runtime.html#syntax-label}{\mathsf{label}}_m\{\}~(\href{../exec/runtime.html#syntax-caughtadm}{\mathsf{caught}}\{a~\href{../exec/runtime.html#syntax-val}{\mathit{val}}^m\}~\href{../exec/runtime.html#syntax-val}{\mathit{val}}^m~\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{return}}~\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{end}})~\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{end}} &amp; \hspace{9ex}\ \\
 \href{../exec/conventions.html#formal-notation}{\hookrightarrow} &amp; \href{../exec/runtime.html#syntax-val}{\mathit{val}}^m &amp; \\
 \end{array}\end{split}\]</div>
-<p>When a throw of the form <span class="math notranslate nohighlight">\(val^m (\href{../exec/runtime.html#syntax-throwadm}{\mathsf{throw}}~a)\)</span> occurs, we search for the maximal surrounding throw context <span class="math notranslate nohighlight">\(T\)</span>,
-which means we pop any other values, labels, frames, and <span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-caughtadm}{\mathsf{caught}}\)</span> instructions surrounding the throw <span class="math notranslate nohighlight">\(val^m (\href{../exec/runtime.html#syntax-throwadm}{\mathsf{throw}}~a)\)</span>,
-until we find an exception handler (corresponding to a try block) that <a class="reference internal" href="#syntax-handler"><span class="std std-ref">handles the exception</span></a>.
-We then append the values <span class="math notranslate nohighlight">\(val^m:[t^m]\)</span> to the tag address <span class="math notranslate nohighlight">\(a\)</span> into a new <span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-caughtadm}{\mathsf{caught}}\)</span> instruction which we push on the stack.</p>
+<p>When a throw of the form <span class="math notranslate nohighlight">\(val^m (\href{../exec/runtime.html#syntax-throwadm}{\mathsf{throw}}~a)\)</span> occurs, search for the maximal surrounding throw context <span class="math notranslate nohighlight">\(T\)</span> is performed,
+which means any other values, labels, frames, and <span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-caughtadm}{\mathsf{caught}}\)</span> instructions surrounding the throw <span class="math notranslate nohighlight">\(val^m (\href{../exec/runtime.html#syntax-throwadm}{\mathsf{throw}}~a)\)</span> are popped,
+until a <a class="reference internal" href="#syntax-handler"><span class="std std-ref">handler</span></a> for the exception is found.
+Then a new <span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-caughtadm}{\mathsf{caught}}\)</span> instruction, containing the tag address <span class="math notranslate nohighlight">\(a\)</span> and the values <span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-val}{\mathit{val}}^m\)</span>, is pushed onto the stack.</p>
 <p>In other words, when a throw occurs, normal execution halts and exceptional execution begins, until the throw
 is the continuation (i.e., in the place of a <span class="math notranslate nohighlight">\(\_\)</span>) of a throw context in a catching try block.</p>
 <p>In this particular case, the exception is caught by the exception handler <span class="math notranslate nohighlight">\(H\)</span> and its values are returned.</p>
