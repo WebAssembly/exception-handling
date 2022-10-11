@@ -2643,15 +2643,28 @@ Control Instructions
 :math:`\TRY~\blocktype~\instr^\ast~\DELEGATE~l`
 ...............................................
 
-.. todo::
-   Add prose for the |TRY| - |DELEGATE| execution step.
+1. Assert: due to :ref:`validation <valid-blocktype>`, :math:`\expand_F(\blocktype)` is defined.
+
+2. Let :math:`[t_1^m] \to [t_2^n]` be the :ref:`function type <syntax-functype>` :math:`\expand_F(\blocktype)`.
+
+3. Let :math:`L` be the label whose arity is :math:`n` and whose continuation is the end of the |TRY| instruction.
+
+4. Let :math:`H` be the :ref:`delegating exception handler <syntax-handler>` :math:`\DELEGATEadm\{l\}`, targeting the :math:`l` surrounding block.
+
+5. Assert: due to :ref:`validation <valid-try-delegate>`, there are at least :math:`m` values on the top of the stack.
+
+6. Pop the values :math:`\val^m` from the stack.
+
+7. :ref:`Enter <exec-instr-seq-enter>` the block :math:`H~(\val^n~\instr^\ast)~\END` with label :math:`L`.
+
+8. :ref:`Install <exec-handler-enter>` the exception handler `H` containing :math:`\val^m~\instr^\ast`.
 
 .. math::
    ~\\[-1ex]
    \begin{array}{lcl}
-   F; \val^n~(\TRY~\X{bt}~\instr^\ast~\DELEGATE~l) &\stepto&
-   F; \LABEL_m\{\}~(\DELEGATEadm\{l\}~\val^n~\instr^\ast~\END)~\END \\
-   && (\iff \expand_F(\X{bt}) = [t_1^n] \to [t_2^m])
+   F; \val^m~(\TRY~\X{bt}~\instr^\ast~\DELEGATE~l) &\stepto&
+   F; \LABEL_n\{\}~(\DELEGATEadm\{l\}~\val^m~\instr^\ast~\END)~\END \\
+   && (\iff \expand_F(\X{bt}) = [t_1^m] \to [t_2^n])
    \end{array}
 
 
@@ -2708,7 +2721,7 @@ Control Instructions
 
 6. Repeat :math:`l+1` times:
 
-   a. While the top of the stack is a value, do:
+   a. While the top of the stack is a value, a |handler|, or a |CAUGHTadm| instruction, do:
 
       i. Pop the value from the stack.
 
@@ -3039,16 +3052,31 @@ Throwing an exception with :ref:`tag address <syntax-tagaddr>` :math:`a`
 
 .. _exec-caughtadm:
 
-Holding a caught exception with |CAUGHTadm|
-...........................................
+Exiting a |CAUGHTadm|
+.....................
 
-.. todo::
-   Add prose describing the administrative |CAUGHTadm| execution step.
+When the |END| of a |CAUGHTadm|, is reached without a jump, exception, or trap, then the following steps are performed.
+
+1. Let :math:`\val^\ast` be the values on the top of the stack.
+
+2. Pop the values :math:`\val^\ast` from the stack.
+
+3. Assert: due to :ref:`validation <valid-instr-seq>`, an administrative instruction :math:`\CAUGHTadm\{a~\val_0^\ast\}` is now on the top of the stack.
+
+4. Pop the |CAUGHTadm| from the stack.
+
+5. Push :math:`\val^\ast` back to the stack.
+
+6. Jump to the position after the |END| of the administrative instruction associated with the |CAUGHTadm| instruction.
+
 
 .. math::
    \begin{array}{rcl}
-   \CAUGHTadm\{a~\val^n\}~\val^m~\END  &\stepto& \val^m
+   \CAUGHTadm\{a~\val_0^\ast\}~\val^\ast~\END  &\stepto& \val^\ast
    \end{array}
+
+.. note::
+   An exception can only be rethrown from the scope of the |CAUGHTadm| administrative instruction holding it, i.e., from the scope of the |CATCH| or |CATCHALL| block of a :ref:`try-catch <syntax-try-catch>` instruction that caught it. Upon exit from a |CAUGHTadm|, the exception it holds is discarded.
 
 
 .. index:: ! call, function, function instance, label, frame
@@ -3143,7 +3171,7 @@ Host Functions
 ..............
 
 Invoking a :ref:`host function <syntax-hostfunc>` has non-deterministic behavior.
-It may either terminate with a :ref:`trap <trap>` or return regularly.
+It may either terminate with a :ref:`trap <trap>`, an exception, or return regularly.
 However, in the latter case, it must consume and produce the right number and types of WebAssembly :ref:`values <syntax-val>` on the stack,
 according to its :ref:`function type <syntax-functype>`.
 

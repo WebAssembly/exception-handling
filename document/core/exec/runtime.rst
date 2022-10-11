@@ -66,7 +66,7 @@ Convention
 * The meta variable :math:`r` ranges over reference values where clear from context.
 
 
-.. index:: ! result, value, trap
+.. index:: ! result, value, trap, exception
    pair: abstract syntax; result
 .. _syntax-result:
 
@@ -74,17 +74,15 @@ Results
 ~~~~~~~
 
 A *result* is the outcome of a computation.
-It is either a sequence of :ref:`values <syntax-val>` or a :ref:`trap <syntax-trap>`.
+It is either a sequence of :ref:`values <syntax-val>`, a :ref:`trap <syntax-trap>`, or an uncaught exception wrapped in its throw context.
 
 .. math::
    \begin{array}{llcl}
    \production{(result)} & \result &::=&
      \val^\ast \\&&|&
-     \TRAP
+     \TRAP  \\&&|&
+     \XT[\val^\ast~(\THROWadm~\tagaddr)]
    \end{array}
-
-.. todo::
-   Add a result value for an unhandled exception.
 
 .. note::
    In the current version of WebAssembly, a result can consist of at most one value.
@@ -554,7 +552,7 @@ If there is no :ref:`tag address <syntax-tagaddr>`, the instructions of that tar
 
 Intuitively, for each target :math:`\{\tagaddr^?~\instr^\ast\}` of a |CATCHadm|, :math:`\instr^\ast` is the *continuation* to execute
 when the handler catches a thrown exception with tag |tagaddr|, or for any exception, when a target specifies no tag address.
-In that case, we say that the exception is handled by the exception handler |CATCHadm|.
+In that case, the exception is handled by the exception handler |CATCHadm|.
 If this list of targets is empty, or if the tag address of the thrown exception is not in the handler's mapping and there is no |CATCHALL| clause, then the exception will be rethrown.
 
 .. todo::
@@ -679,7 +677,7 @@ In order to specify the reduction of :ref:`branches <syntax-instr-control>`, the
 
 This definition allows to index active labels surrounding a :ref:`branch <syntax-br>` or :ref:`return <syntax-return>` instruction.
 
-In order to be able to break jumping over exception handlers and caught exceptions, we must allow for these new structured administrative control instructions to appear after labels in block contexts, by extending block context as follows.
+In order to be able to break jumping over exception handlers and caught exceptions, these new structured administrative control instructions are allowed to appear after labels in block contexts, by extending block context as follows.
 
 .. math::
    \begin{array}{llll}
@@ -714,13 +712,14 @@ the following syntax of *throw contexts* is defined, as well as associated struc
 .. math::
    \begin{array}{llll}
    \production{(throw contexts)} & \XT &::=&
-     \val^\ast~[\_]~\instr^\ast \\ &&|&
+     [\_] | \val^\ast~\XT~\instr^\ast \\ &&|&
      \LABEL_n\{\instr^\ast\}~\XT~\END \\ &&|&
      \CAUGHTadm\{\tagaddr~\val^\ast\}~\XT~\END \\ &&|&
      \FRAME_n\{F\}~\XT~\END \\
    \end{array}
 
 Throw contexts allow matching the program context around a throw instruction up to the innermost enclosing |CATCHadm| or |DELEGATEadm|, thereby selecting the exception |handler| responsible for an exception, if one exists.
+If no exception :ref:`handler that catches the exception <syntax-handler>` is found, the computation :ref:`results <syntax-result>` in an uncaught exception result value, which contains the exception's entire throw context.
 
 .. note::
    Contrary to block contexts, throw contexts don't skip over handlers.
@@ -752,18 +751,16 @@ Throw contexts allow matching the program context around a throw instruction up 
       \stepto & \val_{f32}~\val_{i64} & \\
       \end{array}
 
-   When a throw of the form :math:`\val^m (\THROWadm~a)` occurs, we search for the maximal surrounding throw context :math:`T`,
-   which means we pop any other values, labels, frames, and |CAUGHTadm| instructions surrounding the throw :math:`\val^m (\THROWadm~a)`,
-   until we find an exception handler (corresponding to a try block) that :ref:`handles the exception <syntax-handler>`.
-   We then append the values :math:`\val^m:[t^m]` to the tag address :math:`a` into a new |CAUGHTadm| instruction which we push on the stack.
 
-   In other words, an exception throw is caught when it is the continuation of a throw context in a catching try block,
-   i.e., it is inside a catching try block, which is the innermost with respect to the throw.
+   When a throw of the form :math:`val^m (\THROWadm~a)` occurs, search for the maximal surrounding throw context :math:`T` is performed,
+   which means any other values, labels, frames, and |CAUGHTadm| instructions surrounding the throw :math:`val^m (\THROWadm~a)` are popped,
+   until a :ref:`handler <syntax-handler>` for the exception is found.
+   Then a new |CAUGHTadm| instruction, containing the tag address :math:`a` and the values :math:`\val^m`, is pushed onto the stack.
+
+   If no exception :ref:`handler that catches the exception <syntax-handler>` is found, the computation :ref:`results <syntax-result>` in an uncaught exception result value, which contains the exception's entire throw context.
 
    In this particular case, the exception is caught by the exception handler :math:`H` and its values are returned.
 
-.. todo::
-   Add administrative values to describe unresolved throws.
 
 
 .. index:: ! configuration, ! thread, store, frame, instruction, module instruction
@@ -819,10 +816,7 @@ Finally, the following definition of *evaluation context* and associated structu
    \end{array}
 
 Reduction terminates when a thread's instruction sequence has been reduced to a :ref:`result <syntax-result>`,
-that is, either a sequence of :ref:`values <syntax-val>` or to a |TRAP|.
-
-.. todo::
-   Add rules to deal with unresolved :math:`\THROWadm~\tagaddr`, and extend results to include such situations.
+that is, either a sequence of :ref:`values <syntax-val>`, to an uncaught exception, or to a |TRAP|.
 
 .. note::
    The restriction on evaluation contexts rules out contexts like :math:`[\_]` and :math:`\epsilon~[\_]~\epsilon` for which :math:`E[\TRAP] = \TRAP`.
