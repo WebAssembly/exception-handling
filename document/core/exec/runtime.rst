@@ -752,15 +752,12 @@ If no exception :ref:`handler that catches the exception <syntax-handler>` is fo
       \end{array}
 
 
-   When a throw of the form :math:`val^m (\THROWadm~a)` occurs, search for the maximal surrounding throw context :math:`T` is performed,
-   which means any other values, labels, frames, and |CAUGHTadm| instructions surrounding the throw :math:`val^m (\THROWadm~a)` are popped,
+   When a throw of the form :math:`\val^m (\THROWadm~a)` occurs, search for the maximal surrounding throw context :math:`T` is performed,
+   which means any other values, labels, frames, and |CAUGHTadm| instructions surrounding the throw :math:`\val^m (\THROWadm~a)` are popped,
    until a :ref:`handler <syntax-handler>` for the exception is found.
    Then a new |CAUGHTadm| instruction, containing the tag address :math:`a` and the values :math:`\val^m`, is pushed onto the stack.
 
-   If no exception :ref:`handler that catches the exception <syntax-handler>` is found, the computation :ref:`results <syntax-result>` in an uncaught exception result value, which contains the exception's entire throw context.
-
    In this particular case, the exception is caught by the exception handler :math:`H` and its values are returned.
-
 
 
 .. index:: ! configuration, ! thread, store, frame, instruction, module instruction
@@ -800,7 +797,7 @@ Finally, the following definition of *evaluation context* and associated structu
    \begin{array}{llll}
    \production{(evaluation contexts)} & E &::=&
      [\_] ~|~
-     val^\ast~E~\instr^\ast ~|~
+     \val^\ast~E~\instr^\ast ~|~
      \LABEL_n\{\instr^\ast\}~E~\END \\
    \end{array}
 
