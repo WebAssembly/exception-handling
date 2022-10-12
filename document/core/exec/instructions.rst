@@ -2635,14 +2635,23 @@ Control Instructions
 
 5. Pop the values :math:`\val^m` from the stack.
 
-6. Let :math:`H` be the :ref:`catching exception handler <syntax-handler>` :math:`\CATCHadm\{a_x~instr_2^\ast\}^\ast\{\epsilon~\instr_3^\ast\}^?`, whose mapping from tag addresses to catch bodies corresponds to the |CATCH| and |CATCHALL| clauses, where :math:`a_x` is the tag address of each tag :math:`x`.
+6. Let :math:`F` be the :ref:`current <exec-notation-textual>` :ref:`frame <syntax-frame>`.
 
-   .. todo::
-       Step 6 needs proper writing out into a loop over x*, which looks up each corresponding a_x in the store.
+7. Let :math:`H` be the empty :ref:`catching exception handler <syntax-handler>` :math:`\CATCHadm`.
 
-7. :ref:`Enter <exec-instr-seq-enter>` the block :math:`H~(\val^m~\instr_1^\ast)~\END` with label :math:`L`.
+8. For each catch clause :math:`(\CATCH~x~\instr_2^\ast)` do:
 
-8. :ref:`Enter <exec-handler-enter>` :math:`\val^m~\instr_1^\ast` with exception handler :math:`H`.
+   a. Let :math:`a_x` be the tag address :math:`F.\AMODULE.\MITAGS[x]`.
+
+   b. Append :math:`\{a_x~\instr_2^\ast\}` to :math:`H`.
+
+9. If there is a catch all clause :math:`(\CATCHALL~\instr_3^\ast)`, then
+
+   a. Append :math:`\{\epsilon~\instr_3^\ast\}` to :math:`H`.
+
+10. :ref:`Enter <exec-instr-seq-enter>` the block :math:`H~(\val^m~\instr_1^\ast)~\END` with label :math:`L`.
+
+11. :ref:`Enter <exec-handler-enter>` :math:`\val^m~\instr_1^\ast` with exception handler :math:`H`.
 
 .. math::
    ~\\[-1ex]
