@@ -1436,12 +1436,8 @@ Control Instructions
    }
 
 .. note::
-   The :ref:`notation <notation-extend>` :math:`C,\CLABELS\, [t^\ast]` inserts the new label type at index :math:`0`, shifting all others.
+   The :ref:`label index <syntax-labelidx>` space in the :ref:`context <context>` :math:`C` contains the most recent label first, so that :math:`C.\CLABELS[l]` performs a relative lookup as expected.
 
-   The :ref:`label index <syntax-labelidx>` after |DELEGATE| refers to a label surrounding the :ref:`try-delegate <syntax-try-delegate>` instruction. The furthest label it can refer to is the label inserted by the frame. For example, :math:`\TRY~\dots~\DELEGATE~0` may appear without any explicitly surrounding block, in which case the label 0 refers to the label of the frame.
-
-.. todo::
-   Add references/links to "the label of the frame": Where is this label introduced?
 
 .. _valid-throw:
 
