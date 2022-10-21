@@ -3016,7 +3016,7 @@ When the end of a :ref:`try <syntax-try>` instruction is reached without a jump,
 Throwing an exception with :ref:`tag address <syntax-tagaddr>` :math:`a`
 ........................................................................
 
-When an administrative throw occurs, then values, labels, |CAUGHTadm| instructions,
+When a throw occurs, then values, labels, active catch clauses,
 and call frames are popped if necessary, until an appropriate exception handler is found
 on the top of the stack.
 
@@ -3107,9 +3107,9 @@ on the top of the stack.
    \end{array}
 
 .. note::
-   Note that the reduction step resulting in a |CAUGHTadm| instruction is the only one that does not preserve the throw context.
+   The reduction step activating a catch clause |CAUGHTadm| is the only one that does not preserve the throw context.
    While a |THROWadm| propagates through the stack, the throw context |XT| is collected
-   until the exception is caught inside a |CAUGHTadm| instruction, in which point it's discarded.
+   until the exception is caught inside a |CAUGHTadm| instruction, at which point it is discarded.
 
 .. todo::
    Add explainer note for the reduction of |DELEGATEadm|, when PR #221 is settled.
