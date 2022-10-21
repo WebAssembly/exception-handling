@@ -3052,10 +3052,10 @@ Throwing an exception with :ref:`tag address <syntax-tagaddr>` :math:`a`
 
 .. _exec-caughtadm:
 
-Exiting a |CAUGHTadm|
-.....................
+Exiting a catch clause |CAUGHTadm|
+..................................
 
-When the |END| of a |CAUGHTadm|, is reached without a jump, exception, or trap, then the following steps are performed.
+When the |END| of a catch clause |CAUGHTadm| is reached without a jump, exception, or trap, then the following steps are performed.
 
 1. Let :math:`\val^\ast` be the values on the top of the stack.
 
@@ -3063,7 +3063,7 @@ When the |END| of a |CAUGHTadm|, is reached without a jump, exception, or trap, 
 
 3. Assert: due to :ref:`validation <valid-instr-seq>`, an administrative instruction :math:`\CAUGHTadm\{a~\val_0^\ast\}` is now on the top of the stack.
 
-4. Pop the |CAUGHTadm| from the stack.
+4. Pop the catch clause |CAUGHTadm| from the stack.
 
 5. Push :math:`\val^\ast` back to the stack.
 
