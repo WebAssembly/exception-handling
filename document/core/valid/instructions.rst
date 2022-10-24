@@ -1379,7 +1379,7 @@ Control Instructions
 
   * The tag :math:`C.\CTAGS[x]` must be defined in the context :math:`C`.
 
-  * Let :math:`[t_{3i}^\ast] \to [t_{4i}^\ast]` be the :ref:`tag type <syntax-tagtype>` :math:`C.\tags[x]`.
+  * Let :math:`[t_{3i}^\ast] \to [t_{4i}^\ast]` be the :ref:`tag type <syntax-tagtype>` :math:`C.\CTAGS[x]`.
 
   * The :ref:`result type <syntax-resulttype>` :math:`[t_{4i}^\ast]` must be empty.
 
