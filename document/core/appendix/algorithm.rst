@@ -127,7 +127,7 @@ The control stack is likewise manipulated through auxiliary functions:
      return (if frame.opcode == loop then frame.start_types else frame.end_types)
 
    func is_catch(frame : ctrl_frame) : bool =
-     return frame.catch_label
+     return frame.opcode = catch || frame.opcode = catch_all
 
    func set_catch(catch : bool) =
      error_if(ctrls.is_empty())
