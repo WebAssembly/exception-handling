@@ -2637,21 +2637,25 @@ Control Instructions
 
 6. Let :math:`F` be the :ref:`current <exec-notation-textual>` :ref:`frame <syntax-frame>`.
 
-7. Let :math:`H` be the empty :ref:`catching exception handler <syntax-handler>` :math:`\CATCHadm`.
+7. For each catch clause :math:`(\CATCH~x_i~\instr_{2i}^\ast)` do:
 
-8. For each catch clause :math:`(\CATCH~x~\instr_2^\ast)` do:
+   a. Assert: due to :ref:`validation <valid-try-catch>`, :math:`F.\AMODULE.\MITAGS[x_i]` exists.
 
-   a. Let :math:`a_x` be the tag address :math:`F.\AMODULE.\MITAGS[x]`.
+   b. Let :math:`a_i` be the tag address :math:`F.\AMODULE.\MITAGS[x_i]`.
 
-   b. Append :math:`\{a_x~\instr_2^\ast\}` to :math:`H`.
+   c. Let :math:`H_i` be the handler clause :math:`\{a_i~\instr_{2i}^\ast\}`.
 
-9. If there is a catch all clause :math:`(\CATCHALL~\instr_3^\ast)`, then
+8. If there is a catch all clause :math:`(\CATCHALL~\instr_3^\ast)`, then:
 
-   a. Append :math:`\{\epsilon~\instr_3^\ast\}` to :math:`H`.
+    a. Let :math:`H'^?` be the handler clause :math:`\{\epsilon~\instr_3^\ast\}`.
 
-10. :ref:`Enter <exec-instr-seq-enter>` the block :math:`H~(\val^m~\instr_1^\ast)~\END` with label :math:`L`.
+9. Else:
 
-11. :ref:`Enter <exec-handler-enter>` :math:`\val^m~\instr_1^\ast` with exception handler :math:`H`.
+    a. Let :math:`H'^?` be the empty handler clause :math:`\epsilon`.
+
+10. Let :math:`H^\ast` be the :ref:`catching exception handler <syntax-handler>` containing the concatenation of the handler clauses :math:`H_i` and :math:`H'^?`.
+
+11. :ref:`Enter <exec-handler-enter>` the block :math:`\val^m~\instr_1^\ast` with label :math:`L` and exception handler :math:`H`.
 
 .. math::
    ~\\[-1ex]
@@ -2999,12 +3003,14 @@ The following auxiliary rules define the semantics of entering and exiting :ref:
 
 .. _exec-handler-enter:
 
-Entering :math:`\instr` with exception handler :math:`H`
-........................................................
+Entering :math:`\instr^\ast` with label :math:`L` and exception handler :math:`H`
+.................................................................................
 
-1. Push :math:`H` onto the stack.
+1. Push :math:`L` to the stack.
 
-2. Jump to the start of the instruction sequence :math:`\instr^\ast`.
+2. Push :math:`H` onto the stack.
+
+3. Jump to the start of the instruction sequence :math:`\instr^\ast`.
 
 
 .. note::
