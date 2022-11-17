@@ -1460,7 +1460,7 @@ Control Instructions
 :math:`\RETHROW~l`
 ..................
 
-* The label type :math:`C.\CLABELS[l]` must be defined in the context.
+* The label :math:`C.\CLABELS[l]` must be defined in the context.
 
 * Let :math:`(\LCATCH^?~[t^\ast])` be the :ref:`label type <syntax-labeltype>` :math:`C.\CLABELS[l]`.
 
@@ -1487,7 +1487,7 @@ Control Instructions
 :math:`\BR~l`
 .............
 
-* The label type :math:`C.\CLABELS[l]` must be defined in the context.
+* The label :math:`C.\CLABELS[l]` must be defined in the context.
 
 * Let :math:`\LCATCH^?~[t^\ast]` be the :ref:`label type <syntax-labeltype>` :math:`C.\CLABELS[l]`.
 
@@ -1511,7 +1511,7 @@ Control Instructions
 :math:`\BRIF~l`
 ...............
 
-* The label type :math:`C.\CLABELS[l]` must be defined in the context.
+* The label :math:`C.\CLABELS[l]` must be defined in the context.
 
 * Let :math:`\LCATCH^?~[t^\ast]` be the :ref:`label type <syntax-labeltype>` :math:`C.\CLABELS[l]`.
 
@@ -1534,10 +1534,10 @@ Control Instructions
 ...........................
 
 
-* The label type :math:`C.\CLABELS[l_N]` must be defined in the context.
+* The label :math:`C.\CLABELS[l_N]` must be defined in the context.
 
 * For all :math:`l_i` in :math:`l^\ast`,
-  the label type :math:`C.\CLABELS[l_i]` must be defined in the context.
+  the label :math:`C.\CLABELS[l_i]` must be defined in the context.
 
 * There must be a :ref:`result type <syntax-resulttype>` :math:`[t^\ast]`, such that:
 

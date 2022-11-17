@@ -16,7 +16,7 @@ Consequently, it can be integrated directly into a decoder.
 The algorithm is expressed in typed pseudo code whose semantics is intended to be self-explanatory.
 
 
-.. index:: value type, label type, stack, label, frame, instruction
+.. index:: value type, stack, label, frame, instruction
 
 Data Structures
 ~~~~~~~~~~~~~~~
@@ -51,7 +51,6 @@ the latter surrounding :ref:`structured control instructions <syntax-instr-contr
      end_types : list(val_type)
      height : nat
      unreachable : bool
-     catch_label : bool
    }
 
 For each value, the value stack records its :ref:`value type <syntax-valtype>`, or :code:`Unknown` when the type is not known.
@@ -123,15 +122,8 @@ The control stack is likewise manipulated through auxiliary functions:
      ctrls.pop()
      return frame
 
-   func label_val_types(frame : ctrl_frame) : list(val_type) =
+   func label_types(frame : ctrl_frame) : list(val_type) =
      return (if frame.opcode == loop then frame.start_types else frame.end_types)
-
-   func is_catch(frame : ctrl_frame) : bool =
-     return frame.opcode = catch || frame.opcode = catch_all
-
-   func set_catch(catch : bool) =
-     error_if(ctrls.is_empty())
-     ctrls[0].catch_label := catch
 
    func unreachable() =
      vals.resize(ctrls[0].height)
@@ -144,9 +136,7 @@ Popping a frame first checks that the control stack is not empty.
 It then verifies that the operand stack contains the right types of values expected at the end of the exited block and pops them off the operand stack.
 Afterwards, it checks that the stack has shrunk back to its initial height.
 
-The result type of the :ref:`label <syntax-label>` associated with a control frame is either that of the stack at the start or the end of the frame, determined by the opcode that it originates from.
-
-Whether a label has :ref:`label type <syntax-labeltype>` with present |LCATCH| is stored with the boolean :math:`catch_label` of the frame, which can be checked with :math:`is_catch`, or modified in the top control frame with :math:`set_catch`.
+The type of the :ref:`label <syntax-label>` associated with a control frame is either that of the stack at the start or the end of the frame, determined by the opcode that it originates from.
 
 Finally, the current frame can be marked as unreachable.
 In that case, all existing operand types are purged from the value stack, in order to allow for the :ref:`stack-polymorphism <polymorphism>` logic in :code:`pop_val` to take effect.
@@ -229,34 +219,32 @@ Other instructions are checked in a similar manner.
          error_if(frame.opcode =/= try || frame.opcode =/= catch)
          let params = tags[x].type.params
          push_ctrl(catch, params , frame.end_types)
-         if (frame.opcode =/= try) then set_catch(true)
 
        case (catch_all)
          let frame = pop_ctrl()
          error_if(frame.opcode =/= try || frame.opcode =/= catch)
          push_ctrl(catch_all, [], frame.end_types)
-         if (frame.opcode =/= try) then set_catch(true)
 
        case (br n)
          error_if(ctrls.size() < n)
-         pop_vals(label_val_types(ctrls[n]))
+         pop_vals(label_types(ctrls[n]))
          unreachable()
 
        case (br_if n)
          error_if(ctrls.size() < n)
          pop_val(I32)
-         pop_vals(label_val_types(ctrls[n]))
-         push_vals(label_val_types(ctrls[n]))
+         pop_vals(label_types(ctrls[n]))
+         push_vals(label_types(ctrls[n]))
 
        case (br_table n* m)
          pop_val(I32)
          error_if(ctrls.size() < m)
-         let arity = label_val_types(ctrls[m]).size()
+         let arity = label_types(ctrls[m]).size()
          foreach (n in n*)
            error_if(ctrls.size() < n)
-           error_if(label_val_types(ctrls[n]).size() =/= arity)
-           push_vals(pop_vals(label_val_types(ctrls[n])))
-         pop_vals(label_val_types(ctrls[m]))
+           error_if(label_types(ctrls[n]).size() =/= arity)
+           push_vals(pop_vals(label_types(ctrls[n])))
+         pop_vals(label_types(ctrls[m]))
          unreachable()
 
 .. todo::
