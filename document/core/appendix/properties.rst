@@ -7,7 +7,7 @@ Soundness
 The :ref:`type system <type-system>` of WebAssembly is *sound*, implying both *type safety* and *memory safety* with respect to the WebAssembly semantics. For example:
 
 * All types declared and derived during validation are respected at run time;
-  e.g., every :ref:`local <syntax-local>` or :ref:`global <syntax-global>` variable will only contain type-correct values, every :ref:`instruction <syntax-instr>` will only be applied to operands of the expected type, and every :ref:`function <syntax-func>` :ref:`invocation <exec-invocation>` always evaluates to a result of the right type (if it does not :ref:`trap <trap>` or diverge).
+  e.g., every :ref:`local <syntax-local>` or :ref:`global <syntax-global>` variable will only contain type-correct values, every :ref:`instruction <syntax-instr>` will only be applied to operands of the expected type, and every :ref:`function <syntax-func>` :ref:`invocation <exec-invocation>` always evaluates to a result of the right type (if it does not :ref:`trap <trap>`, throw an exception, or diverge).
 
 * No memory location will be read or written except those explicitly defined by the program, i.e., as a :ref:`local <syntax-local>`, a :ref:`global <syntax-global>`, an element in a :ref:`table <syntax-table>`, or a location within a linear :ref:`memory <syntax-mem>`.
 
@@ -20,7 +20,7 @@ The typing rules defining WebAssembly :ref:`validation <valid>` only cover the *
 In order to state and prove soundness precisely, the typing rules must be extended to the *dynamic* components of the abstract :ref:`runtime <syntax-runtime>`, that is, the :ref:`store <syntax-store>`, :ref:`configurations <syntax-config>`, and :ref:`administrative instructions <syntax-instr-admin>`. [#cite-pldi2017]_
 
 
-.. index:: value, value type, result, result type, trap
+.. index:: value, value type, result, result type, trap, exception, throw
 .. _valid-result:
 
 Results
@@ -57,6 +57,9 @@ Results
    }{
      S \vdashresult \TRAP : [t^\ast]
    }
+
+.. todo::
+   Add validation for exception results.
 
 
 .. _module-context:
@@ -605,21 +608,38 @@ To that end, all previous typing judgements :math:`C \vdash \X{prop}` are genera
 
 .. index:: catch, throw context
 
-:math:`\CATCHadm\{\tagaddr^?~\instr'^\ast\}^\ast~\instr^\ast~\END`
-..................................................................
+:math:`\CATCHadm\{\tagaddr^?~\instr_1^\ast\}^\ast~\instr_2^\ast~\END`
+.....................................................................
 
-.. todo::
-   Add prose.
+* Let :math:`C'` be the same :ref:`context <context>` as :math:`C`, but with the :ref:`label type <syntax-labeltype>` :math:`[t_2^\ast]` prepended to the |CLABELS| vector.
+
+* Under context :math:`C'`,
+  the instruction sequence :math:`\instr_2^\ast` must be :ref:`valid <valid-instr-seq>` with type :math:`[] \to [t_2^\ast]`.
+
+* Let :math:`C''` be the same :ref:`context <context>` as :math:`C`, but with the :ref:`label type <syntax-labeltype>` :math:`(\LCATCH~[t_2^\ast])` prepended to the |CLABELS| vector.
+
+* Under context :math:`C''`,
+  for every :math:`\tagaddr^?` and associated instruction sequence :math:`\instr_1^\ast`:
+
+  * If :math:`\tagaddr^? = \epsilon`, then :math:`\instr_1^\ast` must be :ref:`valid <valid-instr-seq>` with type :math:`[] \to [t_2^\ast]`.
+
+  * Else:
+
+    * The :ref:`external tag value <syntax-externval>` :math:`\EVTAG~\tagaddr` must be :ref:`valid <valid-externval-tag>` with some :ref:`external tag type <syntax-externtype>` :math:`\ETTAG~[t_1^\ast] \to []`.
+
+    * The instruction sequence :math:`\instr_1^\ast` must be :ref:`valid <valid-instr-seq>` with type :math:`[t_1^\ast] \to [t_2^\ast]`.
+
+* Then the compound instruction is valid under context :math:`C'` with type :math:`[] \to [t_2^\ast]`.
 
 .. math::
    \frac{
      \begin{array}{@{}c@{}}
-     ((S \vdashexternval \EVTAG~\tagaddr : \ETTAG~[t'^\ast]\to[])^? \\
-     ~~S; C,\CLABELS\,(\LCATCH~[t^\ast]) \vdashinstrseq \instr'^\ast : [(t'^\ast)^?] \to [t^\ast])^\ast \\
-     S; C,\CLABELS\,[t^\ast] \vdashinstrseq \instr^\ast : [] \to [t^\ast] \\
+     ((S \vdashexternval \EVTAG~\tagaddr : \ETTAG~[t_1^\ast]\to[])^? \\
+     ~~S; C,\CLABELS\,(\LCATCH~[t_2^\ast]) \vdashinstrseq \instr_1^\ast : [(t_1^\ast)^?] \to [t_2^\ast])^\ast \\
+     S; C,\CLABELS\,[t_2^\ast] \vdashinstrseq \instr_2^\ast : [] \to [t_2^\ast] \\
    \end{array}
    }{
-     S; C,\CLABELS\,[t^\ast] \vdashadmininstr \CATCHadm\{\tagaddr^?~{\instr'}^\ast\}^\ast~\instr^\ast~\END : [] \to [t^\ast]
+     S; C,\CLABELS\,[t_2^\ast] \vdashadmininstr \CATCHadm\{\tagaddr^?~{\instr_1}^\ast\}^\ast~\instr_2^\ast~\END : [] \to [t_2^\ast]
    }
 
 
@@ -646,14 +666,25 @@ To that end, all previous typing judgements :math:`C \vdash \X{prop}` are genera
 :math:`\CAUGHTadm\{\tagaddr~\val^\ast\}~\instr^\ast~\END`
 .........................................................
 
-.. todo::
-   Add prose.
+* The :ref:`external tag value <syntax-externval>` :math:`\EVTAG~\tagaddr` must be :ref:`valid <valid-externval-tag>` with some :ref:`external tag type <syntax-externtype>` :math:`\ETTAG~[t_0^\ast] \to []`.
+
+* The :ref:`values <syntax-val>` :math:`\val^\ast` must be of type :math:`[t_0^\ast]`.
+
+* Let :math:`C'` be the same :ref:`context <context>` as :math:`C`, but with the label :math:`(\LCATCH~[t^\ast])` prepended to the |CLABELS| vector.
+
+* Under context :math:`C'`,
+  the instruction sequence :math:`\instr^\ast` must be :ref:`valid <valid-instr-seq>` with type :math:`[] \to [t^\ast]`.
+
+* Let :math:`C''` be the same :ref:`context <context>` as :math:`C`, but with the label :math:`[t^\ast]` prepended to the |CLABELS| vector.
+
+* Then the compound instruction is valid under context :math:`C''` with type :math:`[] \to [t^\ast]`.
+
 
 .. math::
    \frac{
-     S \vdashexternval \EVTAG~\tagaddr : \ETTAG~[t'^\ast]\to[]
+     S \vdashexternval \EVTAG~\tagaddr : \ETTAG~[t_0^\ast]\to[]
      \qquad
-     (val : t')^\ast
+     (val : t_0)^\ast
      \qquad
      S; C,\CLABELS\,(\LCATCH~[t^\ast]) \vdashinstrseq \instr^\ast : [] \to [t^\ast]
    }{
@@ -951,7 +982,7 @@ If a :ref:`configuration <syntax-config>` :math:`S;T` is :ref:`valid <valid-conf
 then it either diverges or takes a finite number of steps to reach a terminal configuration :math:`S';T'` (i.e., :math:`S;T \stepto^\ast S';T'`) that is valid with the same result type (i.e., :math:`\vdashconfig S';T' : [t^\ast]`)
 and where :math:`S'` is an :ref:`extension <extend-store>` of :math:`S` (i.e., :math:`\vdashstoreextends S \extendsto S'`).
 
-In other words, every thread in a valid configuration either runs forever, traps, or terminates with a result that has the expected type.
+In other words, every thread in a valid configuration either runs forever, traps, throws an exception, or terminates with a result that has the expected type.
 Consequently, given a :ref:`valid store <valid-store>`, no computation defined by :ref:`instantiation <exec-instantiation>` or :ref:`invocation <exec-invocation>` of a valid module can "crash" or otherwise (mis)behave in ways not covered by the :ref:`execution <exec>` semantics given in this specification.
 
 
