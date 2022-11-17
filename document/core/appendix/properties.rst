@@ -628,19 +628,22 @@ To that end, all previous typing judgements :math:`C \vdash \X{prop}` are genera
 :math:`\DELEGATEadm\{l\}~\instr^\ast~\END`
 ..........................................
 
-* The instruction sequence :math:`\instr^\ast` must be :ref:`valid <valid-instr-seq>` with some type :math:`[]\to[t^\ast]`.
+* The label :math:`C.\CLABELS[l]` must be defined in the context.
 
-* The label :math:`C.\CLABELS[l+1]` must be defined in the context.
+* Let :math:`C'` be the same :ref:`context <context>` as :math:`C`, but with the label :math:`[t^\ast]` prepended to the |CLABELS| vector.
 
-* Then the compound instruction is valid with type :math:`[] \to [t^\ast]`.
+* Under context :math:`C'`,
+  the instruction sequence :math:`\instr^\ast` must be :ref:`valid <valid-instr-seq>` with type :math:`[]\to[t^\ast]`.
+
+* Then the compound instruction is valid under context :math:`C'` with type :math:`[] \to [t^\ast]`.
 
 .. math::
    \frac{
-     S; C \vdashinstrseq \instr^\ast : [] \to [t^\ast]
+     S; C,\CLABELS\,[t^\ast] \vdashinstrseq \instr^\ast : [] \to [t^\ast]
      \qquad
-     C.\CLABELS[l+1] = [t_0^\ast]
+     C.\CLABELS[l] = [t_0^\ast]
    }{
-     S; C \vdashadmininstr \DELEGATEadm\{l\}~\instr^\ast~\END : [] \to [t^\ast]
+     S; C,\CLABELS\,[t^\ast] \vdashadmininstr \DELEGATEadm\{l\}~\instr^\ast~\END : [] \to [t^\ast]
    }
 
 
