@@ -3099,7 +3099,7 @@ on the top of the stack.
    \CATCHadm\{a'^?~\instr'^\ast\}^\ast~\XT[\val^n~(\THROWadm~a)]~\END  \\
    && (\iff a_1^? \neq \epsilon \land a_1^? \neq a) \\
    S;~\CATCHadm\{a_1^?~\instr^\ast\}\{a'^?~\instr'^\ast\}^\ast~\XT[\val^n~(\THROWadm~a)]~\END &\stepto&
-   S;~\CAUGHTadm\{a~\val^n\}~(\val^n)?~\instr^\ast~\END \\
+   S;~\CAUGHTadm\{a~\val^n\}~(\val^n)^?~\instr^\ast~\END \\
    && (\iff~(a_1^? = \epsilon \lor a_1^? = a)~\land\\
    && \ S.\STAGS[a].\TAGITYPE = [t^n]\to[]) \\
    \LABEL_n\{\}~\XB^l[\DELEGATEadm\{l\}~\XT[\val^n~(\THROWadm~a)]~\END]~\END &\stepto&
