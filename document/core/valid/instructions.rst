@@ -1377,9 +1377,9 @@ Control Instructions
 
 * For every :math:`x_i` and :math:`\instr_{2i}^\ast` in :math:`(\CATCH~x~\instr_2^\ast)^\ast`:
 
-  * The tag :math:`C.\CTAGS[x]` must be defined in the context :math:`C`.
+  * The tag :math:`C.\CTAGS[x_i]` must be defined in the context :math:`C`.
 
-  * Let :math:`[t_{3i}^\ast] \to [t_{4i}^\ast]` be the :ref:`tag type <syntax-tagtype>` :math:`C.\CTAGS[x]`.
+  * Let :math:`[t_{3i}^\ast] \to [t_{4i}^\ast]` be the :ref:`tag type <syntax-tagtype>` :math:`C.\CTAGS[x_i]`.
 
   * The :ref:`result type <syntax-resulttype>` :math:`[t_{4i}^\ast]` must be empty.
 
