@@ -429,10 +429,10 @@ and a reference to the function’s own <a class="reference internal" href="#syn
 <section id="exception-handlers">
 <span id="syntax-handler"></span><h3>Exception handlers<a class="headerlink" href="#exception-handlers" title="Permalink to this headline">¶</a></h3>
 <p>Exception handlers are installed by <span class="math notranslate nohighlight">\(\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{try}}\)</span> instructions and are either <em>catching handlers</em> or <em>delegating handlers</em>.</p>
-<p>Catching handlers start with the identifier <span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-catchadm}{\mathsf{catch}}\)</span> and carry a mapping from <a class="reference internal" href="#syntax-tagaddr"><span class="std std-ref">tag addresses</span></a>
+<p>Catching handlers start with the identifier <span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-catchadm}{\mathsf{catch}}\)</span> and contain handler clauses, which are mappings from <a class="reference internal" href="#syntax-tagaddr"><span class="std std-ref">tag addresses</span></a>
 to their associated branch <em>targets</em>, each of which is expressed syntactically as a possibly empty sequence of
 <a class="reference internal" href="../syntax/instructions.html#syntax-instr"><span class="std std-ref">instructions</span></a> possibly following a <a class="reference internal" href="#syntax-tagaddr"><span class="std std-ref">tag address</span></a>.
-If there is no <a class="reference internal" href="#syntax-tagaddr"><span class="std std-ref">tag address</span></a>, the instructions of that target correspond to a <span class="math notranslate nohighlight">\(\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{catch\_all}}\)</span> clause.</p>
+If there is no <a class="reference internal" href="#syntax-tagaddr"><span class="std std-ref">tag address</span></a>, the instructions of that handler clause correspond to a <span class="math notranslate nohighlight">\(\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{catch\_all}}\)</span> clause.</p>
 <div class="admonition-todo admonition" id="id6">
 <p class="admonition-title">Todo</p>
 <p>Add prose for delegating handlers.</p>
@@ -441,10 +441,10 @@ If there is no <a class="reference internal" href="#syntax-tagaddr"><span class=
 \[\begin{array}{llllll}
   \def\mathdef2162#1{{}}\mathdef2162{(handler)} &amp; \href{../exec/runtime.html#syntax-handler}{\mathit{handler}} &amp;::=&amp; \href{../exec/runtime.html#syntax-catchadm}{\mathsf{catch}}\{\href{../exec/runtime.html#syntax-tagaddr}{\mathit{tagaddr}}^?~\href{../syntax/instructions.html#syntax-instr}{\mathit{instr}}^\ast\}^\ast &amp;|&amp; \href{../exec/runtime.html#syntax-delegateadm}{\mathsf{delegate}}\{l\}
 \end{array}\]</div>
-<p>Intuitively, for each target <span class="math notranslate nohighlight">\(\{\href{../exec/runtime.html#syntax-tagaddr}{\mathit{tagaddr}}^?~\href{../syntax/instructions.html#syntax-instr}{\mathit{instr}}^\ast\}\)</span> of a <span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-catchadm}{\mathsf{catch}}\)</span>, <span class="math notranslate nohighlight">\(\href{../syntax/instructions.html#syntax-instr}{\mathit{instr}}^\ast\)</span> is the <em>continuation</em> to execute
-when the handler catches a thrown exception with tag <span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-tagaddr}{\mathit{tagaddr}}\)</span>, or for any exception, when a target specifies no tag address.
+<p>Intuitively, for each handler clause <span class="math notranslate nohighlight">\(\{\href{../exec/runtime.html#syntax-tagaddr}{\mathit{tagaddr}}^?~\href{../syntax/instructions.html#syntax-instr}{\mathit{instr}}^\ast\}\)</span> of a <span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-catchadm}{\mathsf{catch}}\)</span>, <span class="math notranslate nohighlight">\(\href{../syntax/instructions.html#syntax-instr}{\mathit{instr}}^\ast\)</span> is the <em>continuation</em> to execute
+when the handler catches a thrown exception with tag <span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-tagaddr}{\mathit{tagaddr}}\)</span>, or for any exception, when a handler clause specifies no tag address.
 In that case, the exception is handled by the exception handler <span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-catchadm}{\mathsf{catch}}\)</span>.
-If this list of targets is empty, or if the tag address of the thrown exception is not in the handler’s mapping and there is no <span class="math notranslate nohighlight">\(\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{catch\_all}}\)</span> clause, then the exception will be rethrown.</p>
+If this list of targets is empty, or if the tag address of the thrown exception is not in any of the handler’s clauses and there is no <span class="math notranslate nohighlight">\(\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{catch\_all}}\)</span> clause, then the exception will be rethrown.</p>
 <div class="admonition-todo admonition" id="id7">
 <p class="admonition-title">Todo</p>
 <p>Add prose with intuition on delegating handlers.</p>
