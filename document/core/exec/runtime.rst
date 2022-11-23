@@ -552,7 +552,7 @@ If there is no :ref:`tag address <syntax-tagaddr>`, the instructions of that han
 
 Intuitively, for each handler clause :math:`\{\tagaddr^?~\instr^\ast\}` of a |CATCHadm|, :math:`\instr^\ast` is the *continuation* to execute
 when the handler catches a thrown exception with tag |tagaddr|, or for any exception, when a handler clause specifies no tag address.
-In that case, we say that the exception is handled by the exception handler |CATCHadm|.
+In that case, the exception is handled by the exception handler |CATCHadm|.
 If this list of targets is empty, or if the tag address of the thrown exception is not in any of the handler's clauses and there is no |CATCHALL| clause, then the exception will be rethrown.
 
 .. todo::
