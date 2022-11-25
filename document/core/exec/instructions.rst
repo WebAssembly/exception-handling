@@ -3045,21 +3045,19 @@ on the top of the stack.
 
 9. Pop the exception handler :math:`H` from the stack.
 
-10. Assert: :math:`H` is either of the form :math:`\CATCHadm\{a^?~\instr^\ast\}^k` or :math:`\DELEGATEadm\{l\}.`
+10. Assert: :math:`H` is either of the a catching or a delegating :ref:`exception handler <syntax-handler>`.
 
-11. If :math:`H` is of the form :math:`\CATCHadm\{a^?~\instr^\ast\}^k`, then:
+11. If :math:`H` is a catching exception handler, let :math:`\{a^?~\instr^\ast\}^k` be its clauses. Then:
 
     a. If :math:`k = 0`, then:
 
        i. Push the throw context that we collected so far :math:`\XT[\val^n~(\THROWadm~a)]` onto the stack.
 
-    b. Else :math:`H` is of the form :math:`\CATCHadm\{a_1^?~\instr^\ast\}\{a'^?~\instr'^\ast\}^\ast`.
+    b. Else :math:`H`'s clauses are of the form :math:`\{a_1^?~\instr^\ast\}\{a'^?~\instr'^\ast\}^\ast`.
 
     c. If :math:`a_1^? = \epsilon`, then:
 
-       i. Push :math:`\CAUGHTadm\{a~\val^n\}` onto the stack.
-
-       ii. Jump to the start of the instruction sequence :math:`\instr^\ast`.
+       i. :ref:`Enter <exec-caught-enter>` :math:`\instr^\ast` with catch clause holding the caught exception :math:`\{a~\val^n\}`.
 
     d. Else if :math:`a_1^? = a`, then:
 
@@ -3071,7 +3069,7 @@ on the top of the stack.
 
     e. Else, repeat step 11 for :math:`H = \CATCHadm\{a'^?~\instr'^\ast\}^\ast`.
 
-12. Else the handler :math:`H` has the form :math:`\DELEGATEadm\{l\}`.
+12. Else the handler :math:`H` is a delegating handler, let :math:`l` be its label index.
 
 13. Assert: due to :ref:`validation <valid-delegate-admin>`, the stack contains at least :math:`l+1` labels.
 
@@ -3107,12 +3105,22 @@ on the top of the stack.
    \end{array}
 
 .. note::
-   The reduction step activating a catch clause |CAUGHTadm| is the only one that does not preserve the throw context.
+   The reduction step entering a catch clause |CAUGHTadm| is the only one that does not preserve the throw context.
    While a |THROWadm| propagates through the stack, the throw context |XT| is collected
    until the exception is caught inside a |CAUGHTadm| instruction, at which point it is discarded.
 
 .. todo::
    Add explainer note for the reduction of |DELEGATEadm|, when PR #221 is settled.
+
+
+.. _exec-caughtadm-enter:
+
+Entering :math:`\instr^\ast` with catch clause holding a caught exception :math:`\{a~\val^n\}`
+..............................................................................................
+
+1. Push :math:`\CAUGHTadm\{a~\val^n\}` onto the stack.
+
+2. Jump to the start of the instruction sequence :math:`\instr^\ast`.
 
 
 .. _exec-caughtadm:

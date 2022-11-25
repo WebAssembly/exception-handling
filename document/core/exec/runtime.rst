@@ -539,8 +539,8 @@ Exception handlers
 
 Exception handlers are installed by |TRY| instructions and are either *catching handlers* or *delegating handlers*.
 
-Catching handlers start with the identifier |CATCHadm| and carry a mapping from :ref:`tag addresses <syntax-tagaddr>`
-to their associated branch *targets*, each of which is expressed syntactically as a possibly empty sequence of
+Catching handlers start with the identifier |CATCHadm| and contain catch clauses, which are mappings from :ref:`tag addresses <syntax-tagaddr>`
+to their associated branch *targets*. Each catch clause is expressed syntactically as a possibly empty sequence of
 :ref:`instructions <syntax-instr>` possibly following a :ref:`tag address <syntax-tagaddr>`.
 If there is no :ref:`tag address <syntax-tagaddr>`, the instructions of that target correspond to a |CATCHALL| clause.
 
@@ -552,10 +552,10 @@ If there is no :ref:`tag address <syntax-tagaddr>`, the instructions of that tar
      \production{(handler)} & \handler &::=& \CATCHadm\{\tagaddr^?~\instr^\ast\}^\ast &|& \DELEGATEadm\{l\}
    \end{array}
 
-Intuitively, for each target :math:`\{\tagaddr^?~\instr^\ast\}` of a |CATCHadm|, :math:`\instr^\ast` is the *continuation* to execute
-when the handler catches a thrown exception with tag |tagaddr|, or for any exception, when a target specifies no tag address.
-In that case, we say that the exception is handled by the exception handler |CATCHadm|.
-If this list of targets is empty, or if the tag address of the thrown exception is not in the handler's mapping and there is no |CATCHALL| clause, then the exception will be rethrown.
+Intuitively, for each catch clause :math:`\{\tagaddr^?~\instr^\ast\}` of a catching handler, :math:`\instr^\ast` is the *continuation* to execute
+when the handler catches a thrown exception with tag |tagaddr|, or for any exception, when a catch clause specifies no tag address.
+In that case, the exception is handled, and that catch clause :ref:`entered <exec-caughtadm-enter>`.
+If this list of targets is empty, or if the tag address of the thrown exception is not in any of the catch clauses and there is no |CATCHALL| clause, then the exception will be rethrown.
 
 .. todo::
    Add prose with intuition on delegating handlers.
