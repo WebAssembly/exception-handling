@@ -679,10 +679,10 @@ To that end, all previous typing judgements :math:`C \vdash \X{prop}` are genera
 * The label :math:`C.\CLABELS[0]` must be defined in the context.
 
 * Let :math:`(\LCATCH^?~[t^\ast])` be the :ref:`label type <syntax-labeltype>` :math:`C.\CLABELS[0]`.
-  
+
 * Let :math:`C'` be the same :ref:`context <context>` as :math:`C`, but with the first label popped from the |CLABELS| vector.
 
-* Let :math:`C''` be the same :ref:`context <context>` as :math:`C'`, but with the label :math:`(\LCATCH~[t^\ast])` prepended to the |CLABELS| vector.
+* Let :math:`C''` be the same :ref:`context <context>` as :math:`C'`, but with the label type :math:`(\LCATCH~[t^\ast])` prepended to the |CLABELS| vector.
 
 * Under context :math:`C''`,
   the instruction sequence :math:`\instr^\ast` must be :ref:`valid <valid-instr-seq>` with type :math:`[] \to [t^\ast]`.
