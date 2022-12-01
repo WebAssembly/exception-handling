@@ -2625,16 +2625,45 @@ Control Instructions
 :math:`\TRY~\blocktype~\instr_1^\ast~(\CATCH~x~\instr_2^\ast)^\ast~(\CATCHALL~\instr_3^\ast)^?~\END`
 ....................................................................................................
 
-.. todo::
-   Add prose for the |TRY| - |CATCH| - |CATCHALL| execution step.
+1. Assert: due to :ref:`validation <valid-blocktype>`, :math:`\expand_F(\blocktype)` is defined.
+
+2. Let :math:`[t_1^m] \to [t_2^n]` be the :ref:`function type <syntax-functype>` :math:`\expand_F(\blocktype)`.
+
+3. Let :math:`L` be the label whose arity is :math:`n` and whose continuation is the end of the |TRY| instruction.
+
+4. Assert: due to :ref:`validation <valid-try-catch>`, there are at least :math:`m` values on the top of the stack.
+
+5. Pop the values :math:`\val^m` from the stack.
+
+6. Let :math:`F` be the :ref:`current <exec-notation-textual>` :ref:`frame <syntax-frame>`.
+
+7. For each catch clause :math:`(\CATCH~x_i~\instr_{2i}^\ast)` do:
+
+   a. Assert: due to :ref:`validation <valid-try-catch>`, :math:`F.\AMODULE.\MITAGS[x_i]` exists.
+
+   b. Let :math:`a_i` be the tag address :math:`F.\AMODULE.\MITAGS[x_i]`.
+
+   c. Let :math:`H_i` be the handler clause :math:`\{a_i~\instr_{2i}^\ast\}`.
+
+8. If there is a catch all clause :math:`(\CATCHALL~\instr_3^\ast)`, then:
+
+    a. Let :math:`H'^?` be the handler clause :math:`\{\epsilon~\instr_3^\ast\}`.
+
+9. Else:
+
+    a. Let :math:`H'^?` be the empty handler clause :math:`\epsilon`.
+
+10. Let :math:`H^\ast` be the :ref:`catching exception handler <syntax-handler>` containing the concatenation of the handler clauses :math:`H_i` and :math:`H'^?`.
+
+11. :ref:`Enter <exec-handler-enter>` the block :math:`\val^m~\instr_1^\ast` with label :math:`L` and exception handler :math:`H`.
 
 .. math::
    ~\\[-1ex]
    \begin{array}{l}
-   F; \val^n~(\TRY~\X{bt}~\instr_1^\ast~(\CATCH~x~\instr_2^\ast)^\ast~(\CATCHALL~\instr_3^\ast)^?~\END
+   F; \val^m~(\TRY~\X{bt}~\instr_1^\ast~(\CATCH~x~\instr_2^\ast)^\ast~(\CATCHALL~\instr_3^\ast)^?~\END
    \quad \stepto \\
-   \qquad F; \LABEL_m\{\}~(\CATCHadm\{a~\instr_2^\ast\}^\ast\{\epsilon~\instr_3\ast\}^?~\val^n~\instr_1^\ast~\END)~\END \\
-   (\iff \expand_F(\X{bt}) = [t_1^n] \to [t_2^m] \land (F.\AMODULE.\MITAGS[x]=a)^\ast)
+   \qquad F; \LABEL_n\{\epsilon\}~(\CATCHadm\{a_x~\instr_2^\ast\}^\ast\{\epsilon~\instr_3\ast\}^?~\val^m~\instr_1^\ast~\END)~\END \\
+   (\iff \expand_F(\X{bt}) = [t_1^m] \to [t_2^n] \land (F.\AMODULE.\MITAGS[x]=a_x)^\ast)
    \end{array}
 
 
@@ -2643,15 +2672,28 @@ Control Instructions
 :math:`\TRY~\blocktype~\instr^\ast~\DELEGATE~l`
 ...............................................
 
-.. todo::
-   Add prose for the |TRY| - |DELEGATE| execution step.
+1. Assert: due to :ref:`validation <valid-blocktype>`, :math:`\expand_F(\blocktype)` is defined.
+
+2. Let :math:`[t_1^m] \to [t_2^n]` be the :ref:`function type <syntax-functype>` :math:`\expand_F(\blocktype)`.
+
+3. Let :math:`L` be the label whose arity is :math:`n` and whose continuation is the end of the |TRY| instruction.
+
+4. Let :math:`H` be the :ref:`delegating exception handler <syntax-handler>` :math:`\DELEGATEadm\{l\}`, targeting the :math:`l`-th surrounding block.
+
+5. Assert: due to :ref:`validation <valid-try-delegate>`, there are at least :math:`m` values on the top of the stack.
+
+6. Pop the values :math:`\val^m` from the stack.
+
+7. :ref:`Enter <exec-instr-seq-enter>` the block :math:`H~(\val^n~\instr^\ast)~\END` with label :math:`L`.
+
+8. :ref:`Install <exec-handler-enter>` the exception handler `H` containing :math:`\val^m~\instr^\ast`.
 
 .. math::
    ~\\[-1ex]
    \begin{array}{lcl}
-   F; \val^n~(\TRY~\X{bt}~\instr^\ast~\DELEGATE~l) &\stepto&
-   F; \LABEL_m\{\}~(\DELEGATEadm\{l\}~\val^n~\instr^\ast~\END)~\END \\
-   && (\iff \expand_F(\X{bt}) = [t_1^n] \to [t_2^m])
+   F; \val^m~(\TRY~\X{bt}~\instr^\ast~\DELEGATE~l) &\stepto&
+   F; \LABEL_n\{\epsilon\}~(\DELEGATEadm\{l\}~\val^m~\instr^\ast~\END)~\END \\
+   && (\iff \expand_F(\X{bt}) = [t_1^m] \to [t_2^n])
    \end{array}
 
 
@@ -2708,7 +2750,7 @@ Control Instructions
 
 6. Repeat :math:`l+1` times:
 
-   a. While the top of the stack is a value, do:
+   a. While the top of the stack is a value, a |handler|, or a |CAUGHTadm| instruction, do:
 
       i. Pop the value from the stack.
 
@@ -2974,13 +3016,18 @@ The following auxiliary rules define the semantics of entering and exiting :ref:
 
 .. _exec-handler-enter:
 
-Entering an exception handler :math:`H`
-.......................................
+Entering :math:`\instr^\ast` with label :math:`L` and exception handler :math:`H`
+.................................................................................
 
-1. Push :math:`H` onto the stack.
+1. Push :math:`L` to the stack.
+
+2. Push :math:`H` onto the stack.
+
+3. Jump to the start of the instruction sequence :math:`\instr^\ast`.
+
 
 .. note::
-   No formal reduction rule is needed for installing an exception :ref:`handler <syntax-handler>`
+   No formal reduction rule is needed for entering an exception :ref:`handler <syntax-handler>`
    because it is an :ref:`administrative instruction <syntax-instr-admin>`
    that the :ref:`try <syntax-try>` instruction reduces to directly.
 
@@ -3125,16 +3172,30 @@ Entering :math:`\instr^\ast` with catch clause holding a caught exception :math:
 
 .. _exec-caughtadm:
 
-Holding a caught exception with |CAUGHTadm|
-...........................................
+Exiting a catch clause
+......................
 
-.. todo::
-   Add prose describing the administrative |CAUGHTadm| execution step.
+When the |END| of a catch clause is reached without a jump, exception, or trap, then the following steps are performed.
+
+1. Let :math:`\val^\ast` be the values on the top of the stack.
+
+2. Pop the values :math:`\val^\ast` from the stack.
+
+3. Assert: due to :ref:`validation <valid-instr-seq>`, a caught exception :math:`\{a~\val_0^\ast\}` is now on the top of the stack.
+
+4. Pop the caught exception from the stack.
+
+5. Push :math:`\val^\ast` back to the stack.
+
+6. Jump to the position after the |END| of the administrative instruction associated with the catch clause.
 
 .. math::
    \begin{array}{rcl}
-   \CAUGHTadm\{a~\val^n\}~\val^m~\END  &\stepto& \val^m
+   \CAUGHTadm\{a~\val_0^\ast\}~\val^\ast~\END  &\stepto& \val^\ast
    \end{array}
+
+.. note::
+   An exception can only be rethrown from the scope of the |CAUGHTadm| administrative instruction holding it, i.e., from the scope of the |CATCH| or |CATCHALL| block of a :ref:`try-catch <syntax-try-catch>` instruction that caught it. Upon exit from a |CAUGHTadm|, the exception it holds is discarded.
 
 
 .. index:: ! call, function, function instance, label, frame
@@ -3229,7 +3290,7 @@ Host Functions
 ..............
 
 Invoking a :ref:`host function <syntax-hostfunc>` has non-deterministic behavior.
-It may either terminate with a :ref:`trap <trap>` or return regularly.
+It may either terminate with a :ref:`trap <trap>`, an exception, or return regularly.
 However, in the latter case, it must consume and produce the right number and types of WebAssembly :ref:`values <syntax-val>` on the stack,
 according to its :ref:`function type <syntax-functype>`.
 
