@@ -2719,30 +2719,13 @@ Control Instructions
 
 2. Let :math:`L` be the :math:`l`-th label appearing on the stack, starting from the top and counting from zero.
 
-3. Assert: due to :ref:`validation <valid-rethrow>`, :math:`L` is a catch label, i.e., a label of the form :math:`(\LCATCH~[t^\ast])`.
+3. Assert: due to :ref:`validation <valid-rethrow>`, :math:`L` is a catch label, i.e., a label of the form :math:`(\LCATCH~[t^\ast])`, which is a label followed by a caught exception in an active catch clause.
 
-4. Repeat :math:`l+1` times:
+4. Let :math:`\{a~\val^\ast\}` be the caught exception.
 
-   a. While the top of the stack is a value, a |handler|, or a |CAUGHTadm| instruction, do:
+5. Push the values :math:`\val^\ast` onto the stack.
 
-      i. Pop the instruction from the stack.
-
-   b. Assert: due to :ref:`validation <valid-rethrow>`, the top of the stack now is a label.
-
-   c. Pop the label from the stack.
-
-5. Assert: due to **TODO**, the last two instructions popped are a |CAUGHTadm| instruction and the :math:`l+1`-th label, in that order.
-
-.. todo::
-   Justify the existence of a |CAUGHTadm| here. Perhaps extend some typing rule?
-
-6. Let :math:`\CAUGHTadm\{a~\val^\ast\}` be the instruction after the label :math:`L`.
-
-7. Put all the popped values back on the stack, except the last instruction, the |RETHROW|.
-
-8. Push the values :math:`\val^\ast` onto the stack.
-
-8. :ref:`Throw <exec-throwadm>` an exception with :ref:`tag address <syntax-tagaddr>` :math:`a`.
+6. :ref:`Throw <exec-throwadm>` an exception with :ref:`tag address <syntax-tagaddr>` :math:`a`.
 
 .. math::
    ~\\[-1ex]
