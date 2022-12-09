@@ -3077,18 +3077,17 @@ on the top of the stack.
 
  5. While the stack is not empty and the top of the stack is not an :ref:`exception handler <syntax-handler>`, do:
 
-    a. Pop the top element from the stack, prepending it to the :ref:`throw context <syntax-ctxt-throw>` of the exception: :math:`\XT[\val^n~(\THROWadm~a)]`.
+    a. Pop the top element from the stack.
 
  6. Assert: The stack is now either empty, or there is an exception handler on the top of the stack.
 
  7. If the stack is empty, then:
 
-    a. **TODO** *Return a result value representing the uncaught exception (will probably just be the same as 11.a.i. below).*
+    a. Return the uncaught exception :math:`\val^n~(\THROWadm~a)` as a value.
 
-.. todo::
-   After PR #221 is resolved, this step should be filled in with a PR to specify uncaught exception results.
+8. Else:
 
-8. Else there is an :ref:`exception handler <syntax-handler>` :math:`H` on the top of the stack.
+   a. Assert: there is an :ref:`exception handler <syntax-handler>` :math:`H` on the top of the stack.
 
 9. Pop the exception handler :math:`H` from the stack.
 
@@ -3098,43 +3097,49 @@ on the top of the stack.
 
     a. If :math:`k = 0`, then:
 
-       i. Push the throw context that we collected so far :math:`\XT[\val^n~(\THROWadm~a)]` onto the stack.
+       i. Put the values :math:`\val^n` back onto the stack.
+
+       ii. :ref:`Throw <exec-throwadm>` an exception with tag address :math:`a`.
 
     b. Else :math:`H`'s clauses are of the form :math:`\{a_1^?~\instr^\ast\}\{a'^?~\instr'^\ast\}^\ast`.
 
     c. If :math:`a_1^? = \epsilon`, then:
 
-       i. :ref:`Enter <exec-caught-enter>` :math:`\instr^\ast` with catch clause holding the caught exception :math:`\{a~\val^n\}`.
+       i. :ref:`Enter <exec-caughtadm-enter>` :math:`\instr^\ast` with catch clause holding the caught exception :math:`\{a~\val^n\}`.
 
     d. Else if :math:`a_1^? = a`, then:
 
-       i. Push :math:`\CAUGHTadm\{a~\val^n\}` onto the stack.
+       i. :ref:`Enter <exec-caughtadm-enter>` :math:`\val^n~\instr^\ast` with catch clause holding the caught exception :math:`\{a~\val^n\}`.
 
-       ii. Push the values :math:`\val^n` back to the stack.
+    e. Else:
 
-       iii. Jump to the start of the instruction sequence :math:`\instr^\ast`.
+       i. Let :math:`H'` be the catching exception handler with clauses :math:`\{a'^?~\instr'^\ast\}^\ast`.
 
-    e. Else, repeat step 11 for :math:`H = \CATCHadm\{a'^?~\instr'^\ast\}^\ast`.
+       ii. Repeat step 11 for :math:`H'`.
 
-12. Else the handler :math:`H` is a delegating handler, let :math:`l` be its label index.
+12. Else:
 
-13. Assert: due to :ref:`validation <valid-delegate-admin>`, the stack contains at least :math:`l+1` labels.
+    a. Assert: :math:`H` is a delegating exception handler.
 
-14. Let :math:`L` be the :math:`l`-th label appearing on the stack, starting from the top and counting from zero.
+13. Let :math:`l` be the label index of :math:`H`.
 
-15. Repeat :math:`l+1` times:
+14. Assert: due to :ref:`validation <valid-delegate-admin>`, the stack contains at least :math:`l` labels.
 
-    a. While the instruction on the top of the stack is not a label, do:
+15. Let :math:`L` be the :math:`l`-th label appearing on the stack, starting from the top and counting from zero.
 
-       i. Pop the instruction from the stack, without pushing it to |XT|.
+15. Repeat :math:`l` times:
+
+   a. While the top of the stack is not a label, do:
+
+       i. Pop the top element from the stack.
 
    b. Assert: due to :ref:`validation <valid-delegate-admin>`, the top of the stack now is a label.
 
    c. Pop the label from the stack.
 
-16. Push the throw context that we collected so far :math:`\XT[\val^n~(\THROWadm~a)]` onto the stack.
+16. Push the values :math:`\val^n` onto the stack.
 
-17. Jump to the continuation of :math:`L`.
+17. :ref:`Throw <exec-throwadm>` an exception with tag address :math:`a`.
 
 .. math::
    \begin{array}{rcl}
@@ -3153,11 +3158,9 @@ on the top of the stack.
 
 .. note::
    The reduction step entering a catch clause |CAUGHTadm| is the only one that does not preserve the throw context.
-   While a |THROWadm| propagates through the stack, the throw context |XT| is collected
-   until the exception is caught inside a |CAUGHTadm| instruction, at which point it is discarded.
 
 .. todo::
-   Add explainer note for the reduction of |DELEGATEadm|, when PR #221 is settled.
+   Explain why or what's the meaning of apparently preserving the throw context in the other rules.
 
 
 .. _exec-caughtadm-enter:
