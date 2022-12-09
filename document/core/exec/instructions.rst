@@ -2727,7 +2727,7 @@ Control Instructions
 
       i. Pop the instruction from the stack.
 
-   b. Assert: due to :ref:`validation <valid-br>`, the top of the stack now is a label.
+   b. Assert: due to :ref:`validation <valid-rethrow>`, the top of the stack now is a label.
 
    c. Pop the label from the stack.
 
