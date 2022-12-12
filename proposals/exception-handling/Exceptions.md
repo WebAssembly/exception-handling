@@ -235,7 +235,7 @@ end
 In this example, `N` is used to disambiguate which caught exception is being
 rethrown. It could rethrow any of the three caught expceptions. Hence, `rethrow
 0` corresponds to the exception caught by `catch 3`, `rethrow 1` corresponds to
-the exception caught by `catch 2`, and `rethrow 3` corresponds to the exception
+the exception caught by `catch 2`, and `rethrow 2` corresponds to the exception
 caught by `catch 1`. In wat format, the argument for the `rethrow` instructions
 can also be written as a label, like branches. So `rethrow 0` in the example
 above can also be written as `rethrow $l3`.
