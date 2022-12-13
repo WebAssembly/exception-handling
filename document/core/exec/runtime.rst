@@ -542,21 +542,20 @@ to their associated branch *targets*, each of which is expressed syntactically a
 :ref:`instructions <syntax-instr>` possibly following a :ref:`tag address <syntax-tagaddr>`.
 If there is no :ref:`tag address <syntax-tagaddr>`, the instructions of that handler clause correspond to a |CATCHALL| clause.
 
-.. todo::
-   Add prose for delegating handlers.
+Delegating handlers start with the identifier |DELEGATEadm| and carry a label index,
+indicating the outer block in which any caught exceptions will be thrown (delegated to).
 
 .. math::
    \begin{array}{llllll}
      \production{(handler)} & \handler &::=& \CATCHadm\{\tagaddr^?~\instr^\ast\}^\ast &|& \DELEGATEadm\{l\}
    \end{array}
 
-Intuitively, for each handler clause :math:`\{\tagaddr^?~\instr^\ast\}` of a |CATCHadm|, :math:`\instr^\ast` is the *continuation* to execute
+Intuitively, for each handler clause :math:`\{\tagaddr^?~\instr^\ast\}` of a catching handler, :math:`\instr^\ast` is the *continuation* to execute
 when the handler catches a thrown exception with tag |tagaddr|, or for any exception, when a handler clause specifies no tag address.
-In that case, the exception is handled by the exception handler |CATCHadm|.
+In that case, the exception is handled by the exception handler.
 If this list of targets is empty, or if the tag address of the thrown exception is not in any of the handler's clauses and there is no |CATCHALL| clause, then the exception will be rethrown.
 
-.. todo::
-   Add prose with intuition on delegating handlers.
+Delegating handlers can be thought of a "break to the :math:`l`th label on exception", where :math:`l` is the delegating handler's label index.
 
 
 .. _exec-expand:
