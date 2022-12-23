@@ -686,8 +686,8 @@ In case of |BLOCK| or |IF| it is a *forward jump*,
 resuming execution after the matching |END|.
 In case of |LOOP| it is a *backward jump* to the beginning of the loop.
 
-In case of |TRY|--|DELEGATE| catching an exception, it is a *forward jump*,
-throwing the caught exception *before* the matching |END|.
+When |TRY|--|DELEGATE| handles an exception, it also behaves similar to a forward jump,
+effectively rethrowing the caught exception right before the matching |END|.
 
 .. note::
    This enforces *structured control flow*.
