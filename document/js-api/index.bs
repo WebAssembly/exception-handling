@@ -1045,6 +1045,7 @@ This slot holds a [=function address=] relative to the [=surrounding agent=]'s [
         1. Set |i| to |i| + 1.
     1. Let (|store|, |ret|) be the result of [=func_invoke=](|store|, |funcaddr|, |args|).
     1. Note: The expectation is that [=func_invoke=] will be updated to return (|store|, <var ignore>val</var>* | [=error=] | (exception |exntag| |payload| |opaqueData|)).
+    1. Note: The core spec does not have a notion of |opaqueData| in itself, but a backing store that serves as |opaqueData| is necessary to complete this step.
     1. Set the [=surrounding agent=]'s [=associated store=] to |store|.
     1. If |ret| is [=error=], throw an exception. This exception should be a WebAssembly {{RuntimeError}} exception, unless otherwise indicated by <a href="#errors">the WebAssembly error mapping</a>.
     1. If |ret| is exception |exntag| |payload| |opaqueData|, then
