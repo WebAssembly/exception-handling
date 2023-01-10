@@ -3083,7 +3083,7 @@ on the top of the stack.
 
  7. If the stack is empty, then:
 
-    a. Return the uncaught exception :math:`\val^n~(\THROWadm~a)` as a value.
+    a. Return the uncaught exception :math:`\val^n~(\THROWadm~a)` as a result.
 
 8. Else:
 

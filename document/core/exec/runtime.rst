@@ -552,7 +552,7 @@ If there is no :ref:`tag address <syntax-tagaddr>`, the instructions of that han
    \end{array}
 
 Intuitively, for each catch clause :math:`\{\tagaddr^?~\instr^\ast\}` of a catching handler, :math:`\instr^\ast` is the *continuation* to execute
-when the handler catches a thrown exception with tag |tagaddr|, or for any exception, when a catch clause specifies no tag address.
+when the handler catches a thrown exception with tag |tagaddr|, or for any exception, when the catch clause specifies no tag address.
 In that case, the exception is handled, and that catch clause :ref:`entered <exec-caughtadm-enter>`.
 If this list of targets is empty, or if the tag address of the thrown exception is not in any of the catch clauses and there is no |CATCHALL| clause, then the exception will be rethrown.
 
