@@ -122,7 +122,7 @@ The control stack is likewise manipulated through auxiliary functions:
      ctrls.pop()
      return frame
 
-   func label_types(frame : ctrl_frame) : list(val_types) =
+   func label_types(frame : ctrl_frame) : list(val_type) =
      return (if frame.opcode == loop then frame.start_types else frame.end_types)
 
    func unreachable() =
@@ -140,6 +140,8 @@ The type of the :ref:`label <syntax-label>` associated with a control frame is e
 
 Finally, the current frame can be marked as unreachable.
 In that case, all existing operand types are purged from the value stack, in order to allow for the :ref:`stack-polymorphism <polymorphism>` logic in :code:`pop_val` to take effect.
+Because every function has an implicit outermost label that corresponds to an implicit block frame,
+it is an invariant of the validation algorithm that there always is at least one frame on the control stack when validating an instruction, and hence, `ctrls[0]` is always defined.
 
 .. note::
    Even with the unreachable flag set, consecutive operands are still pushed to and popped from the operand stack.
