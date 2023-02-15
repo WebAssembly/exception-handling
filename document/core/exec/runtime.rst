@@ -74,14 +74,14 @@ Results
 ~~~~~~~
 
 A *result* is the outcome of a computation.
-It is either a sequence of :ref:`values <syntax-val>`, a :ref:`trap <syntax-trap>`, or an uncaught exception wrapped in its :ref:`throw context <syntax-ctxt-throw>`.
+It is either a sequence of :ref:`values <syntax-val>`, a :ref:`trap <syntax-trap>`, or an :ref:`uncaught exception <exec-throwadm>`.
 
 .. math::
    \begin{array}{llcl}
    \production{(result)} & \result &::=&
      \val^\ast \\&&|&
      \TRAP  \\&&|&
-     \XT[\val^\ast~(\THROWadm~\tagaddr)]
+     \val^\ast~(\THROWadm~\tagaddr)
    \end{array}
 
 .. note::
@@ -448,7 +448,7 @@ It filters out entries of a specific kind in an order-preserving fashion:
 
 
 
-.. index:: ! stack, ! frame, ! label, ! handler, instruction, store, activation, function, call, local, module instance, exception handler
+.. index:: ! stack, ! frame, ! label, ! handler, instruction, store, activation, function, call, local, module instance, exception handler, exception
    pair: abstract syntax; frame
    pair: abstract syntax; label
    pair: abstract syntax; handler
@@ -457,6 +457,7 @@ It filters out entries of a specific kind in an order-preserving fashion:
 .. _frame:
 .. _label:
 .. _handler:
+.. _exn:
 .. _stack:
 
 Stack
@@ -472,6 +473,8 @@ The stack contains three kinds of entries:
 * *Activations*: the *call frames* of active :ref:`function <syntax-func>` calls.
 
 * *Handlers*: active exception handlers.
+
+* *Exceptions*: caught exceptions.
 
 These entries can occur on the stack in any order during the execution of a program.
 Stack entries are described by abstract syntax as follows.
@@ -531,30 +534,35 @@ and a reference to the function's own :ref:`module instance <syntax-moduleinst>`
 The values of the locals are mutated by respective :ref:`variable instructions <syntax-instr-variable>`.
 
 .. _syntax-handler:
+.. _syntax-exn:
 
-Exception handlers
-..................
+Exception handlers and exceptions
+.................................
 
-Exception handlers are installed by |TRY| instructions and are either *catching handlers* or *delegating handlers*.
+Exception handlers are installed by |TRY| instructions and are either a list of handlers or a label index.
 
-Catching handlers start with the identifier |CATCHadm| and contain catch clauses, which are mappings from :ref:`tag addresses <syntax-tagaddr>`
-to their associated branch *targets*. Each catch clause is expressed syntactically as a possibly empty sequence of
-
+A list of handlers is a mapping from :ref:`tag addresses <syntax-tagaddr>`
+to their associated branch *targets*. A single handler is expressed syntactically as a possibly empty sequence of
 :ref:`instructions <syntax-instr>` possibly following a :ref:`tag address <syntax-tagaddr>`.
-If there is no :ref:`tag address <syntax-tagaddr>`, the instructions of that handler clause correspond to a |CATCHALL| clause.
+If there is no :ref:`tag address <syntax-tagaddr>`, the instructions of that handler correspond to a |CATCHALL| clause.
 
 .. todo::
    Add prose for delegating handlers.
 
+An exception may be temporarily pushed onto the stack when it is :ref:`thrown and caught <exec-throwadm>` by a handler.
+
 .. math::
    \begin{array}{llllll}
-     \production{(handler)} & \handler &::=& \CATCHadm\{\tagaddr^?~\instr^\ast\}^\ast &|& \DELEGATEadm\{l\}
+     \production{(handler)} & \handler &::=& (\tagaddr^?~\instr^\ast)^\ast &|& \labelidx\\
+     \production{(exception)} & \exn   &::=& \tagaddr~\val^\ast &&
    \end{array}
 
-Intuitively, for each catch clause :math:`\{\tagaddr^?~\instr^\ast\}` of a catching handler, :math:`\instr^\ast` is the *continuation* to execute
-when the handler catches a thrown exception with tag |tagaddr|, or for any exception, when the catch clause specifies no tag address.
-In that case, the exception is handled, and that catch clause :ref:`entered <exec-caughtadm-enter>`.
-If this list of targets is empty, or if the tag address of the thrown exception is not in any of the catch clauses and there is no |CATCHALL| clause, then the exception will be rethrown.
+Intuitively, for each individual handler :math:`(\tagaddr^?~\instr^\ast)`, the instruction block  :math:`\instr^\ast` is the *continuation* to execute
+when the handler catches a thrown exception with tag |tagaddr|, or for any exception, when that handler specifies no tag address.
+If the list of handlers is empty, or if the tag address of the thrown exception is not in any of the handlers in the list, and there is no |CATCHALL| clause, then the exception will be rethrown.
+
+When a thrown exception is caught by a handler, the caught exception is pushed onto the stack and the block of that handler's target is :ref:`entered <exec-caughtadm-enter>`.
+When exiting a block with a caught exception, the exception is discarded.
 
 
 .. todo::
@@ -581,14 +589,13 @@ Conventions
    \end{array}
 
 
-.. index:: ! administrative instructions, function, function instance, function address, label, frame, instruction, trap, call, memory, memory instance, table, table instance, element, data, segment, tag, tag instance, tag address, exceptions, reftype, catch, delegate, handler, caught
+.. index:: ! administrative instructions, function, function instance, function address, label, frame, instruction, trap, call, memory, memory instance, table, table instance, element, data, segment, tag, tag instance, tag address, exception, reftype, handler, caught, caught exception
    pair:: abstract syntax; administrative instruction
 .. _syntax-trap:
 .. _syntax-reffuncaddr:
 .. _syntax-invoke:
 .. _syntax-throwadm:
-.. _syntax-catchadm:
-.. _syntax-delegateadm:
+.. _syntax-handleradm:
 .. _syntax-caughtadm:
 .. _syntax-instr-admin:
 
@@ -610,9 +617,8 @@ In order to express the reduction of :ref:`traps <trap>`, :ref:`calls <syntax-ca
      \INVOKE~\funcaddr \\ &&|&
      \THROWadm~\tagaddr \\ &&|&
      \LABEL_n\{\instr^\ast\}~\instr^\ast~\END \\ &&|&
-     \CATCHadm\{\tagaddr^?~\instr^\ast\}^\ast~\instr^\ast~\END \\ &&|&
-     \DELEGATEadm\{l\}~\instr^\ast~\END \\ &&|&
-     \CAUGHTadm\{\tagaddr~\val^\ast\}~\instr^\ast~\END \\ &&|&
+     \HANDLERadm_n\{\handler\}~\instr^\ast~\END \\ &&|&
+     \CAUGHTadm_n\{\exn\}~\instr^\ast~\END \\ &&|&
      \FRAME_n\{\frame\}~\instr^\ast~\END \\
    \end{array}
 
@@ -628,7 +634,7 @@ The |THROWadm| instruction represents the imminent throw of an exception based o
 The values it will consume depend on its :ref:`tag type <syntax-tagtype>`.
 It unifies the different forms of throwing exceptions.
 
-The |LABEL|, |FRAME|, |CATCHadm|, |DELEGATEadm|, and |CAUGHTadm| instructions model :ref:`labels <syntax-label>`, :ref:`frames <syntax-frame>`, active :ref:`catching exception handlers <syntax-try-catch>`, active :ref:`delegating exception handlers <syntax-try-delegate>`, and :ref:`caught exceptions <exec-throwadm>`, respectively, :ref:`"on the stack" <exec-notation>`.
+The |LABEL|, |FRAME|, |HANDLERadm|, and |CAUGHTadm| instructions model :ref:`labels <syntax-label>`, :ref:`frames <syntax-frame>`, active :ref:`exception handlers <syntax-handleradm>`, and :ref:`caught exceptions <syntax-caughtadm>`, respectively, :ref:`"on the stack" <exec-notation>`.
 Moreover, the administrative syntax maintains the nesting structure of the original :ref:`structured control instruction <syntax-instr-control>` or :ref:`function body <syntax-func>` and their :ref:`instruction sequences <syntax-instr-seq>` with an |END| marker.
 That way, the end of the inner instruction sequence is known when part of an outer sequence.
 
@@ -683,8 +689,8 @@ In order to be able to break jumping over exception handlers and caught exceptio
 
 .. math::
    \begin{array}{llll}
-   \production{(control contexts)} & \XC^{k} &::=& \handler~\XB^k~\END \\
-   & & | & \CAUGHTadm~\{\tagaddr~\val^\ast\}~\XB^k~\END \\
+   \production{(control contexts)} & \XC^{k} &::=& \HANDLERadm_n\{\handler\}~\XB^k~\END \\
+   & & | & \CAUGHTadm_n~\{\exn\}~\XB^k~\END \\
    \production{(block contexts)} & \XB^0 &::=& \dots ~|~  \val^\ast~\XC^0~\instr^\ast\\
    \production{(block contexts)} & \XB^{k+1} &::=& \dots ~|~ \val^\ast~\XC^{k+1}~\instr^\ast \\
    \end{array}
@@ -708,7 +714,7 @@ Throw Contexts
 ..............
 
 In order to specify the reduction of |TRY| blocks
-with the help of the administrative instructions |THROWadm|, |CATCHadm|, |DELEGATEadm|, and |CAUGHTadm|,
+with the help of the administrative instructions |THROWadm|, |HANDLERadm|, and |CAUGHTadm|,
 the following syntax of *throw contexts* is defined, as well as associated structural rules:
 
 .. math::
@@ -717,17 +723,15 @@ the following syntax of *throw contexts* is defined, as well as associated struc
      [\_] \\ &&|&
      \val^\ast~\XT~\instr^\ast \\ &&|&
      \LABEL_n\{\instr^\ast\}~\XT~\END \\ &&|&
-     \CAUGHTadm\{\tagaddr~\val^\ast\}~\XT~\END \\ &&|&
+     \CAUGHTadm_n\{\exn\}~\XT~\END \\ &&|&
      \FRAME_n\{F\}~\XT~\END \\
    \end{array}
 
-Throw contexts allow matching the program context around a throw instruction up to the innermost enclosing |CATCHadm| or |DELEGATEadm|, thereby selecting the exception |handler| responsible for an exception, if one exists.
-If no exception :ref:`handler that catches the exception <syntax-handler>` is found, the computation :ref:`results <syntax-result>` in an uncaught exception result value, which contains the exception's entire throw context.
+Throw contexts allow matching the program context around a throw instruction up to the innermost enclosing |HANDLERadm|, thereby selecting the exception |handler| responsible for an exception, if one exists.
+If no exception :ref:`handler that catches the exception <syntax-handler>` is found, the computation :ref:`results <syntax-result>` in an uncaught exception result value.
 
 .. note::
    Contrary to block contexts, throw contexts don't skip over handlers.
-
-   Since handlers are not included above, there is always a unique maximal throw context to match the reduction rules.
 
    |CAUGHTadm| blocks do not represent active handlers. Instead, they delimit the continuation of a handler that has already been selected. Their sole purpose is to record the exception that has been caught, such that |RETHROW| can access it inside such a block.
 
@@ -741,24 +745,24 @@ If no exception :ref:`handler that catches the exception <syntax-handler>` is fo
    .. math::
       \begin{array}{ll}
       & \hspace{-5ex} F;~\val_{i32}~\val_{f32}~\val_{i64}~(\TRY~\X{bt}~(\THROW~x)~\CATCH~x~\END) \\
-      \stepto & F;~\LABEL_2\{\} (\CATCHadm\{a~\epsilon\}~\val_{i32}~\val_{f32}~\val_{i64}~(\THROW~x)~\END)~\END \\
+      \stepto & F;~\LABEL_2\{\} (\HANDLERadm_2\{(a~\epsilon)\}~\val_{i32}~\val_{f32}~\val_{i64}~(\THROW~x)~\END)~\END \\
       \end{array}
 
    :ref:`Handling the thrown exception <exec-throwadm>` with tag address :math:`a` in the throw context
-   :math:`T=[\val_{i32}\_]`, with the exception handler :math:`H=\CATCHadm\{a~\epsilon\}` gives:
+   :math:`T=[\val_{i32}\_]`, with the exception handler :math:`H=(a~\epsilon)` gives:
 
    .. math::
       \begin{array}{lll}
-      \stepto & F;~\LABEL_2\{\}~(\CAUGHTadm\{a~\val_{f32}~\val_{i64}\}~\val_{f32}~\val_{i64}~\END)~\END & \hspace{9ex}\ \\
+      \stepto & F;~\LABEL_2\{\}~(\CAUGHTadm_2\{a~\val_{f32}~\val_{i64}\}~\val_{f32}~\val_{i64}~\END)~\END & \hspace{9ex}\ \\
       \stepto & F;~\LABEL_2\{\}~\val_{f32}~\val_{i64}~\END & \hspace{9ex}\ \\
       \stepto & \val_{f32}~\val_{i64} & \\
       \end{array}
 
 
-   When a throw of the form :math:`\val^m (\THROWadm~a)` occurs, search for the maximal surrounding throw context :math:`T` is performed,
-   which means any other values, labels, frames, and |CAUGHTadm| instructions surrounding the throw :math:`\val^m (\THROWadm~a)` are popped,
-   until a :ref:`handler <syntax-handler>` for the exception is found.
-   Then a new |CAUGHTadm| instruction, containing the tag address :math:`a` and the values :math:`\val^m`, is pushed onto the stack.
+   When a throw of the form :math:`\val^m (\THROWadm~a)` occurs, search for an enclosing exception handler is performed,
+   which means any throw context (that is any other values, labels, frames, and |CAUGHTadm| instructions) surrounding the throw :math:`\val^m (\THROWadm~a)` is popped,
+   until a :ref:`handler <syntax-handler>` for the exception tag :math:`a` is found.
+   Then the :ref:`caught exception <syntax-exn>` containing the tag address :math:`a` and the values :math:`\val^m`, is pushed onto the stack.
 
    In this particular case, the exception is caught by the exception handler :math:`H` and its values are returned.
 
