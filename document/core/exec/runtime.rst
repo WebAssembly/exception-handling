@@ -543,10 +543,10 @@ to their associated branch *targets*. A single handler is expressed syntacticall
 :ref:`instructions <syntax-instr>` possibly following a :ref:`tag address <syntax-tagaddr>`.
 If there is no :ref:`tag address <syntax-tagaddr>`, the instructions of that handler correspond to a |CATCHALL| clause.
 
-.. todo::
-   Add prose for delegating handlers.
-
 An exception may be temporarily pushed onto the stack when it is :ref:`thrown and caught <exec-throwadm>` by a handler.
+
+A |labelidx| handler points to the outer block in which any exceptions thrown from its scope, will be rethrown (delegated to).
+This handler does not catch exceptions, but only rethrows them.
 
 .. math::
    \begin{array}{llllll}
@@ -561,9 +561,7 @@ If the list of handlers is empty, or if the tag address of the thrown exception 
 When a thrown exception is caught by a handler, the caught exception is pushed onto the stack and the block of that handler's target is :ref:`entered <exec-caughtadm-enter>`.
 When exiting a block with a caught exception, the exception is discarded.
 
-
-.. todo::
-   Add prose with intuition on delegating handlers.
+A handler pointing to a |labelidx| :math:`l` can be thought of as a break to the :math:`l` th label on exception, followed by a rethrow of the exception.
 
 
 .. _exec-expand:
