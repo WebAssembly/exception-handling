@@ -1115,7 +1115,7 @@ Note: Exported Functions do not have a \[[Construct]] method and thus it is not 
                 1. Let |type| be the [=JavaScript exception tag=].
                 1. Let |payload| be « ».
             1. Let |opaqueData| be [=ToWebAssemblyValue=](|v|, [=externref=])
-            1. [=WebAssembly/Throw=] with |type|, |payload|, associating |opaqueData| with the thrown exception.
+            1. [=WebAssembly/Throw=] with |type|, |payload|, and |opaqueData|.
         1. Otherwise, return |result|.\[[Value]].
     1. Let |store| be the [=surrounding agent=]'s [=associated store=].
     1. Let (|store|, |funcaddr|) be [=func_alloc=](|store|, |functype|, |hostfunc|).
@@ -1363,11 +1363,11 @@ For any [=associated store=] |store|, the result of
 
 To <dfn for=WebAssembly>throw</dfn> with a [=tag address=] |type|, a matching [=list=] of WebAssembly values |payload|, and an [=externref=] |opaqueData|, perform the following steps:
 
-1. Associate |opaqueData| with the thrown exception.
+1. Associate |opaqueData| with the identity of the thrown exception.
 1. Unwind the stack until reaching the *catching try block* given |type|.
 1. Invoke the catch block with |payload|.
 
-Note:  The identity represented by |opaqueData| is not exposed to core wasm code, but remains with the exception as it propagates through the wasm frames on the stack.
+Note: The identity represented by |opaqueData| is not exposed to core wasm code, but remains with the exception as it propagates through the wasm frames on the stack.
 If the exception propagates back to JavaScript (by returning from [=func_invoke=]), the same |opaqueData| is returned with it.
 If the exception is caught and rethrown with the rethrow instruction, the identity remains the same.
 Exceptions that originate from core WebAssembly (using the WebAssembly throw instruction) have a |ref.null| identity returned from [=func_invoke=]
