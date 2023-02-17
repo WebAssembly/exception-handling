@@ -20,8 +20,8 @@ test(() => {
     }
   };
 
-  // Call a JS function throws an exception using a JS-defined tag, catch it
-  // with a 'catch' instruction, and rethrows it.
+  // Call a JS function that throws an exception using a JS-defined tag, catches
+  // it with a 'catch' instruction, and rethrows it.
   builder
     .addFunction("catch_js_tag_rethrow", kSig_v_v)
     .addBody([
@@ -34,8 +34,8 @@ test(() => {
     ])
     .exportFunc();
 
-  // Call a JS function throws an exception using a JS-defined tag, catch it
-  // with a 'catch_all' instruction, and rethrows it.
+  // Call a JS function that throws an exception using a JS-defined tag, catches
+  // it with a 'catch_all' instruction, and rethrows it.
   builder
     .addFunction("catch_all_js_tag_rethrow", kSig_v_v)
     .addBody([
