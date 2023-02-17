@@ -216,7 +216,7 @@ Other instructions are checked in a similar manner.
          pop_vals([t1*])
          push_ctrl(try, [t1*], [t2*])
 
-       case (catch)
+       case (catch x)
          let frame = pop_ctrl()
          error_if(frame.opcode =/= try || frame.opcode =/= catch)
          let params = tags[x].type.params
@@ -226,6 +226,11 @@ Other instructions are checked in a similar manner.
          let frame = pop_ctrl()
          error_if(frame.opcode =/= try || frame.opcode =/= catch)
          push_ctrl(catch_all, [], frame.end_types)
+
+       case (throw x)
+          let params = tags[x].type.params
+          pop.vals(params)
+          unreachable()
 
        case (br n)
          error_if(ctrls.size() < n)
@@ -249,8 +254,6 @@ Other instructions are checked in a similar manner.
          pop_vals(label_types(ctrls[m]))
          unreachable()
 
-.. todo::
-   Add a case for :code:`throw`.
 
 .. note::
    It is an invariant under the current WebAssembly instruction set that an operand of :code:`Unknown` type is never duplicated on the stack.
