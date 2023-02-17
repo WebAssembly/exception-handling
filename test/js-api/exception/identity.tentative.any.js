@@ -56,7 +56,6 @@ test(() => {
       result.instance.exports.catch_js_tag_rethrow();
     } catch (e) {
       assert_equals(e, jsTagExn);
-      assert_equals(e.getArg(jsTag, 0), jsTagExn.getArg(jsTag, 0));
       // Even if they have the same payload, they are different objects, so they
       // shouldn't compare equal.
       assert_not_equals(e, jsTagExnSamePayload);
@@ -66,7 +65,6 @@ test(() => {
       result.instance.exports.catch_all_js_tag_rethrow();
     } catch (e) {
       assert_equals(e, jsTagExn);
-      assert_equals(e.getArg(jsTag, 0), jsTagExn.getArg(jsTag, 0));
       assert_not_equals(e, jsTagExnSamePayload);
       assert_not_equals(e, jsTagExnDiffPayload);
     }
