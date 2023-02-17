@@ -45,7 +45,7 @@ test(() => {
 
   const buffer = builder.toBuffer();
 
-  // The exception object's identity should be preserved throw 'rethrow's in
+  // The exception object's identity should be preserved across 'rethrow's in
   // Wasm code. Do tests with a tag defined in JS.
   WebAssembly.instantiate(buffer, imports).then(result => {
     try {
