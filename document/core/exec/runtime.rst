@@ -545,7 +545,7 @@ If there is no :ref:`tag address <syntax-tagaddr>`, the instructions of that han
 
 An exception may be temporarily pushed onto the stack when it is :ref:`thrown and caught <exec-throwadm>` by a handler.
 
-A |labelidx| handler points to the outer block in which any exceptions thrown from its scope, will be rethrown (delegated to).
+A handler can also consist of a single |labelidx|, which denotes an outer block to which every caught exception will be delegated, by implicitly rethrowing inside that block.
 This handler does not catch exceptions, but only rethrows them.
 
 .. math::
@@ -561,7 +561,7 @@ If the list of handlers is empty, or if the tag address of the thrown exception 
 When a thrown exception is caught by a handler, the caught exception is pushed onto the stack and the block of that handler's target is :ref:`entered <exec-caughtadm-enter>`.
 When exiting a block with a caught exception, the exception is discarded.
 
-A handler pointing to a |labelidx| :math:`l` can be thought of as a break to the :math:`l` th label on exception, followed by a rethrow of the exception.
+A handler consisting of a |labelidx| :math:`l` can be thought of as a branch to that label that happens in case an exception occurs, immediately followed by a rethrow of the exception at the target site.
 
 
 .. _exec-expand:
