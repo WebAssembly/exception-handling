@@ -228,8 +228,7 @@ Other instructions are checked in a similar manner.
          push_ctrl(catch_all, [], frame.end_types)
 
        case (throw x)
-          let params = tags[x].type.params
-          pop.vals(params)
+          pop.vals(tags[x].type.params)
           unreachable()
 
        case (br n)
