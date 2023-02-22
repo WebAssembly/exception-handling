@@ -550,8 +550,8 @@ This handler does not catch exceptions, but only rethrows them.
 
 .. math::
    \begin{array}{llllll}
-     \production{(handler)} & \handler &::=& (\tagaddr^?~\instr^\ast)^\ast &|& \labelidx\\
-     \production{(exception)} & \exn   &::=& \tagaddr~\val^\ast &&
+     \production{handler} & \handler &::=& (\tagaddr^?~\instr^\ast)^\ast &|& \labelidx\\
+     \production{exception} & \exn   &::=& \tagaddr~\val^\ast &&
    \end{array}
 
 Intuitively, for each individual handler :math:`(\tagaddr^?~\instr^\ast)`, the instruction block  :math:`\instr^\ast` is the *continuation* to execute
@@ -684,10 +684,10 @@ In order to be able to break jumping over exception handlers and caught exceptio
 
 .. math::
    \begin{array}{llll}
-   \production{(control contexts)} & \XC^{k} &::=& \HANDLERadm_n\{\handler\}~\XB^k~\END \\
+   \production{control contexts} & \XC^{k} &::=& \HANDLERadm_n\{\handler\}~\XB^k~\END \\
    & & | & \CAUGHTadm_n~\{\exn\}~\XB^k~\END \\
-   \production{(block contexts)} & \XB^0 &::=& \dots ~|~  \val^\ast~\XC^0~\instr^\ast\\
-   \production{(block contexts)} & \XB^{k+1} &::=& \dots ~|~ \val^\ast~\XC^{k+1}~\instr^\ast \\
+   \production{block contexts} & \XB^0 &::=& \dots ~|~  \val^\ast~\XC^0~\instr^\ast\\
+   \production{block contexts} & \XB^{k+1} &::=& \dots ~|~ \val^\ast~\XC^{k+1}~\instr^\ast \\
    \end{array}
 
 .. note::
