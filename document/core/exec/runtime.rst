@@ -75,14 +75,14 @@ Results
 ~~~~~~~
 
 A *result* is the outcome of a computation.
-It is either a sequence of :ref:`values <syntax-val>`, a :ref:`trap <syntax-trap>`, or an :ref:`uncaught exception <exec-throwadm>`.
+It is either a sequence of :ref:`values <syntax-val>`, a :ref:`trap <syntax-trap>`, or an :ref:`exception <exec-throwadm>`.
 
 .. math::
    \begin{array}{llcl}
    \production{result} & \result &::=&
      \val^\ast \\&&|&
      \TRAP  \\&&|&
-     \val^\ast~(\THROWadm~\tagaddr)
+     \XT[(\THROWadm~\tagaddr)]
    \end{array}
 
 .. index:: ! store, function instance, table instance, memory instance, tag instance, global instance, module, allocation
