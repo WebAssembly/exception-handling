@@ -66,7 +66,7 @@ Results
 
 * The :ref:`external value <syntax-externval>` :math:`\EVTAG~\tagaddr` must be :ref:`valid <valid-externval-tag>` with some :ref:`external type <syntax-externtype>` :math:`\ETTAG~\tagtype`.
 
-* Let :math:`[t_1^\ast]\to[]` be the :ref:`tag type <syntax-tagtype>` |tagtype|.
+* Let :math:`[t_1^\ast]\to[t_2^\ast]` be the :ref:`tag type <syntax-tagtype>` |tagtype|.
 
 * The values :math:`\val^\ast` must be :ref:`valid <valid-val>` with types :math:`[t_1^\ast]`.
 
@@ -75,11 +75,11 @@ Results
 
 .. math::
    \frac{
-     \vdashexterntype \ETTAG~[t_1^\ast]\to[]~\ok
+     S \vdashexternval \EVTAG~\tagaddr : \ETTAG~[t^\ast] \to []
      \qquad
-     (S \vdashval \val : t_1)^\ast
+     (S \vdashval \val : t)^\ast
    }{
-     S \vdashresult \val^\ast~(\THROWadm~\tagaddr) : [t_2^\ast]
+     S \vdashresult \val^\ast~(\THROWadm~\tagaddr) : [{t'}^\ast]
    }
 
 
