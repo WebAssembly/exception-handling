@@ -45,7 +45,7 @@ These operations closely match respective operations available in hardware.
    \production{signedness} & \sx &::=&
      \K{u} ~|~ \K{s} \\
    \production{instruction} & \instr &::=&
-     \K{i}\X{nn}\K{.}\CONST~\xref{syntax/values}{syntax-int}{\iX{\X{nn}}} ~|~
+     \K{i}\X{nn}\K{.}\CONST~\xref{syntax/values}{syntax-int}{\uX{\X{nn}}} ~|~
      \K{f}\X{nn}\K{.}\CONST~\xref{syntax/values}{syntax-float}{\fX{\X{nn}}} \\&&|&
      \K{i}\X{nn}\K{.}\iunop ~|~
      \K{f}\X{nn}\K{.}\funop \\&&|&
@@ -694,8 +694,8 @@ In case of |BLOCK| or |IF| it is a *forward jump*,
 resuming execution after the matching |END|.
 In case of |LOOP| it is a *backward jump* to the beginning of the loop.
 
-.. todo::
-   Add prose for try-delegate's jump.
+When |TRY|--|DELEGATE| handles an exception, it also behaves similar to a forward jump,
+effectively rethrowing the caught exception right before the matching |END|.
 
 .. note::
    This enforces *structured control flow*.
