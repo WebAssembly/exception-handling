@@ -17,7 +17,7 @@ test(() => {
   const wasmTagIndex = builder.addTag(kSig_v_i);
   builder.addExportOfKind("wasmTag", kExternalTag, wasmTagIndex);
   const throwWasmTagExnIndex = builder.addImport("module", "throwWasmTagExn", kSig_v_v);
-  // Will be assigned later
+  // Will be assigned after an instance is created
   let wasmTagExn = null;
   let wasmTagExnSamePayload = null;
   let wasmTagExnDiffPayload = null;
