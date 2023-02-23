@@ -257,7 +257,7 @@ end
 The `rethrow` here references `try $l2`, but the `rethrow` is not within its
 `catch` block.
 
-The below is an example that includes all the cases explained. The numbers
+The example below includes all of the cases explained above. The numbers
 within `()` after `rethrow`s are the label operands in immediate values.
 ```
 (func $test
