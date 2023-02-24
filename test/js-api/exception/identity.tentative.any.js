@@ -86,9 +86,9 @@ test(() => {
 
   const buffer = builder.toBuffer();
 
-  // The exception object's identity should be preserved across 'rethrow's in
-  // Wasm code. Do tests with a tag defined in JS.
   WebAssembly.instantiate(buffer, imports).then(result => {
+    // The exception object's identity should be preserved across 'rethrow's in
+    // Wasm code. Do tests with a tag defined in JS.
     try {
       result.instance.exports.catch_js_tag_rethrow();
     } catch (e) {
@@ -105,10 +105,8 @@ test(() => {
       assert_not_equals(e, jsTagExnSamePayload);
       assert_not_equals(e, jsTagExnDiffPayload);
     }
-  });
 
-  // Do the same tests with a tag defined in Wasm.
-  WebAssembly.instantiate(buffer, imports).then(result => {
+    // Do the same tests with a tag defined in Wasm.
     const wasmTag = result.instance.exports.wasmTag;
     wasmTagExn = new WebAssembly.Exception(wasmTag, [42]);
     wasmTagExnSamePayload = new WebAssembly.Exception(wasmTag, [42]);
