@@ -94,7 +94,7 @@ test(() => {
         kExprI32Const, 0x00,
       kExprCatch, jsTagIndex,
         kExprReturn,
-      kExprEnd,
+      kExprEnd
     ])
     .exportFunc();
 
@@ -107,7 +107,9 @@ test(() => {
         kExprCallFunction, throwJSTagExnIndex,
       kExprCatch, jsTagIndex,
         kExprThrow, jsTagIndex,
-      kExprEnd,
+      kExprEnd
+    ])
+    .exportFunc();
 
   const buffer = builder.toBuffer();
 
