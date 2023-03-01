@@ -125,29 +125,29 @@
 <td></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>(reserved)</p></td>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{try}}~\mathit{bt}\)</span></p></td>
 <td><p><span class="math notranslate nohighlight">\(\def\mathdef282#1{\mathtt{0x#1}}\mathdef282{06}\)</span></p></td>
-<td></td>
-<td></td>
-<td></td>
+<td><p><span class="math notranslate nohighlight">\([t_1^\ast] \href{../syntax/types.html#syntax-functype}{\rightarrow} [t_2^\ast]\)</span></p></td>
+<td><p><a class="reference internal" href="../valid/instructions.html#valid-try-catch"><span class="std std-ref">validation</span></a>, <a class="reference internal" href="../valid/instructions.html#valid-try-delegate"><span class="std std-ref">validation</span></a></p></td>
+<td><p><a class="reference internal" href="../exec/instructions.html#exec-try-catch"><span class="std std-ref">execution</span></a>, <a class="reference internal" href="../exec/instructions.html#exec-try-catch"><span class="std std-ref">execution</span></a></p></td>
 </tr>
-<tr class="row-odd"><td><p>(reserved)</p></td>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{catch}}~x\)</span></p></td>
 <td><p><span class="math notranslate nohighlight">\(\def\mathdef283#1{\mathtt{0x#1}}\mathdef283{07}\)</span></p></td>
 <td></td>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>(reserved)</p></td>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{throw}}~x\)</span></p></td>
 <td><p><span class="math notranslate nohighlight">\(\def\mathdef284#1{\mathtt{0x#1}}\mathdef284{08}\)</span></p></td>
-<td></td>
-<td></td>
-<td></td>
+<td><p><span class="math notranslate nohighlight">\([t_1^\ast~t_x^\ast] \href{../syntax/types.html#syntax-functype}{\rightarrow} [t_2^\ast]\)</span></p></td>
+<td><p><a class="reference internal" href="../valid/instructions.html#valid-throw"><span class="std std-ref">validation</span></a></p></td>
+<td><p><a class="reference internal" href="../exec/instructions.html#exec-throw"><span class="std std-ref">execution</span></a></p></td>
 </tr>
-<tr class="row-odd"><td><p>(reserved)</p></td>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{rethrow}}~n\)</span></p></td>
 <td><p><span class="math notranslate nohighlight">\(\def\mathdef285#1{\mathtt{0x#1}}\mathdef285{09}\)</span></p></td>
-<td></td>
-<td></td>
-<td></td>
+<td><p><span class="math notranslate nohighlight">\([t_1^\ast] \href{../syntax/types.html#syntax-functype}{\rightarrow} [t_2^\ast]\)</span></p></td>
+<td><p><a class="reference internal" href="../valid/instructions.html#valid-rethrow"><span class="std std-ref">validation</span></a></p></td>
+<td><p><a class="reference internal" href="../exec/instructions.html#exec-rethrow"><span class="std std-ref">execution</span></a></p></td>
 </tr>
 <tr class="row-even"><td><p>(reserved)</p></td>
 <td><p><span class="math notranslate nohighlight">\(\def\mathdef286#1{\mathtt{0x#1}}\mathdef286{0A}\)</span></p></td>
@@ -233,17 +233,17 @@
 <td></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>(reserved)</p></td>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{delegate}}~l\)</span></p></td>
 <td><p><span class="math notranslate nohighlight">\(\def\mathdef300#1{\mathtt{0x#1}}\mathdef300{18}\)</span></p></td>
 <td></td>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>(reserved)</p></td>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{catch\_all}}\)</span></p></td>
 <td><p><span class="math notranslate nohighlight">\(\def\mathdef301#1{\mathtt{0x#1}}\mathdef301{19}\)</span></p></td>
 <td></td>
-<td></td>
-<td></td>
+<td><p><a class="reference internal" href="../valid/instructions.html#valid-try-catch"><span class="std std-ref">validation</span></a></p></td>
+<td><p><a class="reference internal" href="../exec/instructions.html#exec-try-catch"><span class="std std-ref">execution</span></a></p></td>
 </tr>
 <tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\href{../syntax/instructions.html#syntax-instr-parametric}{\mathsf{drop}}\)</span></p></td>
 <td><p><span class="math notranslate nohighlight">\(\def\mathdef302#1{\mathtt{0x#1}}\mathdef302{1A}\)</span></p></td>
