@@ -62,15 +62,15 @@ Results
 :ref:`Results <syntax-result>` :math:`\val^\ast~(\THROWadm~\tagaddr)`
 .....................................................................
 
-* The :ref:`tag address <syntax-tagaddr>` :math:`\tagaddr` must be in :math:`\moduleinst.\MITAGS`.
-
 * The :ref:`external value <syntax-externval>` :math:`\EVTAG~\tagaddr` must be :ref:`valid <valid-externval-tag>` with some :ref:`external type <syntax-externtype>` :math:`\ETTAG~\tagtype`.
 
-* Let :math:`[t_1^\ast]\to[t_2^\ast]` be the :ref:`tag type <syntax-tagtype>` |tagtype|.
+* Let :math:`[t^\ast]\to[{t'}^\ast]` be the :ref:`tag type <syntax-tagtype>` |tagtype|.
 
-* The values :math:`\val^\ast` must be :ref:`valid <valid-val>` with types :math:`[t_1^\ast]`.
+* For each :ref:`value <syntax-val>` :math:`\val_i` in :math:`\val^\ast`:
 
-* Then the result is valid with :ref:`result type <syntax-resulttype>` :math:`[t_2^\ast]`, for any sequence :math:`t_2^\ast` of :ref:`value types <syntax-valtype>`.
+  * The value :math:`\val_i` must be :ref:`valid <valid-val>` with :ref:`value type <syntax-valtype>` :math:`t_i`.
+
+* Then the result is valid with :ref:`result type <syntax-resulttype>` :math:`[{t'}^\ast]`, for any sequence :math:`{t'}^\ast` of :ref:`value types <syntax-valtype>`.
 
 
 .. math::
