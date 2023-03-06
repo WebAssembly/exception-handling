@@ -138,6 +138,24 @@ Added vector type and instructions that manipulate multiple numeric values in pa
 * New injection/projection :ref:`vector instructions <syntax-instr-vec>`: :math:`\K{i}\!N\!\K{x}\!M\!\K{.splat}`, :math:`\K{f}\!N\!\K{x}\!M\!\K{.splat}`, :math:`\K{i}\!N\!\K{x}\!M\!\K{.bitmask}`
 
 
+.. index:: instructions, exception, tag type, tag, handler
+
+Exception Handling
+..................
+
+Added tag type, instructions that throw exceptions of a tag type, and instructions that handle exceptions. [#proposal-eh]_
+
+* New :ref:`tag type <syntax-tagtype>`: :math:`[t^\ast]\to[]`-
+
+* New :ref:`tag section <binary-tagsec>` in binary format.
+
+* New exception throwing :ref:`control instructions <syntax-instr-control>`: :math:`\THROW` and :math:`\RETHROW`.
+
+* New handler :ref:`control instructions <syntax-instr-control>`: :math:`\TRY~\bt~\instr^\ast~(\CATCH~\tagidx~\instr^\ast)^\ast~(\CATCHALL~\instr^\ast)^?\END`, :math:`\TRY~\bt~\instr^\ast~\DELEGATE~\labelidx`.
+
+* New uncaught exception :ref:`result <syntax-result>`.
+
+
 .. [#proposal-signext]
    https://github.com/WebAssembly/spec/tree/main/proposals/sign-extension-ops/
 
@@ -155,3 +173,6 @@ Added vector type and instructions that manipulate multiple numeric values in pa
 
 .. [#proposal-vectype]
    https://github.com/WebAssembly/spec/tree/main/proposals/simd/
+
+.. [#proposal-eh]
+   https://github.com/WebAssembly/spec/tree/main/proposals/exception-handling/
