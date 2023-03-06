@@ -151,7 +151,7 @@ Added tag type, instructions that throw exceptions of a tag type, and instructio
 
 * New exception throwing :ref:`control instructions <syntax-instr-control>`: :math:`\THROW` and :math:`\RETHROW`.
 
-* New handler :ref:`control instructions <syntax-instr-control>`: :math:`\TRY~\bt~\instr^\ast~(\CATCH~\tagidx~\instr^\ast)^\ast~(\CATCHALL~\instr^\ast)^?\END`, :math:`\TRY~\bt~\instr^\ast~\DELEGATE~\labelidx`.
+* New handler :ref:`control instructions <syntax-instr-control>`: :math:`\TRY~\X{bt}~\instr_1^\ast~(\CATCH~x~\instr_2^\ast)^\ast~(\CATCHALL~\instr_3^\ast)^?\END`, :math:`\TRY~\X{bt}~\instr^\ast~\DELEGATE~l`.
 
 * New uncaught exception :ref:`result <syntax-result>`.
 
