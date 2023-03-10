@@ -64,7 +64,9 @@ Results
 
 * The :ref:`external value <syntax-externval>` :math:`\EVTAG~\tagaddr` must be :ref:`valid <valid-externval-tag>` with some :ref:`external type <syntax-externtype>` :math:`\ETTAG~\tagtype`.
 
-* Let :math:`[t^\ast]\to[{t'}^\ast]` be the :ref:`tag type <syntax-tagtype>` |tagtype|.
+* Let :math:`[t^\ast]\to[t_0^\ast]` be the :ref:`tag type <syntax-tagtype>` |tagtype|.
+
+* Assert: due to :ref:`validation <valid-externval-tag>` the type sequence :math:`t_0^\ast` must be empty.
 
 * For each :ref:`value <syntax-val>` :math:`\val_i` in :math:`\val^\ast`:
 
