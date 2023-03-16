@@ -293,14 +293,16 @@ Functions
 .. index:: invocation, value, result
 .. _embed-func-invoke:
 
-:math:`\F{func\_invoke}(\store, \funcaddr, \val^\ast) : (\store, \val^\ast ~|~ \error)`
-........................................................................................
+:math:`\F{func\_invoke}(\store, \funcaddr, \val^\ast) : (\store, \val^\ast ~|~ \error ~|~ \exception)`
+......................................................................................................
 
 1. Try :ref:`invoking <exec-invocation>` the function :math:`\funcaddr` in :math:`\store` with :ref:`values <syntax-val>` :math:`\val^\ast` as arguments:
 
   a. If it succeeds with :ref:`values <syntax-val>` :math:`{\val'}^\ast` as results, then let :math:`\X{result}` be :math:`{\val'}^\ast`.
 
-  b. Else it has trapped, hence let :math:`\X{result}` be :math:`\ERROR`.
+  b. Else if the result is a :ref:`throw context <syntax-throw-contexts>` for an uncaught exception with :ref:`tag <syntax-tag-instances>` :math:`{\tag}` and payload :ref:`values <syntax-val>` :math:`{\val'}^\ast`,  let :math:`\X{result}` be :math:`{tag'}`, :math:`{\val'}`.
+
+  c. Else it has trapped, hence let :math:`\X{result}` be :math:`\ERROR`.
 
 2. Return the new store paired with :math:`\X{result}`.
 
@@ -309,6 +311,7 @@ Functions
    \begin{array}{lclll}
    \F{func\_invoke}(S, a, v^\ast) &=& (S', {v'}^\ast) && (\iff \invoke(S, a, v^\ast) \stepto^\ast S'; F; {v'}^\ast) \\
    \F{func\_invoke}(S, a, v^\ast) &=& (S', \ERROR) && (\iff \invoke(S, a, v^\ast) \stepto^\ast S'; F; \TRAP) \\
+   \F{func\_invoke}(S, a, v^\ast) &=& (S', {v}, {v'}^\ast) && (\iff \invoke(S, a, v^\ast) \stepto^\ast S'; F; \THROW) \\
    \end{array}
 
 .. note::
