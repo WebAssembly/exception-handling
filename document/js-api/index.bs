@@ -1049,7 +1049,7 @@ This slot holds a [=function address=] relative to the [=surrounding agent=]'s [
     1. Set the [=surrounding agent=]'s [=associated store=] to |store|.
     1. If |ret| is [=error=], throw an exception. This exception should be a WebAssembly {{RuntimeError}} exception, unless otherwise indicated by <a href="#errors">the WebAssembly error mapping</a>.
     1. If |ret| is exception |exntag| |payload|, then
-        1. Let |opaqueData| be the [=externref=] assocated with the returned exception.
+        1. Let |opaqueData| be the [=externref=] associated with the returned exception.
         1. If |opaqueData| is not [=ref.null=] [=externref=],
             1. Let « [=ref.extern=] |externaddr| » be |opaqueData|.
             1. Throw the result of [=retrieving an extern value=] from |externaddr|.
