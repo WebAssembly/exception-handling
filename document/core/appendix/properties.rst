@@ -66,7 +66,7 @@ Results
 
 * Let :math:`[t^\ast]\to[t_0^\ast]` be the :ref:`tag type <syntax-tagtype>` |tagtype|.
 
-* Assert: due to :ref:`validation <valid-externval-tag>` the type sequence :math:`t_0^\ast` must be empty.
+* Due to :ref:`validation <valid-externval-tag>` the type sequence :math:`t_0^\ast` must be empty.
 
 * For each :ref:`value <syntax-val>` :math:`\val_i` in :math:`\val^\ast` and corresponding :ref:`value type <syntax-valtype>` :math:`t_i` in :math:`t_i`:
 
