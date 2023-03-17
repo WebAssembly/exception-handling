@@ -143,7 +143,7 @@ Added vector type and instructions that manipulate multiple numeric values in pa
 Exception Handling
 ..................
 
-Added tag type, instructions that throw exceptions of a tag type, and instructions that handle exceptions. [#proposal-eh]_
+Added tag definitions, imports, and exports, and instructions to throw and catch exceptions [#proposal-eh]_
 
 * New :ref:`tag type <syntax-tagtype>`: :math:`[t^\ast]\to[]`-
 
@@ -151,7 +151,7 @@ Added tag type, instructions that throw exceptions of a tag type, and instructio
 
 * New exception throwing :ref:`control instructions <syntax-instr-control>`: :math:`\THROW` and :math:`\RETHROW`.
 
-* New handler :ref:`control instructions <syntax-instr-control>`: :math:`\TRY~\X{bt}~\instr_1^\ast~(\CATCH~x~\instr_2^\ast)^\ast~(\CATCHALL~\instr_3^\ast)^?\END`, :math:`\TRY~\X{bt}~\instr^\ast~\DELEGATE~l`.
+* New handler :ref:`control instructions <syntax-instr-control>`: :math:`(\TRY~\X{bt}~\instr_1^\ast~(\CATCH~x~\instr_2^\ast)^\ast~(\CATCHALL~\instr_3^\ast)^?\END)` and :math:`(\TRY~\X{bt}~\instr^\ast~\DELEGATE~l)`.
 
 * New uncaught exception :ref:`result <syntax-result>`.
 
@@ -174,5 +174,5 @@ Added tag type, instructions that throw exceptions of a tag type, and instructio
 .. [#proposal-vectype]
    https://github.com/WebAssembly/spec/tree/main/proposals/simd/
 
-.. [#proposal-eh]
+.. [#proposal-exceptions]
    https://github.com/WebAssembly/spec/tree/main/proposals/exception-handling/
