@@ -1323,3 +1323,5 @@
 
 .. |error| mathdef:: \xref{appendix/embedding}{embed-error}{\X{error}}
 .. |ERROR| mathdef:: \xref{appendix/embedding}{embed-error}{\K{error}}
+.. |exception| mathdef:: \xref{appendix/embedding}{embed-exception}{\X{exception}}
+.. |ETHROW| mathdef:: \xref{appendix/embedding}{embed-exception}{\K{THROW}}

@@ -43,6 +43,19 @@ In addition to the error conditions specified explicitly in this section, implem
    Implementations can refine it to carry suitable classifications and diagnostic messages.
 
 
+.. _embed-exception:
+
+Exceptions
+~~~~~~~~~~
+
+Invoke operations may throw or propagate exceptions, indicated by an auxiliary syntactic class:
+
+.. math::
+   \begin{array}{llllll}
+   \production{exception} & \exception &::=& \ETHROW & exnaddr & val^\ast \\
+   \end{array}
+
+
 Pre- and Post-Conditions
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -300,7 +313,7 @@ Functions
 
   a. If it succeeds with :ref:`values <syntax-val>` :math:`{\val'}^\ast` as results, then let :math:`\X{result}` be :math:`{\val'}^\ast`.
 
-  b. Else if the result is a :ref:`throw context <syntax-throw-contexts>` for an uncaught exception with :ref:`tag <syntax-tag-instances>` :math:`{\tag}` and payload :ref:`values <syntax-val>` :math:`{\val'}^\ast`,  let :math:`\X{result}` be :math:`{tag'}`, :math:`{\val'}`.
+  b. Else if the outcome is an exception with :ref:`tag <syntax-tagaddr>` :math:`\tagaddr` and payload :ref:`values <syntax-val>` :math:`{\val'}^\ast`,  let :math:`\X{result}` be :math:`\ETHROW~\tagaddr~{\val'}^\ast`.
 
   c. Else it has trapped, hence let :math:`\X{result}` be :math:`\ERROR`.
 
@@ -310,8 +323,8 @@ Functions
    ~ \\
    \begin{array}{lclll}
    \F{func\_invoke}(S, a, v^\ast) &=& (S', {v'}^\ast) && (\iff \invoke(S, a, v^\ast) \stepto^\ast S'; F; {v'}^\ast) \\
+   \F{func\_invoke}(S, a, v^\ast) &=& (S', \ETHROW~a'~{v'}^\ast) && (\iff \invoke(S, a, v^\ast) \stepto^\ast S'; F; \XT[(\THROWadm~a')]) \\
    \F{func\_invoke}(S, a, v^\ast) &=& (S', \ERROR) && (\iff \invoke(S, a, v^\ast) \stepto^\ast S'; F; \TRAP) \\
-   \F{func\_invoke}(S, a, v^\ast) &=& (S', {v}, {v'}^\ast) && (\iff \invoke(S, a, v^\ast) \stepto^\ast S'; F; \THROW) \\
    \end{array}
 
 .. note::
