@@ -310,6 +310,8 @@ namespace WebAssembly {
 
     Promise&lt;Instance> instantiate(
         Module moduleObject, optional object importObject);
+
+    readonly attribute Tag JSTag;
 };
 </pre>
 
@@ -1063,6 +1065,9 @@ This slot holds a [=function address=] relative to the [=surrounding agent=]'s [
     1. Set the [=surrounding agent=]'s [=associated store=] to |store|.
     1. If |ret| is [=error=], throw an exception. This exception should be a WebAssembly {{RuntimeError}} exception, unless otherwise indicated by <a href="#errors">the WebAssembly error mapping</a>.
     1. If |ret| is exception |exntag| |payload| |opaqueData|, then
+        1. If |exntag| is the [=JavaScript exception tag=], then
+            1. Let « [=ref.extern=] |externaddr| » be |payload|
+            1. Throw the result of [=retrieving an extern value=] from |externaddr|.
         1. If |opaqueData| is not [=ref.null=] [=externref=],
             1. Let « [=ref.extern=] |externaddr| » be |opaqueData|.
             1. Throw the result of [=retrieving an extern value=] from |externaddr|.
@@ -1126,7 +1131,7 @@ Note: Exported Functions do not have a \[[Construct]] method and thus it is not 
                 1. Let |payload| be |v|.\[[Payload]].
             1. Otherwise,
                 1. Let |type| be the [=JavaScript exception tag=].
-                1. Let |payload| be « ».
+                1. Let |payload| be « [=ToWebAssemblyValue=](|v|, [=externref=]) ».
             1. Let |opaqueData| be [=ToWebAssemblyValue=](|v|, [=externref=])
             1. [=WebAssembly/Throw=] with |type|, |payload| and |opaqueData|.
         1. Otherwise, return |result|.\[[Value]].
@@ -1383,10 +1388,14 @@ The <dfn attribute for="Exception">stack</dfn> getter steps are:
 <h4 id="js-exceptions">JavaScript exceptions</h4>
 
 The <dfn>JavaScript exception tag</dfn> is a [=tag address=] reserved by this
-specification to distinguish exceptions originating from JavaScript.
+specification to distinguish exceptions originating from JavaScript. It is exposed
+to JavaScript code via {{WebAssembly}}.{{JSTag}} a global pre-initailized (TODO: what's ths spec-y way to say this?)
+Tag object [=create a Tag object|created=] from the JavaScript exception tag address.
+
 
 For any [=associated store=] |store|, the result of
-[=tag_parameters=](|store|, [=JavaScript exception tag=]) must be « ».
+[=tag_parameters=](|store|, [=JavaScript exception tag=]) must be « [=externref=] ».
+
 
 <div algorithm>
 
