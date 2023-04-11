@@ -26,8 +26,17 @@ For numeric parameters, notation like :math:`n:\u32` is used to specify a symbol
 
 .. _embed-error:
 
-Errors
-~~~~~~
+Exceptions and Errors
+~~~~~~~~~~~~~~~~~~~~~
+
+Invoke operations may throw or propagate exceptions, indicated by an auxiliary syntactic class:
+
+.. math::
+   \begin{array}{llll}
+   \production{exception} & \exception &::=& \ETHROW ~ \tagaddr ~ val^\ast \\
+   \end{array}
+
+The tag instance :math:`tagaddr` identifies the :ref:`type <syntax-tagtype>` of exception thrown. The values :math:`val^\ast` are the exception's payload; their types match the tag type's parameters.
 
 Failure of an interface operation is indicated by an auxiliary syntactic class:
 
@@ -43,17 +52,6 @@ In addition to the error conditions specified explicitly in this section, implem
    Implementations can refine it to carry suitable classifications and diagnostic messages.
 
 
-.. _embed-exception:
-
-Exceptions
-~~~~~~~~~~
-
-Invoke operations may throw or propagate exceptions, indicated by an auxiliary syntactic class:
-
-.. math::
-   \begin{array}{llllll}
-   \production{exception} & \exception &::=& \ETHROW & exnaddr & val^\ast \\
-   \end{array}
 
 
 Pre- and Post-Conditions
