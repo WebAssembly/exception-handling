@@ -4,9 +4,9 @@
   <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
   <title>WebAssembly JavaScript Interface: Exception Handling</title>
   <meta content="ED" name="w3c-status">
-  <meta content="Bikeshed version 79b02508e, updated Tue Feb 28 10:48:19 2023 -0800" name="generator">
+  <meta content="Bikeshed version d9bd89757, updated Thu Mar 23 10:06:53 2023 -0700" name="generator">
   <link href="https://www.w3.org/TR/wasm-js-api-2/" rel="canonical">
-  <meta content="d12346cf9a10ddeeef0fcf0c08819755e1a4ac4a" name="document-revision">
+  <meta content="57858284fb6044643a50eccab283262731294d5d" name="document-revision">
 <style>
 emu-const {
     font-family: serif;
@@ -302,7 +302,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">WebAssembly JavaScript Interface: Exception Handling</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2023-03-01">1 March 2023</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2023-04-12">12 April 2023</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -1285,7 +1285,7 @@ Each <code class="idl"><a data-link-type="idl" href="#table" id="ref-for-table�
       <p>If <var>elementType</var> is not a <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-reftype" id="ref-for-syntax-reftype">reftype</a>,</p>
       <ol>
        <li data-md>
-        <p><a data-link-type="dfn">Throw</a> a <code class="idl"><a data-link-type="idl" href="https://tc39.github.io/ecma262/#sec-native-error-types-used-in-this-standard-typeerror" id="ref-for-sec-native-error-types-used-in-this-standard-typeerror②">TypeError</a></code> exception.</p>
+        <p><a data-link-type="dfn" href="#webassembly-throw" id="ref-for-webassembly-throw">Throw</a> a <code class="idl"><a data-link-type="idl" href="https://tc39.github.io/ecma262/#sec-native-error-types-used-in-this-standard-typeerror" id="ref-for-sec-native-error-types-used-in-this-standard-typeerror②">TypeError</a></code> exception.</p>
       </ol>
      <li data-md>
       <p>Let <var>initial</var> be <var>descriptor</var>["initial"].</p>
@@ -1769,7 +1769,7 @@ This slot holds a <a data-link-type="dfn" href="https://webassembly.github.io/ex
        <li data-md>
         <p>Let <var>method</var> be <a data-link-type="dfn" href="https://tc39.github.io/ecma262/#sec-returnifabrupt-shorthands" id="ref-for-sec-returnifabrupt-shorthands①④">?</a> <a data-link-type="dfn" href="https://tc39.github.io/ecma262/#sec-getmethod" id="ref-for-sec-getmethod">GetMethod</a>(<var>ret</var>, <a data-link-type="dfn" href="https://tc39.github.io/ecma262/#sec-well-known-symbols" id="ref-for-sec-well-known-symbols">@@iterator</a>).</p>
        <li data-md>
-        <p>If <var>method</var> is undefined, <a data-link-type="dfn">throw</a> a <code class="idl"><a data-link-type="idl" href="https://tc39.github.io/ecma262/#sec-native-error-types-used-in-this-standard-typeerror" id="ref-for-sec-native-error-types-used-in-this-standard-typeerror⑨">TypeError</a></code>.</p>
+        <p>If <var>method</var> is undefined, <a data-link-type="dfn" href="#webassembly-throw" id="ref-for-webassembly-throw①">throw</a> a <code class="idl"><a data-link-type="idl" href="https://tc39.github.io/ecma262/#sec-native-error-types-used-in-this-standard-typeerror" id="ref-for-sec-native-error-types-used-in-this-standard-typeerror⑨">TypeError</a></code>.</p>
        <li data-md>
         <p>Let <var>values</var> be <a data-link-type="dfn" href="https://tc39.github.io/ecma262/#sec-returnifabrupt-shorthands" id="ref-for-sec-returnifabrupt-shorthands①⑤">?</a> <a data-link-type="dfn" href="https://tc39.github.io/ecma262/#sec-iterabletolist" id="ref-for-sec-iterabletolist">IterableToList</a>(<var>ret</var>, <var>method</var>).</p>
        <li data-md>
@@ -1837,7 +1837,7 @@ This slot holds a <a data-link-type="dfn" href="https://webassembly.github.io/ex
          <li data-md>
           <p>Let <var>opaqueData</var> be <a data-link-type="dfn" href="#towebassemblyvalue" id="ref-for-towebassemblyvalue①⓪">ToWebAssemblyValue</a>(<var>v</var>, <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-reftype" id="ref-for-syntax-reftype⑦">externref</a>)</p>
          <li data-md>
-          <p><a data-link-type="dfn" href="#webassembly-throw" id="ref-for-webassembly-throw">Throw</a> with <var>type</var>, <var>payload</var> and <var>opaqueData</var>.</p>
+          <p><a data-link-type="dfn" href="#webassembly-throw" id="ref-for-webassembly-throw②">Throw</a> with <var>type</var>, <var>payload</var> and <var>opaqueData</var>.</p>
         </ol>
        <li data-md>
         <p>Otherwise, return <var>result</var>.[[Value]].</p>
@@ -2360,20 +2360,22 @@ In practice, an implementation may run out of resources for valid modules below 
     with <code>class="note"</code>,
     like this: </p>
    <p class="note" role="note">Note, this is an informative note.</p>
-   <h3 class="no-ref no-num heading settled" id="w3c-conformant-algorithms"><span class="content">Conformant Algorithms</span><a class="self-link" href="#w3c-conformant-algorithms"></a></h3>
-   <p>Requirements phrased in the imperative as part of algorithms
+   <section>
+    <h3 class="no-ref no-num heading settled" id="w3c-conformant-algorithms"><span class="content">Conformant Algorithms</span><a class="self-link" href="#w3c-conformant-algorithms"></a></h3>
+    <p>Requirements phrased in the imperative as part of algorithms
     (such as "strip any leading space characters"
     or "return false and abort these steps")
     are to be interpreted with the meaning of the key word
     ("must", "should", "may", etc)
     used in introducing the algorithm. </p>
-   <p>Conformance requirements phrased as algorithms or specific steps
+    <p>Conformance requirements phrased as algorithms or specific steps
     can be implemented in any manner,
     so long as the end result is equivalent.
     In particular, the algorithms defined in this specification
     are intended to be easy to understand
     and are not intended to be performant.
     Implementers are encouraged to optimize. </p>
+   </section>
   </div>
 <script src="https://www.w3.org/scripts/TR/2021/fixup.js"></script>
   <h2 class="no-num no-ref heading settled" id="index"><span class="content">Index</span><a class="self-link" href="#index"></a></h2>
@@ -4679,7 +4681,8 @@ In practice, an implementation may run out of resources for valid modules below 
   <aside aria-labelledby="infopaneltitle-for-webassembly-throw" class="dfn-panel" data-for="webassembly-throw" id="infopanel-for-webassembly-throw">
    <span id="infopaneltitle-for-webassembly-throw" style="display:none">Info about the 'throw' definition.</span><b><a href="#webassembly-throw">#webassembly-throw</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-webassembly-throw">4.6. Exported Functions</a>
+    <li><a href="#ref-for-webassembly-throw">4.4. Tables</a>
+    <li><a href="#ref-for-webassembly-throw①">4.6. Exported Functions</a> <a href="#ref-for-webassembly-throw②">(2)</a>
    </ul>
   </aside>
   <aside aria-labelledby="infopaneltitle-for-exceptiondef-compileerror" class="dfn-panel" data-for="exceptiondef-compileerror" id="infopanel-for-exceptiondef-compileerror">
