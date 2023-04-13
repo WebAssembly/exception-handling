@@ -813,7 +813,7 @@ Each {{Table}} object has a \[[Table]] internal slot, which is a [=table address
     The <dfn constructor for="Table">Table(|descriptor|, |value|)</dfn> constructor, when invoked, performs the following steps:
     1. Let |elementType| be [=ToValueType=](|descriptor|["element"]).
     1. If |elementType| is not a [=reftype=],
-        1. [=Throw=] a {{TypeError}} exception.
+        1. Throw a {{TypeError}} exception.
     1. Let |initial| be |descriptor|["initial"].
     1. If |descriptor|["maximum"] [=map/exists=], let |maximum| be |descriptor|["maximum"]; otherwise, let |maximum| be empty.
     1. If |maximum| is not empty and |maximum| &lt; |initial|, throw a {{RangeError}} exception.
@@ -1059,10 +1059,12 @@ This slot holds a [=function address=] relative to the [=surrounding agent=]'s [
         1. [=list/Append=] [=ToWebAssemblyValue=](|arg|, |t|) to |args|.
         1. Set |i| to |i| + 1.
     1. Let (|store|, |ret|) be the result of [=func_invoke=](|store|, |funcaddr|, |args|).
-    1. Note: The expectation is that [=func_invoke=] will be updated to return (|store|, <var ignore>val</var>* | [=error=] | (exception |exntag| |payload| |opaqueData|)).
+    1. Note: The expectation is that [=func_invoke=] will be updated to return (|store|, <var ignore>val</var>* | [=error=] | (exception |exntag| |payload|)). XXX (we still need to update document/core/appendix/embedding.rst for this)
+    
     1. Set the [=surrounding agent=]'s [=associated store=] to |store|.
     1. If |ret| is [=error=], throw an exception. This exception should be a WebAssembly {{RuntimeError}} exception, unless otherwise indicated by <a href="#errors">the WebAssembly error mapping</a>.
-    1. If |ret| is exception |exntag| |payload| |opaqueData|, then
+    1. If |ret| is exception |exntag| |payload|, then
+        1. Let |opaqueData| be the [=externref=] associated with the returned exception.
         1. If |opaqueData| is not [=ref.null=] [=externref=],
             1. Let « [=ref.extern=] |externaddr| » be |opaqueData|.
             1. Throw the result of [=retrieving an extern value=] from |externaddr|.
@@ -1096,7 +1098,7 @@ Note: Exported Functions do not have a \[[Construct]] method and thus it is not 
     1. Otherwise, if |resultsSize| is 1, return « [=?=] [=ToWebAssemblyValue=](|ret|, |results|[0]) ».
     1. Otherwise,
         1. Let |method| be [=?=] [=GetMethod=](|ret|, [=@@iterator=]).
-        1. If |method| is undefined, [=throw=] a {{TypeError}}.
+        1. If |method| is undefined, throw a {{TypeError}}.
         1. Let |values| be [=?=] [=IterableToList=](|ret|, |method|).
         1. Let |wasmValues| be a new, empty [=list=].
         1. If |values|'s [=list/size=] is not |resultsSize|, throw a {{TypeError}} exception.
@@ -1128,7 +1130,7 @@ Note: Exported Functions do not have a \[[Construct]] method and thus it is not 
                 1. Let |type| be the [=JavaScript exception tag=].
                 1. Let |payload| be « ».
             1. Let |opaqueData| be [=ToWebAssemblyValue=](|v|, [=externref=])
-            1. [=WebAssembly/Throw=] with |type|, |payload| and |opaqueData|.
+            1. [=WebAssembly/Throw=] with |type|, |payload|, and |opaqueData|.
         1. Otherwise, return |result|.\[[Value]].
     1. Let |store| be the [=surrounding agent=]'s [=associated store=].
     1. Let (|store|, |funcaddr|) be [=func_alloc=](|store|, |functype|, |hostfunc|).
@@ -1392,10 +1394,14 @@ For any [=associated store=] |store|, the result of
 
 To <dfn for=WebAssembly>throw</dfn> with a [=tag address=] |type|, a matching [=list=] of WebAssembly values |payload|, and an [=externref=] |opaqueData|, perform the following steps:
 
+1. Associate |opaqueData| with the identity of the thrown exception.
 1. Unwind the stack until reaching the *catching try block* given |type|.
-1. Invoke the catch block with |payload| and |opaqueData|.
+1. Invoke the catch block with |payload|.
 
-Note: This algorithm is expected to be moved into the core specification.
+Note: The identity represented by |opaqueData| is not exposed to core wasm code, but remains with the exception as it propagates through the wasm frames on the stack.
+If the exception propagates back to JavaScript (by returning from [=func_invoke=]), the same |opaqueData| is returned with it.
+If the exception is caught and rethrown with the rethrow instruction, the identity remains the same.
+Exceptions that originate from core WebAssembly (using the WebAssembly throw instruction) have a |ref.null| identity associated with them.
 
 </div>
 
