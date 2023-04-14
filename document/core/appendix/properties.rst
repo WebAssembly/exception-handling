@@ -62,11 +62,7 @@ Results
 :ref:`Results <syntax-result>` :math:`\val^\ast~(\THROWadm~\tagaddr)`
 .....................................................................
 
-* The :ref:`external value <syntax-externval>` :math:`\EVTAG~\tagaddr` must be :ref:`valid <valid-externval-tag>` with some :ref:`external type <syntax-externtype>` :math:`\ETTAG~\tagtype`.
-
-* Let :math:`[t^\ast]\to[t_0^\ast]` be the :ref:`tag type <syntax-tagtype>` |tagtype|.
-
-* Due to :ref:`validation <valid-externval-tag>` the type sequence :math:`t_0^\ast` must be empty.
+* The :ref:`external tag value <syntax-externval>` :math:`\EVTAG~\tagaddr` must be :ref:`valid <valid-externval-tag>` with :ref:`external tag type <syntax-externtype>` :math:`\ETTAG~[t^\ast]\to[]`.
 
 * For each :ref:`value <syntax-val>` :math:`\val_i` in :math:`\val^\ast` and corresponding :ref:`value type <syntax-valtype>` :math:`t_i` in :math:`t_i`:
 
