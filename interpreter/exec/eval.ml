@@ -663,7 +663,7 @@ let rec step (c : config) : config =
       vs, [Throwing (a, vs0) @@ at]
 
     | Label (n, es0, (vs', {it = Delegating (0l, a, vs0); at} :: es')), vs ->
-      vs, [Throwing (a, vs0) @@ at]
+      vs, [Delegating (a, vs0) @@ at]
 
     | Label (n, es0, (vs', {it = Delegating (k, a, vs0); at} :: es')), vs ->
       vs, [Delegating (Int32.sub k 1l, a, vs0) @@ at]
