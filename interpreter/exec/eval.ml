@@ -718,7 +718,7 @@ let rec step (c : config) : config =
     | Catch (n, cts, ca, (vs', [])), vs ->
       vs' @ vs, []
 
-    | Catch (n, cts, ca, (vs', ({it = Trapping _ | Breaking _ | Returning _ | Delegating _; at} as e) :: es')), vs ->
+    | Catch (n, cts, ca, (vs', ({it = Trapping _ | Breaking _ | Returning _ | ReturningInvoke _ | Delegating _; at} as e) :: es')), vs ->
       vs, [e]
 
     | Catch (n, cts, ca, (vs', {it = Rethrowing (k, cont); at} :: es')), vs ->
@@ -743,7 +743,7 @@ let rec step (c : config) : config =
     | Caught (n, a, vs0, (vs', [])), vs ->
       vs' @ vs, []
 
-    | Caught (n, a, vs0, (vs', ({it = Trapping _ | Breaking _ | Returning _ | Throwing _ | Delegating _; at} as e) :: es')), vs ->
+    | Caught (n, a, vs0, (vs', ({it = Trapping _ | Breaking _ | Returning _ | ReturningInvoke _ | Throwing _ | Delegating _; at} as e) :: es')), vs ->
       vs, [e]
 
     | Caught (n, a, vs0, (vs', {it = Rethrowing (0l, cont); at} :: es')), vs ->
@@ -759,7 +759,7 @@ let rec step (c : config) : config =
     | Delegate (l, (vs', [])), vs ->
       vs' @ vs, []
 
-    | Delegate (l, (vs', ({it = Trapping _ | Breaking _ | Returning _ | Rethrowing _ | Delegating _; at} as e) :: es')), vs ->
+    | Delegate (l, (vs', ({it = Trapping _ | Breaking _ | Returning _ | ReturningInvoke _ | Rethrowing _ | Delegating _; at} as e) :: es')), vs ->
       vs, [e]
 
     | Delegate (l, (vs', {it = Throwing (a, vs0); at} :: es')), vs ->
