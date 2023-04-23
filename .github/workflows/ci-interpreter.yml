@@ -29,6 +29,6 @@ jobs:
         with:
           node-version: 19.x
       - name: Build interpreter
-        ru:n ci interpreter && opam exec make
+        run: ci interpreter && opam exec make
       - name: Run tests
         run: cd interpreter && opam exec make JS='node --experimental-wasm-return_call' ci
