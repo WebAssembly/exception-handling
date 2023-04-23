@@ -232,8 +232,8 @@ expr:
   ( loop <name>? <block_type> <instr>* )
   ( if <name>? <block_type> ( then <instr>* ) ( else <instr>* )? )
   ( if <name>? <block_type> <expr>+ ( then <instr>* ) ( else <instr>* )? ) ;; = <expr>+ (if <name>? <block_type> (then <instr>*) (else <instr>*)?)
-  ( try <name>? <block_type> (do <instr>* ) ( catch <instr>* )* ( catch_all <instr>* )? )
-  ( try <name>? <block_type> (do <instr>* ) ( delegate <var> ) )
+  ( try <name>? <block_type> ( do <instr>* ) ( catch <instr>* )* ( catch_all <instr>* )? )
+  ( try <name>? <block_type> ( do <instr>* ) ( delegate <var> ) )
 
 instr:
   <expr>
@@ -242,9 +242,9 @@ instr:
   loop <name>? <block_type> <instr>* end <name>?                     ;; = (loop <name>? <block_type> <instr>*)
   if <name>? <block_type> <instr>* end <name>?                       ;; = (if <name>? <block_type> (then <instr>*))
   if <name>? <block_type> <instr>* else <name>? <instr>* end <name>? ;; = (if <name>? <block_type> (then <instr>*) (else <instr>*))
-  try <name>? <block_type> <instr>* ( catch <name>? <instr>* )* ( catch_all <name>? <instr>* )? end <name>?
-                                                                     ;; = ( try <name>? <block_type> (do <instr>* ) ( catch <instr>* )* ( catch_all <instr>* )? )
-  try <name>? <block_type> <instr>* delegate <var>                   ;; = (try <name>? <block_type> (do <instr>* ) (delegate <var> ) )
+  try <name>? <block_type> <instr>* (catch <name>? <instr>*)* (catch_all <name>? <instr>*)? end <name>?
+                                                                     ;; = (try <name>? <block_type> (do <instr>*) (catch <instr>*)* (catch_all <instr>*)?)
+  try <name>? <block_type> <instr>* delegate <var>                   ;; = (try <name>? <block_type> (do <instr>*) (delegate <var>))
 
 op:
   unreachable
