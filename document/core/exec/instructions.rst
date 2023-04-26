@@ -3168,7 +3168,7 @@ on the top of the stack.
 
        iii. Else if :math:`a_1^? = a`, then:
 
-            * :ref:`Enter <exec-caughtadm-enter>` the block :math:`\val^n~\instr^\ast` with caught exception :math:`a~\val^n`.
+            * :ref:`Enter <exec-caughtadm-enter>` the block :math:`\instr^\ast` with caught exception :math:`a~\val^n`.
 
        iv. Else, pop the first handler from :math:`H`.
 
