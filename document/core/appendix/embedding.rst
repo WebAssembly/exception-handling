@@ -29,16 +29,16 @@ For numeric parameters, notation like :math:`n:\u32` is used to specify a symbol
 Exceptions and Errors
 ~~~~~~~~~~~~~~~~~~~~~
 
-Invoke operations may throw or propagate exceptions, indicated by an auxiliary syntactic class:
+Invoking an exported function may throw or propagate exceptions, expressed by an auxiliary syntactic class:
 
 .. math::
    \begin{array}{llll}
    \production{exception} & \exception &::=& \ETHROW ~ \tagaddr ~ val^\ast \\
    \end{array}
 
-The tag instance :math:`tagaddr` identifies the :ref:`type <syntax-tagtype>` of exception thrown. The values :math:`val^\ast` are the exception's payload; their types match the tag type's parameters.
+The tag instance :math:`tagaddr` identifies the exception thrown. The values :math:`val^\ast` are the exception's payload; their types match the tag type's parameters.
 
-Failure of an interface operation is indicated by an auxiliary syntactic class:
+Failure of an interface operation is also indicated by an auxiliary syntactic class:
 
 .. math::
    \begin{array}{llll}
