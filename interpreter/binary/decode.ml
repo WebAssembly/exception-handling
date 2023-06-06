@@ -164,6 +164,7 @@ let ref_type s =
   match s7 s with
   | -0x10 -> FuncRefType
   | -0x11 -> ExternRefType
+  | -0x1c -> ExnRefType
   | _ -> error s (pos s - 1) "malformed reference type"
 
 let value_type s =
@@ -267,27 +268,20 @@ let rec instr s =
   | 0x06 ->
     let bt = block_type s in
     let es = instr_block s in
-    let ct = catch_list s in
-    let ca =
-      if peek s = Some 0x19 then begin
-        ignore (byte s);
-        Some (instr_block s)
-      end else
-        None
-    in
-    if ct <> [] || ca <> None then begin
+    (match peek s with
+    | Some (0x0b | 0x16 | 0x17) ->
+      let cs = catch_list s in
+      let ca = opt catch_all (peek s = Some 0x17) s in
       end_ s;
-      try_catch bt es ct ca
-    end else begin
-      match op s with
-      | 0x0b -> try_catch bt es [] None
-      | 0x18 -> try_delegate bt es (at var s)
-      | b -> illegal s pos b
-    end
-  | 0x07 -> error s pos "misplaced CATCH opcode"
+      try_catch bt es cs ca
+    | _ ->
+      expect 0x18 s "DELEGATE opcode expected";
+      try_delegate bt es (at var s)
+    )
+  | 0x07 as b -> illegal s pos b
   | 0x08 -> throw (at var s)
-  | 0x09 -> rethrow (at var s)
-  | 0x0a as b -> illegal s pos b
+  | 0x09 as b -> illegal s pos b
+  | 0x0a -> rethrow
   | 0x0b -> error s pos "misplaced END opcode"
 
   | 0x0c -> br (at var s)
@@ -309,10 +303,13 @@ let rec instr s =
     let x = at var s in
     return_call_indirect x y
 
-  | 0x14 | 0x15 | 0x16 | 0x17 as b -> illegal s pos b
+  | 0x14 | 0x15 as b -> illegal s pos b
 
+  | 0x16 -> error s pos "misplaced CATCH opcode"
+  | 0x17 -> error s pos "misplaced CATCH_ALL opcode"
   | 0x18 -> error s pos "misplaced DELEGATE opcode"
-  | 0x19 -> error s pos "misplaced CATCH_ALL opcode"
+
+  | 0x19 as b -> illegal s pos b
 
   | 0x1a -> drop
   | 0x1b -> select None
@@ -813,19 +810,21 @@ let rec instr s =
 and instr_block s = List.rev (instr_block' s [])
 and instr_block' s es =
   match peek s with
-  | None | Some (0x05 | 0x07 | 0x0a | 0x0b | 0x18 | 0x19) -> es
+  | None | Some (0x05 | 0x0b | 0x16 | 0x17 | 0x18) -> es
   | _ ->
     let pos = pos s in
     let e' = instr s in
     instr_block' s ((e' @@ region s pos pos) :: es)
+
 and catch_list s =
-  if peek s = Some 0x07 then begin
-    ignore (byte s);
-    let tag = at var s in
-    let instrs = instr_block s in
-    (tag, instrs) :: catch_list s
-  end else
-    []
+  if peek s <> Some 0x16 then [] else
+  let _ = byte s in
+  let x = at var s in
+  let es = instr_block s in
+  (x, es) :: catch_list s
+
+and catch_all s =
+  expect 0x17 s "CATCH_ALL opcode expected"; instr_block s
 
 let const s =
   let c = at instr_block s in

@@ -66,11 +66,9 @@ and admin_instr' =
   | ReturningInvoke of value stack * func_inst
   | Breaking of int32 * value stack
   | Throwing of Tag.t * value stack
-  | Rethrowing of int32 * (admin_instr -> admin_instr)
   | Label of int32 * instr list * code
   | Frame of int32 * frame * code
   | Catch of int32 * (Tag.t * instr list) list * instr list option * code
-  | Caught of int32 * Tag.t * value stack * code
   | Delegate of int32 * code
   | Delegating of int32 * Tag.t * value stack
 
@@ -237,8 +235,11 @@ let rec step (c : config) : config =
         let args, vs' = take n vs e.at, drop n vs e.at in
         vs', [Throwing (t, args) @@ e.at]
 
-      | Rethrow x, vs ->
-        vs, [Rethrowing (x.it, fun e -> e) @@ e.at]
+      | Rethrow, Ref (NullRef _) :: vs ->
+        vs, [Trapping "null exception reference" @@ e.at]
+
+      | Rethrow, Ref (ExnRef (t, args)) :: vs ->
+        vs, [Throwing (t, args) @@ e.at]
 
       | TryCatch (bt, es', cts, ca), vs ->
         let FuncType (ts1, ts2) = block_type frame.inst bt in
@@ -655,9 +656,6 @@ let rec step (c : config) : config =
     | Throwing _, _ ->
       assert false
 
-    | Rethrowing _, _ ->
-      Crash.error e.at "undefined catch label"
-
     | Delegating _, _ ->
       Crash.error e.at "undefined delegate label"
 
@@ -687,9 +685,6 @@ let rec step (c : config) : config =
 
     | Label (n, es0, (vs', {it = Delegating (k, a, vs0); at} :: es')), vs ->
       vs, [Delegating (Int32.sub k 1l, a, vs0) @@ at]
-
-    | Label (n, es0, (vs', {it = Rethrowing (k, cont); at} :: es')), vs ->
-      vs, [Rethrowing (Int32.sub k 1l, (fun e -> Label (n, es0, (vs', cont e :: es')) @@ e.at)) @@ at]
 
     | Label (n, es0, code'), vs ->
       let c' = step {c with code = code'} in
@@ -721,17 +716,14 @@ let rec step (c : config) : config =
     | Catch (n, cts, ca, (vs', ({it = Trapping _ | Breaking _ | Returning _ | ReturningInvoke _ | Delegating _; at} as e) :: es')), vs ->
       vs, [e]
 
-    | Catch (n, cts, ca, (vs', {it = Rethrowing (k, cont); at} :: es')), vs ->
-      vs, [Rethrowing (k, (fun e -> Catch (n, cts, ca, (vs', (cont e) :: es')) @@ e.at)) @@ at]
-
     | Catch (n, (a', es'') :: cts, ca, (vs', {it = Throwing (a, vs0); at} :: es')), vs ->
       if a == a' then
-        vs, [Caught (n, a, vs0, (vs0, List.map plain es'')) @@ at]
+        Ref (ExnRef (a, vs0)) :: vs0 @ vs, List.map plain es''
       else
         vs, [Catch (n, cts, ca, (vs', {it = Throwing (a, vs0); at} :: es')) @@ e.at]
 
     | Catch (n, [], Some es'', (vs', {it = Throwing (a, vs0); at} :: es')), vs ->
-      vs, [Caught (n, a, vs0, (vs0, List.map plain es'')) @@ at]
+      Ref (ExnRef (a, vs0)) :: vs, List.map plain es''
 
     | Catch (n, [], None, (vs', {it = Throwing (a, vs0); at} :: es')), vs ->
       vs, [Throwing (a, vs0) @@ at]
@@ -740,26 +732,10 @@ let rec step (c : config) : config =
       let c' = step {c with code = code'} in
       vs, [Catch (n, cts, ca, c'.code) @@ e.at]
 
-    | Caught (n, a, vs0, (vs', [])), vs ->
-      vs' @ vs, []
-
-    | Caught (n, a, vs0, (vs', ({it = Trapping _ | Breaking _ | Returning _ | ReturningInvoke _ | Throwing _ | Delegating _; at} as e) :: es')), vs ->
-      vs, [e]
-
-    | Caught (n, a, vs0, (vs', {it = Rethrowing (0l, cont); at} :: es')), vs ->
-      vs, [Caught (n, a, vs0, (vs', (cont (Throwing (a, vs0) @@ at)) :: es')) @@ e.at]
-
-    | Caught (n, a, vs0, (vs', {it = Rethrowing (k, cont); at} :: es')), vs ->
-      vs, [Rethrowing (k, (fun e -> Caught (n, a, vs0, (vs', (cont e) :: es')) @@ e.at)) @@ at]
-
-    | Caught (n, a, vs0, code'), vs ->
-      let c' = step {c with code = code'} in
-      vs, [Caught (n, a, vs0, c'.code) @@ e.at]
-
     | Delegate (l, (vs', [])), vs ->
       vs' @ vs, []
 
-    | Delegate (l, (vs', ({it = Trapping _ | Breaking _ | Returning _ | ReturningInvoke _ | Rethrowing _ | Delegating _; at} as e) :: es')), vs ->
+    | Delegate (l, (vs', ({it = Trapping _ | Breaking _ | Returning _ | ReturningInvoke _ | Delegating _; at} as e) :: es')), vs ->
       vs, [e]
 
     | Delegate (l, (vs', {it = Throwing (a, vs0); at} :: es')), vs ->

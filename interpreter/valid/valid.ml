@@ -14,8 +14,6 @@ let require b at s = if not b then error at s
 
 (* Context *)
 
-type label_kind = BlockLabel | CatchLabel
-
 type context =
 {
   types : func_type list;
@@ -28,7 +26,7 @@ type context =
   datas : unit list;
   locals : value_type list;
   results : value_type list;
-  labels : (label_kind * result_type) list;
+  labels : result_type list;
   refs : Free.t;
 }
 
@@ -257,34 +255,34 @@ let rec check_instr (c : context) (e : instr) (s : infer_result_type) : op_type 
 
   | Block (bt, es) ->
     let FuncType (ts1, ts2) as ft = check_block_type c bt in
-    check_block {c with labels = (BlockLabel, ts2) :: c.labels} es ft e.at;
+    check_block {c with labels = ts2 :: c.labels} es ft e.at;
     ts1 --> ts2
 
   | Loop (bt, es) ->
     let FuncType (ts1, ts2) as ft = check_block_type c bt in
-    check_block {c with labels = (BlockLabel, ts1) :: c.labels} es ft e.at;
+    check_block {c with labels = ts1 :: c.labels} es ft e.at;
     ts1 --> ts2
 
   | If (bt, es1, es2) ->
     let FuncType (ts1, ts2) as ft = check_block_type c bt in
-    check_block {c with labels = (BlockLabel, ts2) :: c.labels} es1 ft e.at;
-    check_block {c with labels = (BlockLabel, ts2) :: c.labels} es2 ft e.at;
+    check_block {c with labels = ts2 :: c.labels} es1 ft e.at;
+    check_block {c with labels = ts2 :: c.labels} es2 ft e.at;
     (ts1 @ [NumType I32Type]) --> ts2
 
   | Br x ->
-    let (_, ts) = label c x in
+    let ts = label c x in
     ts -->... []
 
   | BrIf x ->
-    let (_, ts) = label c x in
+    let ts = label c x in
     (ts @ [NumType I32Type]) --> ts
 
   | BrTable (xs, x) ->
-    let (_, ts) = label c x in
+    let ts = label c x in
     let n = List.length ts in
     let ts' = Lib.List.table n (fun i -> peek (n - i) s) in
     check_stack ts' (known ts) x.at;
-    List.iter (fun x' -> check_stack ts' (known (snd (label c x'))) x'.at) xs;
+    List.iter (fun x' -> check_stack ts' (known (label c x')) x'.at) xs;
     (ts' @ [Some (NumType I32Type)]) -~>... []
 
   | Return ->
@@ -318,24 +316,23 @@ let rec check_instr (c : context) (e : instr) (s : infer_result_type) : op_type 
     let FuncType (ts1, _) = type_ c (y @@ e.at) in
     ts1 -->... []
 
-  | Rethrow x ->
-    let (kind, _) = label c x in
-    require (kind = CatchLabel) e.at "invalid rethrow label";
-    [] -->... []
+  | Rethrow ->
+    [RefType ExnRefType] -->... []
 
   | TryCatch (bt, es, cts, ca) ->
     let FuncType (ts1, ts2) as ft = check_block_type c bt in
-    let c_try = {c with labels = (BlockLabel, ts2) :: c.labels} in
-    let c_catch = {c with labels = (CatchLabel, ts2) :: c.labels} in
+    let c_try = {c with labels = ts2 :: c.labels} in
+    let c_catch = {c with labels = ts2 :: c.labels} in
     check_block c_try es ft e.at;
-    List.iter (fun ct -> check_catch ct c_catch ft e.at) cts;
-    Lib.Option.app (fun es -> check_block c_catch es ft e.at) ca;
+    List.iter (fun ct -> check_catch c_catch ct ts2 e.at) cts;
+    let ft' = FuncType ([RefType ExnRefType], ts2) in
+    Option.iter (fun es -> check_block c_catch es ft' e.at) ca;
     ts1 --> ts2
 
   | TryDelegate (bt, es, x) ->
     let FuncType (ts1, ts2) as ft = check_block_type c bt in
     ignore (label c x);
-    check_block {c with labels = (BlockLabel, ts2) :: c.labels} es ft e.at;
+    check_block {c with labels = ts2 :: c.labels} es ft e.at;
     ts1 --> ts2
 
   | LocalGet x ->
@@ -577,12 +574,10 @@ and check_block (c : context) (es : instr list) (ft : func_type) at =
     ("type mismatch: block requires " ^ string_of_result_type ts2 ^
      " but stack has " ^ string_of_infer_types (snd s))
 
-and check_catch (ct : var * instr list) (c : context) (ft : func_type) at =
-  let (x, es) = ct in
+and check_catch (c : context) (x, es : var * instr list) (ts : value_type list) at =
   let TagType y = tag c x in
   let FuncType (ts1, _) = type_ c (y @@ at) in
-  let FuncType (_, ts2) = ft in
-  check_block c es (FuncType (ts1, ts2)) at
+  check_block c es (FuncType (ts1 @ [RefType ExnRefType], ts)) at
 
 
 (* Types *)
@@ -652,7 +647,7 @@ let check_type (t : type_) =
 let check_func (c : context) (f : func) =
   let {ftype; locals; body} = f.it in
   let FuncType (ts1, ts2) = type_ c ftype in
-  let c' = {c with locals = ts1 @ locals; results = ts2; labels = [(BlockLabel, ts2)]} in
+  let c' = {c with locals = ts1 @ locals; results = ts2; labels = [ts2]} in
   check_block c' body (FuncType ([], ts2)) f.at
 
 let check_tag (c : context) (t : tag) =

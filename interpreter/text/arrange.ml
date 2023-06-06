@@ -456,6 +456,14 @@ let rec instr e =
     | ReturnCall x -> "return_call " ^ var x, []
     | ReturnCallIndirect (x, y) ->
       "return_call_indirect " ^ var x, [Node ("type " ^ var y, [])]
+    | Throw x -> "throw " ^ var x, []
+    | Rethrow -> "rethrow", []
+    | TryCatch (bt, es, cs, ca) ->
+      "try", block_type bt @
+        [Node ("do", list instr es)] @ list catch cs @ opt catch_all ca
+    | TryDelegate (bt, es, x) ->
+      "try", block_type bt @
+        [Node ("do", list instr es); Node ("delegate " ^ var x, [])]
     | LocalGet x -> "local.get " ^ var x, []
     | LocalSet x -> "local.set " ^ var x, []
     | LocalTee x -> "local.tee " ^ var x, []
@@ -490,18 +498,6 @@ let rec instr e =
     | Unary op -> unop op, []
     | Binary op -> binop op, []
     | Convert op -> cvtop op, []
-    | TryCatch (bt, es, ct, ca) ->
-      let catch (tag, es) = Node ("catch " ^ var tag, list instr es) in
-      let catch_all = match ca with
-        | Some es -> [Node ("catch_all", list instr es)]
-        | None -> [] in
-      let handler = list catch ct @ catch_all in
-      "try", block_type bt @ [Node ("do", list instr es)] @ handler
-    | TryDelegate (bt, es, x) ->
-      let delegate = [Node ("delegate " ^ var x, [])] in
-      "try", block_type bt @ [Node ("do", list instr es)] @ delegate
-    | Throw x -> "throw " ^ var x, []
-    | Rethrow x -> "rethrow " ^ var x, []
     | VecConst v -> vec_constop v.it ^ " " ^ vec v, []
     | VecTest op -> vec_testop op, []
     | VecUnary op -> vec_unop op, []
@@ -518,6 +514,9 @@ let rec instr e =
     | VecExtract op -> vec_extractop op, []
     | VecReplace op -> vec_replaceop op, []
   in Node (head, inner)
+
+and catch (x, es) = Node ("catch " ^ var x, list instr es)
+and catch_all es = Node ("catch_all", list instr es)
 
 let const head c =
   match c.it with

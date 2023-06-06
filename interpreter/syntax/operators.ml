@@ -32,7 +32,7 @@ let call_indirect x y = CallIndirect (x, y)
 let return_call x = ReturnCall x
 let return_call_indirect x y = ReturnCallIndirect (x, y)
 let throw x = Throw x
-let rethrow x = Rethrow x
+let rethrow = Rethrow
 
 let local_get x = LocalGet x
 let local_set x = LocalSet x

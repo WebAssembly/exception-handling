@@ -7,7 +7,7 @@
   (func (export "delegate-no-throw") (result i32)
     (try $t (result i32)
       (do (try (result i32) (do (i32.const 1)) (delegate $t)))
-      (catch $e0 (i32.const 2))
+      (catch $e0 (drop) (i32.const 2))
     )
   )
 
@@ -24,7 +24,7 @@
           (delegate $t)
         )
       )
-      (catch $e0 (i32.const 2))
+      (catch $e0 (drop) (i32.const 2))
     )
   )
 
@@ -38,18 +38,18 @@
               (delegate $t)
             )
           )
-          (catch $e0 (i32.const 2))
+          (catch $e0 (drop) (i32.const 2))
         )
       )
-      (catch $e0 (i32.const 3))
+      (catch $e0 (drop) (i32.const 3))
     )
   )
 
   (func (export "delegate-to-block") (result i32)
     (try (result i32)
-      (do (block (try (do (throw $e0)) (delegate 0)))
-          (i32.const 0))
-      (catch_all (i32.const 1)))
+      (do (block (try (do (throw $e0)) (delegate 0))) (i32.const 0))
+      (catch_all (drop) (i32.const 1))
+    )
   )
 
   (func (export "delegate-to-catch") (result i32)
@@ -57,9 +57,9 @@
       (do (try
             (do (throw $e0))
             (catch $e0
-              (try (do (rethrow 1)) (delegate 0))))
+              (try (param exnref) (do (rethrow)) (delegate 0))))
           (i32.const 0))
-      (catch_all (i32.const 1)))
+      (catch_all (drop) (i32.const 1)))
   )
 
   (func (export "delegate-to-caller-trivial")
@@ -68,7 +68,7 @@
       (delegate 0)))
 
   (func (export "delegate-to-caller-skipping")
-    (try (do (try (do (throw $e0)) (delegate 1))) (catch_all))
+    (try (do (try (do (throw $e0)) (delegate 1))) (catch_all (drop)))
   )
 
   (func $select-tag (param i32)
@@ -87,34 +87,52 @@
           (delegate $t)
         )
       )
-      (catch $e0 (i32.const 2))
+      (catch $e0 (drop) (i32.const 2))
     )
   )
 
   (func (export "delegate-throw-no-catch") (result i32)
     (try (result i32)
       (do (try (result i32) (do (throw $e0) (i32.const 1)) (delegate 0)))
-      (catch $e1 (i32.const 2))
+      (catch $e1 (drop) (i32.const 2))
     )
   )
 
   (func (export "delegate-correct-targets") (result i32)
     (try (result i32)
-      (do (try $l3
-            (do (try $l2
-                  (do (try $l1
-                        (do (try $l0
-                              (do (try
-                                    (do (throw $e0))
-                                    (delegate $l1)))
-                              (catch_all unreachable)))
-                        (delegate $l3)))
-                  (catch_all unreachable)))
-            (catch_all (try
-                         (do (throw $e0))
-                         (delegate $l3))))
-          unreachable)
-      (catch_all (i32.const 1))))
+      (do
+        (try $l3
+          (do
+            (try $l2
+              (do
+                (try $l1
+                  (do
+                    (try $l0
+                      (do
+                        (try
+                          (do (throw $e0))
+                          (delegate $l1)
+                        )
+                      )
+                      (catch_all (unreachable))
+                    )
+                  )
+                  (delegate $l3)
+                )
+              )
+              (catch_all (unreachable))
+            )
+          )
+          (catch_all
+            (drop)
+            (try (do (throw $e0)) (delegate $l3))
+          )
+        )
+        (unreachable)
+      )
+      (catch_all (drop) (i32.const 1))
+    )
+  )
 
   (func $throw-void (throw $e0))
   (func (export "return-call-in-try-delegate")
@@ -127,7 +145,7 @@
           (delegate $l)
         )
       )
-      (catch $e0)
+      (catch $e0 (drop))
     )
   )
 
@@ -142,7 +160,7 @@
           (delegate $l)
         )
       )
-      (catch $e0)
+      (catch $e0 (drop))
     )
   )
 )

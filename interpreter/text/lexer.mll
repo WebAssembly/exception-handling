@@ -147,7 +147,9 @@ rule token = parse
       | "f32x4" -> VEC_SHAPE (V128.F32x4 ())
       | "f64x2" -> VEC_SHAPE (V128.F64x2 ())
 
+      | "exn" -> EXN
       | "extern" -> EXTERN
+      | "exnref" -> EXNREF
       | "externref" -> EXTERNREF
       | "funcref" -> FUNCREF
       | "mut" -> MUT

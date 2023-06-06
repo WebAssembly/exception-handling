@@ -90,6 +90,11 @@ Exception tag indices are used by:
    can catch. If true it pushes the corresponding argument values of the
    exception onto the stack.
 
+### Exception references
+
+When caught, an exception is reified into an _exception reference_, a value of the new type `exnref`.
+Exception references can be used to `rethrow` the caught exception.
+
 ### Try-catch blocks
 
 A _try block_ defines a list of instructions that may need to process exceptions
@@ -113,23 +118,23 @@ end
 
 A try-catch block contains zero or more `catch` blocks and zero or one
 `catch_all` block. All `catch` blocks must precede the `catch_all` block, if
-any. The `catch`/`catch_all` instructions (within the try construct) are called
-the _catching_ instructions. There may not be any `catch` or `catch_all` blocks
+any. The `catch`/`catch_all` clauses (within the try construct) are called
+the _catching_ clauses. There may not be any `catch` or `catch_all` blocks
 after a `try`, in which case the `try` block does not catch any exceptions.
 
 The _body_ of the try block is the list of instructions before the first
 catching instruction. The _body_ of each catch block is the sequence of
 instructions following the corresponding catching instruction before the next
-catching instruction (or the `end` instruction if it is the last catching
+catching clause (or the `end` instruction if it is the last catching
 block).
 
-The `catch` instruction has an exception tag associated with it. The tag
+The `catch` clause has an exception tag associated with it. The tag
 identifies what exceptions it can catch. That is, any exception created with the
-corresponding exception tag. Catch blocks that begin with a `catch` instruction
+corresponding exception tag. Catch blocks in a `catch` clause
 are considered _tagged_ catch blocks.
 
-The last catching instruction of a try-catch block can be the `catch_all`
-instruction. If it begins with the `catch_all` instruction, it defines the
+The last catching clause of a try-catch block can be the `catch_all`
+clause. If present, it defines the
 _default_ catch block. The default catch block has no tag index, and is used to
 catch all exceptions not caught by any of the tagged catch blocks. The term
 'catch block' refers to both `catch` and `catch_all` blocks.
@@ -180,10 +185,12 @@ Then in case of a try-catch block, tagged catch blocks are tried in the order
 they appear in the catching try block, until one matches. If a matched tagged
 catch block is found, control is transferred to the body of the catch block, and
 the arguments of the exception are pushed back onto the stack.
+In addition, an exception reference is pushed to the stack that represents the caught exception.
 
 Otherwise, control is transferred to the body of the `catch_all` block, if any.
-However, unlike tagged catch blocks, the constructor arguments are not copied
-back onto the operand stack.
+However, unlike tagged catch blocks, the constructor arguments are not pushed
+onto the operand stack.
+However, an exception reference is still pushed to the stack.
 
 If no tagged catch blocks were matched, and the catching try block doesn't have
 a `catch_all` block, the exception is rethrown.
@@ -199,103 +206,14 @@ Note that a caught exception can be rethrown using the `rethrow` instruction.
 
 ### Rethrowing an exception
 
-The `rethrow` instruction can only appear in the body of a catch/catch_all
-block. It always re-throws the exception caught by an enclosing catch block.
+The `rethrow` takes an operand of type `exnref` and re-throws the corresponding caught exception.
+If the operand is null, a trap occurs.
 
-Associated with the `rethrow` instruction is a _label_. The label is used to
-disambiguate which exception is to be rethrown, when inside nested catch blocks.
-The label is the relative block depth to the corresponding try block for which
-the catching block appears.
-
-For example consider the following:
-
-```
-try $l1
-  ...
-catch  ;; $l1
-  ...
-  block
-    ...
-    try $l2
-      ...
-    catch  ;; $l2
-      ...
-      try $l3
-        ...
-      catch  ;; $l3
-        ...
-        rethrow N  ;; (or label)
-      end
-    end
-  end
-  ...
-end
-```
-
-In this example, `N` is used to disambiguate which caught exception is being
-rethrown. It could rethrow any of the three caught expceptions. Hence, `rethrow
-0` corresponds to the exception caught by `catch 3`, `rethrow 1` corresponds to
-the exception caught by `catch 2`, and `rethrow 3` corresponds to the exception
-caught by `catch 1`. In wat format, the argument for the `rethrow` instructions
-can also be written as a label, like branches. So `rethrow 0` in the example
-above can also be written as `rethrow $l3`.
-
-Note that `rethrow 2` is not allowed because it does not refer to a `try` label
-from within its catch block. Rather, it references a `block` instruction, so it
-will result in a validation failure.
-
-Note that the example below is a validation failure:
-```
-try $l1
-  try $l2
-    rethrow $l2  ;; (= rethrow 0)
-  catch
-  end
-catch
-end
-```
-The `rethrow` here references `try $l2`, but the `rethrow` is not within its
-`catch` block.
-
-The example below includes all of the cases explained above. The numbers
-within `()` after `rethrow`s are the label operands in immediate values.
-```
-(func $test
-  try $lA
-    ...
-  catch ($lA)
-    ...
-    block $lB
-      ...
-      try $lC
-        ...
-      catch ($lC)
-        ...
-        try $lD
-          ...
-          rethrow $lD (0) ;; refers to 'catch ($lD)', but it is not within 'catch ($lD)', so validation failure
-          rethrow $lC (1) ;; rethrows the exception caught by catch ($lC)
-          rethrow $lB (2) ;; refers to 'block $lB', so validation failure
-          rethrow $lA (3) ;; rethrows the exception caught by catch ($lA)
-          rethrow 4       ;; validation failure
-        catch ($lD)
-          ...
-          rethrow $lD (0) ;; rethrows the exception caught by catch ($lD)
-          rethrow $lC (1) ;; rethrows the exception caught by catch ($lC)
-          rethrow $lB (2) ;; refers to 'block $lB', so validation failure
-          rethrow $lA (3) ;; rethrows the exception caught by catch ($lA)
-          rethrow 4       ;; validation failure
-        end
-      end
-    end
-    ...
-  end
-```
 
 ### Try-delegate blocks
 
-Try blocks can also be used with the `delegate` instruction. A try-delegate
-block contains a `delegate` instruction with the following form:
+Try blocks can also be used with the `delegate` clause. A try-delegate
+block has the following form:
 
 ```
 try blocktype
@@ -304,9 +222,9 @@ delegate label
 ```
 
 The `delegate` clause does not have an associated body, so try-delegate blocks
-don't have an `end` instruction at the end. The `delegate` instruction takes a
-try label and delegates exception handling to a `catch`/`catch_all`/`delegate`
-specified by the `try` label. For example, consider this code:
+don't have an `end` instruction at the end. The `delegate` clause takes a
+label and essentially rethrows the exception inside the block corresponding to that label. If the label denotes a `try` block, it therefor delegates exception handling to the corresponding `catch`/`catch_all`/`delegate` handler
+of that `try` block. For example, consider this code:
 
 ```
 try $l0
@@ -580,6 +498,10 @@ document](https://github.com/WebAssembly/design/blob/master/BinaryEncoding.md).
 
 #### Other Types
 
+##### exnref
+
+The type `exnref` is represented by the type opcode `-0x1c`.
+
 ##### tag_type
 
 We reserve a bit to denote the exception attribute:
@@ -687,11 +609,11 @@ throws, and rethrows as follows:
 | Name | Opcode | Immediates | Description |
 | ---- | ---- | ---- | ---- |
 | `try` | `0x06` | sig : `blocktype` | begins a block which can handle thrown exceptions |
-| `catch` | `0x07` | index : `varint32` | begins the catch block of the try block |
-| `catch_all` | `0x19` | | begins the catch_all block of the try block |
+| `catch` | `0x16` | index : `varint32` | begins the catch block of the try block |
+| `catch_all` | `0x17` | | begins the catch_all block of the try block |
 | `delegate` | `0x18` | relative_depth : `varuint32` | begins the delegate block of the try block |
 | `throw` | `0x08` | index : `varint32` | Creates an exception defined by the tag and then throws it |
-| `rethrow` | `0x09` | relative_depth : `varuint32` | Pops the `exnref` on top of the stack and throws it |
+| `rethrow` | `0x0a` | | Pops an `exnref` from the stack and throws it |
 
 The *sig* fields of `block`, `if`, and `try` operators are block signatures
 which describe their use of the operand stack.

@@ -214,7 +214,7 @@ let inline_type_explicit (c : context) x ft at =
 %token<Types.num_type> NUM_TYPE
 %token<Types.vec_type> VEC_TYPE
 %token<V128.shape> VEC_SHAPE
-%token FUNCREF EXTERNREF EXTERN MUT
+%token FUNCREF EXNREF EXTERNREF EXN EXTERN MUT
 %token UNREACHABLE NOP DROP SELECT
 %token BLOCK END IF THEN ELSE LOOP BR BR_IF BR_TABLE TRY DO CATCH CATCH_ALL
 %token DELEGATE
@@ -267,10 +267,12 @@ string_list :
 
 ref_kind :
   | FUNC { FuncRefType }
+  | EXN { ExnRefType }
   | EXTERN { ExternRefType }
 
 ref_type :
   | FUNCREF { FuncRefType }
+  | EXNREF { ExnRefType }
   | EXTERNREF { ExternRefType }
 
 value_type :
@@ -397,7 +399,7 @@ plain_instr :
   | CALL var { fun c -> call ($2 c func) }
   | RETURN_CALL var { fun c -> return_call ($2 c func) }
   | THROW var { fun c -> throw ($2 c tag) }
-  | RETHROW var { fun c -> rethrow ($2 c label)  }
+  | RETHROW { fun c -> rethrow }
   | LOCAL_GET var { fun c -> local_get ($2 c local) }
   | LOCAL_SET var { fun c -> local_set ($2 c local) }
   | LOCAL_TEE var { fun c -> local_tee ($2 c local) }

@@ -7,7 +7,7 @@
   (func (export "catch-rethrow-0")
     (try
       (do (throw $e0))
-      (catch $e0 (rethrow 0))
+      (catch $e0 (rethrow))
     )
   )
 
@@ -15,7 +15,11 @@
     (try (result i32)
       (do (throw $e0))
       (catch $e0
-        (if (i32.eqz (local.get 0)) (then (rethrow 1))) (i32.const 23)
+        (if (param exnref) (i32.eqz (local.get 0))
+          (then (rethrow))
+          (else (drop))
+        )
+        (i32.const 23)
       )
     )
   )
@@ -23,7 +27,7 @@
   (func (export "catchall-rethrow-0")
     (try
       (do (throw $e0))
-      (catch_all (rethrow 0))
+      (catch_all (rethrow))
     )
   )
 
@@ -31,20 +35,28 @@
     (try (result i32)
       (do (throw $e0))
       (catch_all
-        (if (i32.eqz (local.get 0)) (then (rethrow 1))) (i32.const 23)
+        (if (param exnref) (i32.eqz (local.get 0))
+          (then (rethrow))
+          (else (drop))
+        )
+        (i32.const 23)
       )
     )
   )
 
   (func (export "rethrow-nested") (param i32) (result i32)
+    (local $exn1 exnref)
+    (local $exn2 exnref)
     (try (result i32)
       (do (throw $e1))
       (catch $e1
+        (local.set $exn1)
         (try (result i32)
           (do (throw $e0))
           (catch $e0
-            (if (i32.eq (local.get 0) (i32.const 0)) (then (rethrow 1)))
-            (if (i32.eq (local.get 0) (i32.const 1)) (then (rethrow 2)))
+            (local.set $exn2)
+            (if (i32.eq (local.get 0) (i32.const 0)) (then (rethrow (local.get $exn1))))
+            (if (i32.eq (local.get 0) (i32.const 1)) (then (rethrow (local.get $exn2))))
             (i32.const 23)
           )
         )
@@ -53,22 +65,26 @@
   )
 
   (func (export "rethrow-recatch") (param i32) (result i32)
+    (local $e exnref)
     (try (result i32)
       (do (throw $e0))
       (catch $e0
+        (local.set $e)
         (try (result i32)
-         (do (if (i32.eqz (local.get 0)) (then (rethrow 2))) (i32.const 42))
-         (catch $e0 (i32.const 23))
+         (do (if (i32.eqz (local.get 0)) (then (rethrow (local.get $e)))) (i32.const 42))
+         (catch $e0 (drop) (i32.const 23))
         )
       )
     )
   )
 
   (func (export "rethrow-stack-polymorphism")
-    (try
+    (local $e exnref)
+    (try (result f64)
       (do (throw $e0))
-      (catch $e0 (i32.const 1) (rethrow 0))
+      (catch $e0 (local.set $e) (i32.const 1) (rethrow (local.get $e)))
     )
+    (unreachable)
   )
 )
 
@@ -90,7 +106,5 @@
 
 (assert_exception (invoke "rethrow-stack-polymorphism"))
 
-(assert_invalid (module (func (rethrow 0))) "invalid rethrow label")
-(assert_invalid (module (func (block (rethrow 0)))) "invalid rethrow label")
-(assert_invalid (module (func (try (do (rethrow 0)) (delegate 0))))
-                "invalid rethrow label")
+(assert_invalid (module (func (rethrow))) "type mismatch")
+(assert_invalid (module (func (block (rethrow)))) "type mismatch")

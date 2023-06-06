@@ -25,6 +25,7 @@
     (try
       (do (call $throw-1-2))
       (catch $e-i32-i32
+        (drop)
         (i32.const 2)
         (if (i32.ne) (then (unreachable)))
         (i32.const 1)
