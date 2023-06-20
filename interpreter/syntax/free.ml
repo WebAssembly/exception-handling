@@ -84,8 +84,8 @@ let rec instr (e : instr) =
     tables (var x) ++ types (var y)
   | Throw x -> tags (var x)
   | Rethrow -> empty
-  | TryCatch (bt, es, cs, ca) -> block es ++ list catch cs ++ opt block ca
-  | TryDelegate (bt, es, x) -> block es ++ tags (var x)
+  | Try (bt, es, cs, xo) ->
+    block es ++ list catch cs ++ opt (fun x -> labels (var x)) xo
   | LocalGet x | LocalSet x | LocalTee x -> locals (var x)
   | GlobalGet x | GlobalSet x -> globals (var x)
   | TableGet x | TableSet x | TableSize x | TableGrow x | TableFill x ->
@@ -108,7 +108,7 @@ let rec instr (e : instr) =
 and block (es : instr list) =
   let free = list instr es in {free with labels = shift free.labels}
 
-and catch (x, es) = tags (var x) ++ block es
+and catch (x1, x2) = tags (var x1) ++ labels (var x2)
 
 let const (c : const) = block c.it
 

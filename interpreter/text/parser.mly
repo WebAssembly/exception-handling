@@ -214,7 +214,6 @@ let inline_type_explicit (c : context) x ft at =
 %token FUNCREF EXNREF EXTERNREF EXN EXTERN MUT
 %token UNREACHABLE NOP DROP SELECT
 %token BLOCK END IF THEN ELSE LOOP BR BR_IF BR_TABLE TRY DO CATCH CATCH_ALL
-%token DELEGATE
 %token CALL CALL_INDIRECT RETURN RETURN_CALL RETURN_CALL_INDIRECT
 %token LOCAL_GET LOCAL_SET LOCAL_TEE GLOBAL_GET GLOBAL_SET
 %token TABLE_GET TABLE_SET
@@ -523,10 +522,7 @@ block_instr :
       let ts, es1 = $3 c' in if_ ts es1 ($6 c') }
   | TRY labeling_opt block handler_instr END labeling_end_opt
     { fun c -> let c' = $2 c $6 in
-      let bt, es = $3 c' in let cs, ca = $4 c c' in try_catch bt es cs ca }
-  | TRY labeling_opt block DELEGATE var
-    { fun c -> let c' = $2 c [] in
-      let bt, es = $3 c' in try_delegate bt es ($5 c label) }
+      let bt, es = $3 c' in let cs, xo = $4 c in try_ bt es cs xo }
 
 block :
   | type_use block_param_body
@@ -558,25 +554,25 @@ block_result_body :
 
 handler :
   | /* empty */
-    { fun c c' -> [], None }
+    { fun c -> [], None }
   | LPAR catch_all RPAR
-    { fun c c' -> [], Some ($2 c c') }
+    { fun c -> [], Some ($2 c) }
   | LPAR catch RPAR handler
-    { fun c c' -> let cs, ca = $4 c c' in $2 c c' :: cs, ca }
+    { fun c -> let cs, xo = $4 c in $2 c :: cs, xo }
 
 handler_instr :
   | /* empty */
-    { fun c c' -> [], None }
+    { fun c -> [], None }
   | catch_all
-    { fun c c' -> [], Some ($1 c c') }
+    { fun c -> [], Some ($1 c) }
   | catch handler_instr
-    { fun c c' -> let cs, ca = $2 c c' in $1 c c' :: cs, ca }
+    { fun c -> let cs, xo = $2 c in $1 c :: cs, xo }
 
 catch :
-  | CATCH var instr_list { fun c c' -> ($2 c tag, $3 c') }
+  | CATCH var var { fun c -> ($2 c tag, $3 c label) }
 
 catch_all :
-  | CATCH_ALL instr_list { fun c c' -> $2 c' }
+  | CATCH_ALL var { fun c -> $2 c label }
 
 
 expr :  /* Sugar */
@@ -606,10 +602,7 @@ expr1 :  /* Sugar */
       let bt, (es, es1, es2) = $3 c c' in es, if_ bt es1 es2 }
   | TRY labeling_opt try_block
     { fun c -> let c' = $2 c [] in 
-      let bt, (es, esh) = $3 c c' in
-      match esh with
-      | `Catch (cs, ca) -> [], try_catch bt es cs ca
-      | `Delegate x -> [], try_delegate bt es x }
+      let bt, (es, (cs, xo)) = $3 c c' in [], try_ bt es cs xo }
 
 select_expr_results :
   | LPAR RESULT value_type_list RPAR select_expr_results
@@ -711,9 +704,7 @@ try_block_result_body :
 
 try_body :
   | LPAR DO instr_list RPAR handler
-    { fun c c' -> $3 c', `Catch ($5 c c') }
-  | LPAR DO instr_list RPAR LPAR DELEGATE var RPAR
-    { fun c c' -> $3 c', `Delegate ($7 c label) }
+    { fun c c' -> $3 c', $5 c }
 
 expr_list :
   | /* empty */ { fun c -> [] }

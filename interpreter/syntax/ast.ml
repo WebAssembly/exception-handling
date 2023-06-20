@@ -185,11 +185,8 @@ and instr' =
   | Unary of unop                     (* unary numeric operator *)
   | Binary of binop                   (* binary numeric operator *)
   | Convert of cvtop                  (* conversion *)
-  | TryCatch of
-      block_type * instr list *       (* try *)
-      (var * instr list) list *       (* catch exception with tag *)
-      instr list option               (* catch_all *)
-  | TryDelegate of block_type * instr list * var (* try/delegate *)
+  | Try of block_type * instr list *  (* try *)
+      (var * var) list * var option   (* catch exception *)
   | Throw of var                      (* throw exception *)
   | Rethrow                           (* rethrow exception *)
   | VecConst of vec                   (* constant *)

@@ -661,7 +661,6 @@ rule token = parse
       | "do" -> DO
       | "catch" -> CATCH
       | "catch_all" -> CATCH_ALL
-      | "delegate" -> DELEGATE
       | "throw" -> THROW
       | "rethrow" -> RETHROW
 

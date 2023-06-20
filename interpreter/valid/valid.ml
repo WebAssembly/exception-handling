@@ -319,20 +319,15 @@ let rec check_instr (c : context) (e : instr) (s : infer_result_type) : op_type 
   | Rethrow ->
     [RefType ExnRefType] -->... []
 
-  | TryCatch (bt, es, cts, ca) ->
+  | Try (bt, es, cs, xo) ->
     let FuncType (ts1, ts2) as ft = check_block_type c bt in
-    let c_try = {c with labels = ts2 :: c.labels} in
-    let c_catch = {c with labels = ts2 :: c.labels} in
-    check_block c_try es ft e.at;
-    List.iter (fun ct -> check_catch c_catch ct ts2 e.at) cts;
-    let ft' = FuncType ([RefType ExnRefType], ts2) in
-    Option.iter (fun es -> check_block c_catch es ft' e.at) ca;
-    ts1 --> ts2
-
-  | TryDelegate (bt, es, x) ->
-    let FuncType (ts1, ts2) as ft = check_block_type c bt in
-    ignore (label c x);
-    check_block {c with labels = ts2 :: c.labels} es ft e.at;
+    let c' = {c with labels = ts2 :: c.labels} in
+    check_block c' es ft e.at;
+    List.iter (fun ct -> check_catch c ct ts2 e.at) cs;
+    Option.iter (fun x ->
+      require (label c x = [RefType ExnRefType]) x.at
+        "type mismatch for catch_all label"
+    ) xo;
     ts1 --> ts2
 
   | LocalGet x ->
@@ -574,10 +569,13 @@ and check_block (c : context) (es : instr list) (ft : func_type) at =
     ("type mismatch: block requires " ^ string_of_result_type ts2 ^
      " but stack has " ^ string_of_infer_types (snd s))
 
-and check_catch (c : context) (x, es : var * instr list) (ts : value_type list) at =
-  let TagType y = tag c x in
+and check_catch (c : context) (x1, x2 : var * var) (ts : value_type list) at =
+  let TagType y = tag c x1 in
   let FuncType (ts1, _) = type_ c (y @@ at) in
-  check_block c es (FuncType (ts1 @ [RefType ExnRefType], ts)) at
+  require (label c x2 = ts1 @ [RefType ExnRefType]) at
+    ("type mismatch: catch handler requires " ^
+        string_of_result_type (ts1 @ [RefType ExnRefType]) ^
+     " but label has " ^ string_of_result_type (label c x2))
 
 
 (* Types *)

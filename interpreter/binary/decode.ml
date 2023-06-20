@@ -268,16 +268,10 @@ let rec instr s =
   | 0x06 ->
     let bt = block_type s in
     let es = instr_block s in
-    (match peek s with
-    | Some (0x0b | 0x16 | 0x17) ->
-      let cs = catch_list s in
-      let ca = opt catch_all (peek s = Some 0x17) s in
-      end_ s;
-      try_catch bt es cs ca
-    | _ ->
-      expect 0x18 s "DELEGATE opcode expected";
-      try_delegate bt es (at var s)
-    )
+    let cs = catch_list s in
+    let xo = catch_all s in
+    end_ s;
+    try_ bt es cs xo
   | 0x07 as b -> illegal s pos b
   | 0x08 -> throw (at var s)
   | 0x09 as b -> illegal s pos b
@@ -819,12 +813,14 @@ and instr_block' s es =
 and catch_list s =
   if peek s <> Some 0x16 then [] else
   let _ = byte s in
-  let x = at var s in
-  let es = instr_block s in
-  (x, es) :: catch_list s
+  let x1 = at var s in
+  let x2 = at var s in
+  (x1, x2) :: catch_list s
 
 and catch_all s =
-  expect 0x17 s "CATCH_ALL opcode expected"; instr_block s
+  if peek s <> Some 0x17 then None else
+  let _ = byte s in
+  Some (at var s)
 
 let const s =
   let c = at instr_block s in

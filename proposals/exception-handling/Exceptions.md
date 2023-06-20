@@ -36,7 +36,7 @@ succeeding instructions to process the data.
 A WebAssembly exception is created when you throw it with the `throw`
 instruction. Thrown exceptions are handled as follows:
 
-1. They can be caught by one of `catch`/`catch_all` blocks in an enclosing try
+1. They can be caught by one of `catch`/`catch_all` handlers in an enclosing try
    block of a function body.
 
 1. Throws not caught within a function body continue up the call stack, popping
@@ -106,47 +106,35 @@ following form:
 ```
 try blocktype
   instruction*
-catch i
-  instruction*
-catch j
-  instruction*
+catch i li
+catch j lj
 ...
-catch_all
-  instruction*
+catch_all l
 end
 ```
 
-A try-catch block contains zero or more `catch` blocks and zero or one
-`catch_all` block. All `catch` blocks must precede the `catch_all` block, if
+A try-catch block contains zero or more `catch` clauses and zero or one
+`catch_all` clause. All `catch` clauses must precede the `catch_all` clause, if
 any. The `catch`/`catch_all` clauses (within the try construct) are called
-the _catching_ clauses. There may not be any `catch` or `catch_all` blocks
+the _catching_ clauses. There may be no `catch` or `catch_all` clauses
 after a `try`, in which case the `try` block does not catch any exceptions.
 
 The _body_ of the try block is the list of instructions before the first
-catching instruction. The _body_ of each catch block is the sequence of
-instructions following the corresponding catching instruction before the next
-catching clause (or the `end` instruction if it is the last catching
-block).
+catching instruction.
 
-The `catch` clause has an exception tag associated with it. The tag
+Each `catch` clause has an exception tag associated with it. The tag
 identifies what exceptions it can catch. That is, any exception created with the
-corresponding exception tag. Catch blocks in a `catch` clause
-are considered _tagged_ catch blocks.
+corresponding exception tag.
 
 The last catching clause of a try-catch block can be the `catch_all`
 clause. If present, it defines the
-_default_ catch block. The default catch block has no tag index, and is used to
-catch all exceptions not caught by any of the tagged catch blocks. The term
-'catch block' refers to both `catch` and `catch_all` blocks.
-
-When the program runs `br` within `catch` or `catch_all` blocks, the rest of
-the catching blocks will not run and the program control will branch to the
-destination, as in normal blocks.
+_default_ handler. The default handler has no tag index, and is used to
+catch all exceptions not caught by any of the tagged catch clauses.
 
 Try blocks, like control-flow blocks, have a _block type_. The block type of a
 try block defines the values yielded by evaluating the try block when either no
-exception is thrown, or the exception is successfully caught by the catch block.
-Because `try` and `end` instructions define a control-flow block, they can be
+exception is thrown, or the exception is successfully caught by the catch clause.
+Because `try` and `end` define a control-flow block, they can be
 targets for branches (`br` and `br_if`) as well.
 
 ### Throwing an exception
@@ -173,34 +161,21 @@ an an enclosing try block, or the call stack is flushed. If the call stack is
 flushed, the embedder defines how to handle uncaught exceptions. Otherwise, the
 found enclosing try block is the catching try block.
 
-A throw inside the body of a catch block is never caught by the corresponding
-try block of the catch block, since instructions in the body of the catch block
-are not in the body of the try block.
-
 Once a catching try block is found for the thrown exception, the operand stack
 is popped back to the size the operand stack had when the try block was entered
 after possible block parameters were popped.
 
-Then in case of a try-catch block, tagged catch blocks are tried in the order
-they appear in the catching try block, until one matches. If a matched tagged
-catch block is found, control is transferred to the body of the catch block, and
+Then catch clauses are tried in the order
+they appear in the catching try block, until one matches. If a matching catch clause is found, control is transferred to the label that catch clause, and
 the arguments of the exception are pushed back onto the stack.
 In addition, an exception reference is pushed to the stack that represents the caught exception.
 
-Otherwise, control is transferred to the body of the `catch_all` block, if any.
-However, unlike tagged catch blocks, the constructor arguments are not pushed
+Otherwise, control is transferred to the label of the `catch_all` clause, if present.
+However, unlike regular catch blocks, the constructor arguments are not pushed
 onto the operand stack.
 However, an exception reference is still pushed to the stack.
 
-If no tagged catch blocks were matched, and the catching try block doesn't have
-a `catch_all` block, the exception is rethrown.
-
-If control is transferred to the body of a catch block, and the last instruction
-in the body is executed, control then exits the try block.
-
-If the selected catch block does not throw an exception, it must yield the
-value(s) specified by the type annotation on the corresponding catching try
-block.
+If no catch clauses were matched, the exception is rethrown.
 
 Note that a caught exception can be rethrown using the `rethrow` instruction.
 
@@ -209,157 +184,21 @@ Note that a caught exception can be rethrown using the `rethrow` instruction.
 The `rethrow` takes an operand of type `exnref` and re-throws the corresponding caught exception.
 If the operand is null, a trap occurs.
 
-
-### Try-delegate blocks
-
-Try blocks can also be used with the `delegate` clause. A try-delegate
-block has the following form:
-
-```
-try blocktype
-  instruction*
-delegate label
-```
-
-The `delegate` clause does not have an associated body, so try-delegate blocks
-don't have an `end` instruction at the end. The `delegate` clause takes a
-label and essentially rethrows the exception inside the block corresponding to that label. If the label denotes a `try` block, it therefor delegates exception handling to the corresponding `catch`/`catch_all`/`delegate` handler
-of that `try` block. For example, consider this code:
-
-```
-try $l0
-  try
-    call $foo
-  delegate $l0  ;; (= delegate 0)
-catch
-  ...
-catch_all
-  ...
-end
-```
-
-If `call $foo` throws, searching for a catching block first finds `delegate`,
-and because it delegates exception handling to catching instructions associated
-with `$l1`, it will be next checked by the outer `catch` and then `catch_all`
-instructions.
-
-`delegate` can also target `catch`-less `try`s or non-`try` block constructs
-like `block`s or `loop`s, in which case the delegated exception is assumed to
-propagate to the outer scope and will be caught by the next matching
-try-catches, or rethrown to the caller if there is no outer try block. In the
-examples, catches are annotated with `($label_name)` to clarify which `try` it
-belongs to for clarification; it is not the official syntax.
-```
-try $l0
-  block $l1
-    try
-      call $foo
-    delegate $l1  ;; delegates to 'catch ($l0)'
-  end
-catch ($l0)
-end
-```
-
-Like branches, `delegate` can only target outer blocks, and effectively
-rethrows the exception in that block. Consequently, delegating to a specific
-`catch` or `catch_all` handler requires targeting the respective label from
-within the associated `try` block. Delegating to a label from within a `catch`
-block does delegate the exception to the next enclosing handler -- analogous to
-performing a `throw` within a `catch` block, that handler is no longer active
-at that point. Here is another example:
-
-```
-try $l0
-  try $l1
-  catch ($l1)
-    try
-      call $foo
-    delegate $l1  ;; delegates to 'catch ($l0)'
-  catch_all
-    ...
-  end
-catch ($l0)
-```
-
-Here the `delegate` is targeting `catch ($l1)`, which exists before the
-`delegate`. So in case an exception occurs, it propagates out and ends up
-targetting `catch ($l0)`, if the catch has a matching tag. If not, it will
-propagate further out. Even if the `catch_all` is below the `delegate`,
-`delegate` targets catches of a `try` as a whole and does not target an
-individual `catch`/`catch_all`, so it doesn't apply.
-
-If `delegate` targets the implicit function body block, then in effect it
-delegates the exception to the caller of the current function. For example:
-```
-(func $test
-  try
-    try
-      call $foo
-    delegate 1  ;; delegates to the caller
-  catch
-    ...
-  catch_all
-    ...
-  end
-)
-```
-In case `foo` throws, `delegate 1` here delegates the exception handling to the
-caller, i.e., the exception escapes the current function. If the immediate is
-greater than or equal to the number of block nesting including the implicit
-function-level block, it is a validation failure. In this example, any number
-equal to or greater than 2 is not allowed.
-
-The below is an example that includes all the cases explained. The numbers
-within `()` after `delegate`s are the label operands in immediate values.
-```
-(func $test
-  try $lA
-    block $lB
-      try $lC
-        try
-        delegate $lC (0)  ;; delegates to 'catch ($lC)'
-        try
-        delegate $lB (1)  ;; $lB is a block, so delegates to 'catch ($lA)'
-        try
-        delegate $lA (2)  ;; delegates to 'catch ($lA)'
-        try
-        delegate 3        ;; propagates to the caller
-        try
-        delegate 4        ;; validation failure
-      catch ($lC)
-        try
-        delegate $lC (0)  ;; 'catch ($lC)' is above this instruction,
-                          ;; so delegates to 'catch ($lA)'
-        try
-        delegate $lB (1)  ;; $lB is a block, so delegates to 'catch ($lA)'
-        try
-        delegate $lA (2)  ;; delegates to 'catch ($lA)'
-        try
-        delegate 3        ;; propagates to the caller
-        try
-        delegate 4        ;; validation failure
-      end  ;; try $lC
-    end  ;; block $lB
-  catch ($lA)
-  end  ;; try $lA
-)
-```
-
 ### JS API
 
 #### Traps
 
-The `catch`/`catch_all` instruction catches exceptions generated by the `throw`
-instruction, but does not catch traps. The rationale for this is that in general
+The `catch`/`catch_all` clauses catch exceptions generated by the `throw`
+instruction, but do not catch traps. The rationale for this is that in general
 traps are not locally recoverable and are not needed to be handled in local
 scopes like try-catch.
 
-The `catch` instruction catches foreign exceptions generated from calls to
+The `try` instruction catches foreign exceptions generated from calls to
 function imports as well, including JavaScript exceptions, with a few
 exceptions:
 1. In order to be consistent before and after a trap reaches a JavaScript frame,
-   the `catch` instruction does not catch exceptions generated from traps.
-1. The `catch` instruction does not catch JavaScript exceptions generated from
+   the `try` instruction does not catch exceptions generated from traps.
+1. The `try` instruction does not catch JavaScript exceptions generated from
    stack overflow and out of memory.
 
 Filtering these exceptions should be based on a predicate that is not observable
@@ -460,9 +299,8 @@ document](https://github.com/WebAssembly/spec/blob/master/document/core/text/ins
 The following rules are added to *instructions*:
 
 ```
-  try blocktype instruction* (catch tag_index instruction*)* (catch_all instruction*)? end |
-  try blocktype instruction* delegate label |
-  throw tag_index argument* |
+  try blocktype instruction* (catch tag_index label)* (catch_all label)? end |
+  throw tag_index |
   rethrow label |
 ```
 
@@ -609,9 +447,8 @@ throws, and rethrows as follows:
 | Name | Opcode | Immediates | Description |
 | ---- | ---- | ---- | ---- |
 | `try` | `0x06` | sig : `blocktype` | begins a block which can handle thrown exceptions |
-| `catch` | `0x16` | index : `varint32` | begins the catch block of the try block |
-| `catch_all` | `0x17` | | begins the catch_all block of the try block |
-| `delegate` | `0x18` | relative_depth : `varuint32` | begins the delegate block of the try block |
+| `catch` | `0x16` | index : `varint32`, label : `varint32` | catch handler of a try block |
+| `catch_all` | `0x17` | label : `varint32` | catch_all handler of a try block |
 | `throw` | `0x08` | index : `varint32` | Creates an exception defined by the tag and then throws it |
 | `rethrow` | `0x0a` | | Pops an `exnref` from the stack and throws it |
 
