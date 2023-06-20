@@ -144,9 +144,6 @@ let func_type (c : context) x =
   try (Lib.List32.nth c.types.list x.it).it
   with Failure _ -> error x.at ("unknown type " ^ Int32.to_string x.it)
 
-let handlers (c : context) h =
-  List.map (fun (l, i) -> (l c tag, i c)) h
-
 let anon category space n =
   let i = space.count in
   space.count <- Int32.add i n;
@@ -524,12 +521,12 @@ block_instr :
   | IF labeling_opt block ELSE labeling_end_opt instr_list END labeling_end_opt
     { fun c -> let c' = $2 c ($5 @ $8) in
       let ts, es1 = $3 c' in if_ ts es1 ($6 c') }
-  | TRY labeling_opt block handler_instr
-    { fun c -> let c' = $2 c [] in
-      let ts, es = $3 c' in  $4 ts es c' }
+  | TRY labeling_opt block handler_instr END labeling_end_opt
+    { fun c -> let c' = $2 c $6 in
+      let bt, es = $3 c' in let cs, ca = $4 c c' in try_catch bt es cs ca }
   | TRY labeling_opt block DELEGATE var
     { fun c -> let c' = $2 c [] in
-      let ts, es = $3 c' in try_delegate ts es ($5 c label) }
+      let bt, es = $3 c' in try_delegate bt es ($5 c label) }
 
 block :
   | type_use block_param_body
@@ -559,43 +556,27 @@ block_result_body :
     { let FuncType (ins, out) = fst $5 in
       FuncType (ins, $3 @ out), snd $5 }
 
-handler_instr :
-  | catch_list_instr END
-    { fun bt es c -> try_catch bt es (handlers c $1) None }
-  | catch_list_instr catch_all END
-    { fun bt es c -> try_catch bt es (handlers c $1) (Some ($2 c)) }
-  | catch_all END
-    { fun bt es c -> try_catch bt es [] (Some ($1 c)) }
-  | END { fun bt es c -> try_catch bt es [] None }
-
-catch_list_instr :
-  | catch catch_list_instr { $1 :: $2 }
-  | catch { [$1] }
-
 handler :
-  | catch_list
-      { fun bt es _ c' ->
-        let cs = (List.map (fun (l, i) -> (l c' tag, i c')) $1) in
-        try_catch bt es cs None }
-  | catch_list LPAR catch_all RPAR
-    { fun bt es _ c' ->
-      let cs = (List.map (fun (l, i) -> (l c' tag, i c')) $1) in
-      try_catch bt es cs (Some ($3 c')) }
+  | /* empty */
+    { fun c c' -> [], None }
   | LPAR catch_all RPAR
-    { fun bt es _ c' -> try_catch bt es [] (Some ($2 c')) }
-  | LPAR DELEGATE var RPAR
-    { fun bt es c _ -> try_delegate bt es ($3 c label) }
-  | /* empty */ { fun bt es c _ -> try_catch bt es [] None }
+    { fun c c' -> [], Some ($2 c c') }
+  | LPAR catch RPAR handler
+    { fun c c' -> let cs, ca = $4 c c' in $2 c c' :: cs, ca }
 
-catch_list :
-  | catch_list LPAR catch RPAR { $1 @ [$3] }
-  | LPAR catch RPAR { [$2] }
+handler_instr :
+  | /* empty */
+    { fun c c' -> [], None }
+  | catch_all
+    { fun c c' -> [], Some ($1 c c') }
+  | catch handler_instr
+    { fun c c' -> let cs, ca = $2 c c' in $1 c c' :: cs, ca }
 
 catch :
-  | CATCH var instr_list { ($2, $3) }
+  | CATCH var instr_list { fun c c' -> ($2 c tag, $3 c') }
 
 catch_all :
-  | CATCH_ALL instr_list { $2 }
+  | CATCH_ALL instr_list { fun c c' -> $2 c' }
 
 
 expr :  /* Sugar */
@@ -624,7 +605,11 @@ expr1 :  /* Sugar */
     { fun c -> let c' = $2 c [] in
       let bt, (es, es1, es2) = $3 c c' in es, if_ bt es1 es2 }
   | TRY labeling_opt try_block
-    { fun c -> let c' = $2 c [] in [], $3 c c' }
+    { fun c -> let c' = $2 c [] in 
+      let bt, (es, esh) = $3 c c' in
+      match esh with
+      | `Catch (cs, ca) -> [], try_catch bt es cs ca
+      | `Delegate x -> [], try_delegate bt es x }
 
 select_expr_results :
   | LPAR RESULT value_type_list RPAR select_expr_results
@@ -698,33 +683,37 @@ try_block :
   | type_use try_block_param_body
     { let at = at () in
       fun c c' ->
-      let bt = VarBlockType (inline_type_explicit c' ($1 c' type_) (fst $2) at) in
-      snd $2 bt c c' }
+      let ft, esh = $2 c c' in
+      let bt = VarBlockType (inline_type_explicit c' ($1 c' type_) ft at) in
+      bt, esh }
   | try_block_param_body  /* Sugar */
     { let at = at () in
       fun c c' ->
+      let ft, esh = $1 c c' in
       let bt =
-        match fst $1 with
+        match ft with
         | FuncType ([], []) -> ValBlockType None
         | FuncType ([], [t]) -> ValBlockType (Some t)
-        | ft ->  VarBlockType (inline_type c' ft at)
-      in snd $1 bt c c' }
+        | _ ->  VarBlockType (inline_type c' ft at)
+      in bt, esh }
 
 try_block_param_body :
   | try_block_result_body { $1 }
   | LPAR PARAM value_type_list RPAR try_block_param_body
-    { let FuncType (ins, out) = fst $5 in
-      FuncType ($3 @ ins, out), snd $5 }
+    { fun c c' -> let FuncType (ins, out), esh = $5 c c' in
+      FuncType ($3 @ ins, out), esh }
 
 try_block_result_body :
-  | try_ { FuncType ([], []), $1 }
+  | try_body { fun c c' -> FuncType ([], []), $1 c c' }
   | LPAR RESULT value_type_list RPAR try_block_result_body
-    { let FuncType (ins, out) = fst $5 in
-      FuncType (ins, $3 @ out), snd $5 }
+    { fun c c' -> let FuncType (ins, out), esh = $5 c c' in
+      FuncType (ins, $3 @ out), esh }
 
-try_ :
+try_body :
   | LPAR DO instr_list RPAR handler
-    { fun bt c c' -> $5 bt ($3 c') c c' }
+    { fun c c' -> $3 c', `Catch ($5 c c') }
+  | LPAR DO instr_list RPAR LPAR DELEGATE var RPAR
+    { fun c c' -> $3 c', `Delegate ($7 c label) }
 
 expr_list :
   | /* empty */ { fun c -> [] }
