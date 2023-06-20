@@ -98,7 +98,8 @@ let type_of_num = function
 let type_of_vec = function
   | V128 _ -> V128Type
 
-let type_of_ref' = ref (function NullRef t -> t | _ -> assert false)
+let type_of_ref' =
+  ref (function NullRef t -> t | ExnRef _ -> ExnRefType | _ -> assert false)
 let type_of_ref r = !type_of_ref' r
 
 let type_of_value = function
