@@ -736,8 +736,8 @@ struct
     | VecReplace (V128 (F32x4 (V128Op.Replace i))) -> vecop 0x20l; byte i
     | VecReplace (V128 (F64x2 (V128Op.Replace i))) -> vecop 0x22l; byte i
 
-  and catch (x1, x2) = op 0x16; var x1; var x2
-  and catch_all x = op 0x17; var x
+  and catch (x1, x2) = op 0x1d; var x1; var x2
+  and catch_all x = op 0x1e; var x
 
   let const c =
     list instr c.it; end_ ()

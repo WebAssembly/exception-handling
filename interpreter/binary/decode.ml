@@ -297,19 +297,16 @@ let rec instr s =
     let x = at var s in
     return_call_indirect x y
 
-  | 0x14 | 0x15 as b -> illegal s pos b
-
-  | 0x16 -> error s pos "misplaced CATCH opcode"
-  | 0x17 -> error s pos "misplaced CATCH_ALL opcode"
-  | 0x18 -> error s pos "misplaced DELEGATE opcode"
-
-  | 0x19 as b -> illegal s pos b
+  | 0x14 | 0x15 | 0x16 | 0x17 | 0x18 | 0x19 as b -> illegal s pos b
 
   | 0x1a -> drop
   | 0x1b -> select None
   | 0x1c -> select (Some (vec value_type s))
 
-  | 0x1d | 0x1e | 0x1f as b -> illegal s pos b
+  | 0x1d -> error s pos "misplaced CATCH opcode"
+  | 0x1e -> error s pos "misplaced CATCH_ALL opcode"
+
+  | 0x1f as b -> illegal s pos b
 
   | 0x20 -> local_get (at var s)
   | 0x21 -> local_set (at var s)
@@ -804,21 +801,21 @@ let rec instr s =
 and instr_block s = List.rev (instr_block' s [])
 and instr_block' s es =
   match peek s with
-  | None | Some (0x05 | 0x0b | 0x16 | 0x17 | 0x18) -> es
+  | None | Some (0x05 | 0x0b | 0x1d | 0x1e) -> es
   | _ ->
     let pos = pos s in
     let e' = instr s in
     instr_block' s ((e' @@ region s pos pos) :: es)
 
 and catch_list s =
-  if peek s <> Some 0x16 then [] else
+  if peek s <> Some 0x1d then [] else
   let _ = byte s in
   let x1 = at var s in
   let x2 = at var s in
   (x1, x2) :: catch_list s
 
 and catch_all s =
-  if peek s <> Some 0x17 then None else
+  if peek s <> Some 0x1e then None else
   let _ = byte s in
   Some (at var s)
 

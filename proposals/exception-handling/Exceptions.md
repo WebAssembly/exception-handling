@@ -447,8 +447,8 @@ throws, and rethrows as follows:
 | Name | Opcode | Immediates | Description |
 | ---- | ---- | ---- | ---- |
 | `try` | `0x06` | sig : `blocktype` | begins a block which can handle thrown exceptions |
-| `catch` | `0x16` | index : `varint32`, label : `varint32` | catch handler of a try block |
-| `catch_all` | `0x17` | label : `varint32` | catch_all handler of a try block |
+| `catch` | `0x1d` | index : `varint32`, label : `varint32` | catch handler of a try block |
+| `catch_all` | `0x1e` | label : `varint32` | catch_all handler of a try block |
 | `throw` | `0x08` | index : `varint32` | Creates an exception defined by the tag and then throws it |
 | `rethrow` | `0x0a` | | Pops an `exnref` from the stack and throws it |
 
