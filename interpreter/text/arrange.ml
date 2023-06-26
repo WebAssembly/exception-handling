@@ -458,9 +458,9 @@ let rec instr e =
       "return_call_indirect " ^ var x, [Node ("type " ^ var y, [])]
     | Throw x -> "throw " ^ var x, []
     | Rethrow -> "rethrow", []
-    | Try (bt, es, cs, xo) ->
+    | Try (bt, cs, xo, es) ->
       "try", block_type bt @
-        [Node ("do", list instr es)] @ list catch cs @ opt catch_all xo
+        list catch cs @ opt catch_all xo @ list instr es
     | LocalGet x -> "local.get " ^ var x, []
     | LocalSet x -> "local.set " ^ var x, []
     | LocalTee x -> "local.tee " ^ var x, []

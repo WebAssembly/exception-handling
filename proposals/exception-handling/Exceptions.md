@@ -105,11 +105,11 @@ following form:
 
 ```
 try blocktype
-  instruction*
 catch i li
 catch j lj
 ...
 catch_all l
+  instruction*
 end
 ```
 
@@ -119,8 +119,8 @@ any. The `catch`/`catch_all` clauses (within the try construct) are called
 the _catching_ clauses. There may be no `catch` or `catch_all` clauses
 after a `try`, in which case the `try` block does not catch any exceptions.
 
-The _body_ of the try block is the list of instructions before the first
-catching instruction.
+The _body_ of the try block is the list of instructions after the last
+catching clause, if any.
 
 Each `catch` clause has an exception tag associated with it. The tag
 identifies what exceptions it can catch. That is, any exception created with the
@@ -299,7 +299,7 @@ document](https://github.com/WebAssembly/spec/blob/master/document/core/text/ins
 The following rules are added to *instructions*:
 
 ```
-  try blocktype instruction* (catch tag_index label)* (catch_all label)? end |
+  try blocktype (catch tag_index label)* (catch_all label)? instruction* end |
   throw tag_index |
   rethrow label |
 ```
@@ -446,11 +446,23 @@ throws, and rethrows as follows:
 
 | Name | Opcode | Immediates | Description |
 | ---- | ---- | ---- | ---- |
-| `try` | `0x06` | sig : `blocktype` | begins a block which can handle thrown exceptions |
-| `catch` | `0x1d` | index : `varint32`, label : `varint32` | catch handler of a try block |
-| `catch_all` | `0x1e` | label : `varint32` | catch_all handler of a try block |
-| `throw` | `0x08` | index : `varint32` | Creates an exception defined by the tag and then throws it |
+| `try` | `0x1f` | sig : `blocktype`, n : `varuint32`, catch : `catch^n`, catch_all : `catch_all` | begins a block which can handle thrown exceptions |
+| `throw` | `0x08` | index : `varuint32` | Creates an exception defined by the tag and then throws it |
 | `rethrow` | `0x0a` | | Pops an `exnref` from the stack and throws it |
 
 The *sig* fields of `block`, `if`, and `try` operators are block signatures
 which describe their use of the operand stack.
+
+A `catch` handler is a pair of tag and label index:
+
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| tag | `varuint32` | tag index |
+| label | `varuint32` | label index |
+
+A `catch_all` handler is a byte, optionally followed by a label index:
+
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| flag | `uint8` | 0 if no catch_all handler is present, 1 otherwise |
+| label | `varuint32?` | label index, only present if `flag = 1` |

@@ -84,8 +84,9 @@ let rec instr (e : instr) =
     tables (var x) ++ types (var y)
   | Throw x -> tags (var x)
   | Rethrow -> empty
-  | Try (bt, es, cs, xo) ->
-    block es ++ list catch cs ++ opt (fun x -> labels (var x)) xo
+  | Try (bt, cs, xo, es) ->
+    block_type bt ++
+    list catch cs ++ opt (fun x -> labels (var x)) xo ++ block es
   | LocalGet x | LocalSet x | LocalTee x -> locals (var x)
   | GlobalGet x | GlobalSet x -> globals (var x)
   | TableGet x | TableSet x | TableSize x | TableGrow x | TableFill x ->

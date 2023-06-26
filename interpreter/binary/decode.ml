@@ -265,14 +265,7 @@ let rec instr s =
     end
 
   | 0x05 -> error s pos "misplaced ELSE opcode"
-  | 0x06 ->
-    let bt = block_type s in
-    let es = instr_block s in
-    let cs = catch_list s in
-    let xo = catch_all s in
-    end_ s;
-    try_ bt es cs xo
-  | 0x07 as b -> illegal s pos b
+  | 0x06 | 0x07 as b -> illegal s pos b
   | 0x08 -> throw (at var s)
   | 0x09 as b -> illegal s pos b
   | 0x0a -> rethrow
@@ -303,10 +296,15 @@ let rec instr s =
   | 0x1b -> select None
   | 0x1c -> select (Some (vec value_type s))
 
-  | 0x1d -> error s pos "misplaced CATCH opcode"
-  | 0x1e -> error s pos "misplaced CATCH_ALL opcode"
+  | 0x1d | 0x1e as b -> illegal s pos b
 
-  | 0x1f as b -> illegal s pos b
+  | 0x1f ->
+    let bt = block_type s in
+    let cs = vec catch s in
+    let xo = catch_all s in
+    let es = instr_block s in
+    end_ s;
+    try_ bt cs xo es
 
   | 0x20 -> local_get (at var s)
   | 0x21 -> local_set (at var s)
@@ -801,23 +799,22 @@ let rec instr s =
 and instr_block s = List.rev (instr_block' s [])
 and instr_block' s es =
   match peek s with
-  | None | Some (0x05 | 0x0b | 0x1d | 0x1e) -> es
+  | None | Some (0x05 | 0x0b) -> es
   | _ ->
     let pos = pos s in
     let e' = instr s in
     instr_block' s ((e' @@ region s pos pos) :: es)
 
-and catch_list s =
-  if peek s <> Some 0x1d then [] else
-  let _ = byte s in
+and catch s =
   let x1 = at var s in
   let x2 = at var s in
-  (x1, x2) :: catch_list s
+  (x1, x2)
 
 and catch_all s =
-  if peek s <> Some 0x1e then None else
-  let _ = byte s in
-  Some (at var s)
+  match byte s with
+  | 0x0 -> None
+  | 0x1 -> Some (at var s)
+  | _ -> error s (pos s - 1) "malformed catch_all"
 
 let const s =
   let c = at instr_block s in

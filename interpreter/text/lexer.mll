@@ -658,7 +658,6 @@ rule token = parse
       | "f64x2.replace_lane" -> VEC_REPLACE f64x2_replace_lane
 
       | "try" -> TRY
-      | "do" -> DO
       | "catch" -> CATCH
       | "catch_all" -> CATCH_ALL
       | "throw" -> THROW

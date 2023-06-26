@@ -168,9 +168,9 @@ struct
       op 0x04; block_type bt; list instr es1;
       if es2 <> [] then op 0x05;
       list instr es2; end_ ()
-    | Try (bt, es, cs, xo) ->
-      op 0x06; block_type bt; list instr es;
-      list catch cs; opt catch_all xo; end_ ()
+    | Try (bt, cs, xo, es) ->
+      op 0x1f; block_type bt;
+      vec catch cs; catch_all xo; list instr es; end_ ()
     | Br x -> op 0x0c; var x
     | BrIf x -> op 0x0d; var x
     | BrTable (xs, x) -> op 0x0e; vec var xs; var x
@@ -736,8 +736,10 @@ struct
     | VecReplace (V128 (F32x4 (V128Op.Replace i))) -> vecop 0x20l; byte i
     | VecReplace (V128 (F64x2 (V128Op.Replace i))) -> vecop 0x22l; byte i
 
-  and catch (x1, x2) = op 0x1d; var x1; var x2
-  and catch_all x = op 0x1e; var x
+  and catch (x1, x2) = var x1; var x2
+  and catch_all = function
+    | None -> byte 0
+    | Some x -> byte 1; var x
 
   let const c =
     list instr c.it; end_ ()
