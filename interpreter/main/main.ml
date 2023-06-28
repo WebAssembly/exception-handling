@@ -24,6 +24,8 @@ let argspec = Arg.align
     " read script from file";
   "-o", Arg.String (fun file -> add_arg ("(output " ^ quote file ^ ")")),
     " write module to file";
+  "-c", Arg.Set Flags.convert_exn,
+    " convert old to new exception contructs";
   "-b", Arg.Int (fun n -> Flags.budget := n),
     " configure call depth budget (default is " ^ string_of_int !Flags.budget ^ ")";
   "-w", Arg.Int (fun n -> Flags.width := n),

@@ -528,6 +528,22 @@ let rec run_command cmd =
         print_module x_opt m
       end
     end;
+    let m =
+      if not !Flags.convert_exn then m else begin
+        trace "Converting...";
+        let m = Convert_exn.convert_module m in
+        if not !Flags.unchecked then begin
+          trace "Rechecking...";
+try
+          Valid.check_module m
+with e ->
+Sexpr.output stdout 80 (Arrange.module_ m);
+print_string "\n"; flush_all ();
+raise e
+        end;
+        m
+      end
+    in
     bind scripts x_opt [cmd];
     bind modules x_opt m;
     if not !Flags.dry then begin

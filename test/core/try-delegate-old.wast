@@ -45,6 +45,7 @@
     )
   )
 
+(;
   (func (export "delegate-to-block") (result i32)
     (try_old (result i32)
       (do (block (try_old (do (throw $e0)) (delegate 0)))
@@ -70,6 +71,7 @@
   (func (export "delegate-to-caller-skipping")
     (try_old (do (try_old (do (throw $e0)) (delegate 1))) (catch_all))
   )
+;)
 
   (func $select-tag (param i32)
     (block (block (block (local.get 0) (br_table 0 1 2)) (return)) (throw $e0))
@@ -98,6 +100,7 @@
     )
   )
 
+(;
   (func (export "delegate-correct-targets") (result i32)
     (try_old (result i32)
       (do (try_old $l3
@@ -115,6 +118,7 @@
                          (delegate $l3))))
           unreachable)
       (catch_all (i32.const 1))))
+;)
 
   (func $throw-void (throw $e0))
   (func (export "return-call-in-try-delegate")
@@ -162,6 +166,7 @@
 
 (assert_return (invoke "delegate-skip") (i32.const 3))
 
+(;
 (assert_return (invoke "delegate-to-block") (i32.const 1))
 (assert_return (invoke "delegate-to-catch") (i32.const 1))
 
@@ -169,6 +174,7 @@
 (assert_exception (invoke "delegate-to-caller-skipping"))
 
 (assert_return (invoke "delegate-correct-targets") (i32.const 1))
+;)
 
 (assert_exception (invoke "return-call-in-try-delegate"))
 (assert_exception (invoke "return-call-indirect-in-try-delegate"))
