@@ -69,8 +69,6 @@ and admin_instr' =
   | Label of int32 * instr list * code
   | Frame of int32 * frame * code
   | Catch of int32 * (Tag.t * var) list * var option * code
-  | Delegate of int32 * code
-  | Delegating of int32 * Tag.t * value stack
 
 type config =
 {
@@ -649,9 +647,6 @@ let rec step (c : config) : config =
     | Throwing _, _ ->
       assert false
 
-    | Delegating _, _ ->
-      Crash.error e.at "undefined delegate label"
-
     | Label (n, es0, (vs', [])), vs ->
       vs' @ vs, []
 
@@ -672,12 +667,6 @@ let rec step (c : config) : config =
 
     | Label (n, es0, (vs', {it = Throwing (a, vs0); at} :: es')), vs ->
       vs, [Throwing (a, vs0) @@ at]
-
-    | Label (n, es0, (vs', {it = Delegating (0l, a, vs0); at} :: es')), vs ->
-      vs, [Throwing (a, vs0) @@ at]
-
-    | Label (n, es0, (vs', {it = Delegating (k, a, vs0); at} :: es')), vs ->
-      vs, [Delegating (Int32.sub k 1l, a, vs0) @@ at]
 
     | Label (n, es0, code'), vs ->
       let c' = step {c with code = code'} in
@@ -706,7 +695,7 @@ let rec step (c : config) : config =
     | Catch (n, cs, xo, (vs', [])), vs ->
       vs' @ vs, []
 
-    | Catch (n, cs, xo, (vs', ({it = Trapping _ | Breaking _ | Returning _ | ReturningInvoke _ | Delegating _; at} as e) :: es')), vs ->
+    | Catch (n, cs, xo, (vs', ({it = Trapping _ | Breaking _ | Returning _ | ReturningInvoke _; at} as e) :: es')), vs ->
       vs, [e]
 
     | Catch (n, (a', x) :: cs, xo, (vs', {it = Throwing (a, vs0); at} :: es')), vs ->
@@ -724,19 +713,6 @@ let rec step (c : config) : config =
     | Catch (n, cs, xo, code'), vs ->
       let c' = step {c with code = code'} in
       vs, [Catch (n, cs, xo, c'.code) @@ e.at]
-
-    | Delegate (l, (vs', [])), vs ->
-      vs' @ vs, []
-
-    | Delegate (l, (vs', ({it = Trapping _ | Breaking _ | Returning _ | ReturningInvoke _ | Delegating _; at} as e) :: es')), vs ->
-      vs, [e]
-
-    | Delegate (l, (vs', {it = Throwing (a, vs0); at} :: es')), vs ->
-      vs, [Delegating (l, a, vs0) @@ e.at]
-
-    | Delegate (l, code'), vs ->
-      let c' = step {c with code = code'} in
-      vs, [Delegate (l, c'.code) @@ e.at]
 
     | Invoke func, vs when c.budget = 0 ->
       Exhaustion.error e.at "call stack exhausted"
