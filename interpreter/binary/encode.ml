@@ -171,6 +171,20 @@ struct
     | Try (bt, cs, xo, es) ->
       op 0x1f; block_type bt;
       vec catch cs; catch_all xo; list instr es; end_ ()
+    | TryCatch_old (bt, es, ct, ca) ->
+      op 0x06; block_type bt; list instr es;
+      let catch (tag, es) =
+        op 0x07; var tag; list instr es
+      in
+      list catch ct;
+      begin match ca with
+        | None -> ()
+        | Some es -> op 0x19; list instr es
+      end;
+      end_ ()
+    | TryDelegate_old (bt, es, x) ->
+      op 0x06; block_type bt; list instr es;
+      op 0x18; var x
     | Br x -> op 0x0c; var x
     | BrIf x -> op 0x0d; var x
     | BrTable (xs, x) -> op 0x0e; vec var xs; var x
@@ -181,6 +195,7 @@ struct
     | ReturnCallIndirect (x, y) -> op 0x13; var y; var x
     | Throw x -> op 0x08; var x
     | Rethrow -> op 0x0a
+    | Rethrow_old x -> op 0x09; var x
 
     | Drop -> op 0x1a
     | Select None -> op 0x1b

@@ -21,6 +21,8 @@ let block bt es = Block (bt, es)
 let loop bt es = Loop (bt, es)
 let if_ bt es1 es2 = If (bt, es1, es2)
 let try_ bt cs xo es = Try (bt, cs, xo, es)
+let try_catch_old bt es ct ca = TryCatch_old (bt, es, ct, ca)
+let try_delegate_old bt es x = TryDelegate_old (bt, es, x)
 let br x = Br x
 let br_if x = BrIf x
 let br_table xs x = BrTable (xs, x)
@@ -32,6 +34,7 @@ let return_call x = ReturnCall x
 let return_call_indirect x y = ReturnCallIndirect (x, y)
 let throw x = Throw x
 let rethrow = Rethrow
+let rethrow_old x = Rethrow_old x
 
 let local_get x = LocalGet x
 let local_set x = LocalSet x

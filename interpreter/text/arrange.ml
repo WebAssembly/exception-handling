@@ -458,9 +458,20 @@ let rec instr e =
       "return_call_indirect " ^ var x, [Node ("type " ^ var y, [])]
     | Throw x -> "throw " ^ var x, []
     | Rethrow -> "rethrow", []
+    | Rethrow_old x -> "rethrow " ^ var x, []
     | Try (bt, cs, xo, es) ->
       "try", block_type bt @
         list catch cs @ opt catch_all xo @ list instr es
+    | TryCatch_old (bt, es, ct, ca) ->
+      let catch (tag, es) = Node ("catch " ^ var tag, list instr es) in
+      let catch_all = match ca with
+        | Some es -> [Node ("catch_all", list instr es)]
+        | None -> [] in
+      let handler = list catch ct @ catch_all in
+      "try_old", block_type bt @ [Node ("do", list instr es)] @ handler
+    | TryDelegate_old (bt, es, x) ->
+      let delegate = [Node ("delegate " ^ var x, [])] in
+      "try_old", block_type bt @ [Node ("do", list instr es)] @ delegate
     | LocalGet x -> "local.get " ^ var x, []
     | LocalSet x -> "local.set " ^ var x, []
     | LocalTee x -> "local.tee " ^ var x, []

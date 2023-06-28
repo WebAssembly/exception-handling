@@ -265,9 +265,29 @@ let rec instr s =
     end
 
   | 0x05 -> error s pos "misplaced ELSE opcode"
-  | 0x06 | 0x07 as b -> illegal s pos b
+  | 0x06 ->
+    let bt = block_type s in
+    let es = instr_block s in
+    let ct = catch_list_old s in
+    let ca =
+      if peek s = Some 0x19 then begin
+        ignore (byte s);
+        Some (instr_block s)
+      end else
+        None
+    in
+    if ct <> [] || ca <> None then begin
+      end_ s;
+      try_catch_old bt es ct ca
+    end else begin
+      match op s with
+      | 0x0b -> try_catch_old bt es [] None
+      | 0x18 -> try_delegate_old bt es (at var s)
+      | b -> illegal s pos b
+    end
+  | 0x07 -> error s pos "misplaced old CATCH opcode"
   | 0x08 -> throw (at var s)
-  | 0x09 as b -> illegal s pos b
+  | 0x09 -> rethrow_old (at var s)
   | 0x0a -> rethrow
   | 0x0b -> error s pos "misplaced END opcode"
 
@@ -290,7 +310,10 @@ let rec instr s =
     let x = at var s in
     return_call_indirect x y
 
-  | 0x14 | 0x15 | 0x16 | 0x17 | 0x18 | 0x19 as b -> illegal s pos b
+  | 0x14 | 0x15 | 0x16 | 0x17 as b -> illegal s pos b
+
+  | 0x18 -> error s pos "misplaced old DELEGATE opcode"
+  | 0x19 -> error s pos "misplaced old CATCH_ALL opcode"
 
   | 0x1a -> drop
   | 0x1b -> select None
@@ -799,11 +822,20 @@ let rec instr s =
 and instr_block s = List.rev (instr_block' s [])
 and instr_block' s es =
   match peek s with
-  | None | Some (0x05 | 0x0b) -> es
+  | None | Some (0x05 | 0x07 | 0x0b | 0x18 | 0x19) -> es
   | _ ->
     let pos = pos s in
     let e' = instr s in
     instr_block' s ((e' @@ region s pos pos) :: es)
+
+and catch_list_old s =
+  if peek s = Some 0x07 then begin
+    ignore (byte s);
+    let tag = at var s in
+    let instrs = instr_block s in
+    (tag, instrs) :: catch_list_old s
+  end else
+    []
 
 and catch s =
   let x1 = at var s in

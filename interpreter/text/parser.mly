@@ -214,6 +214,7 @@ let inline_type_explicit (c : context) x ft at =
 %token FUNCREF EXNREF EXTERNREF EXN EXTERN MUT
 %token UNREACHABLE NOP DROP SELECT
 %token BLOCK END IF THEN ELSE LOOP BR BR_IF BR_TABLE TRY CATCH CATCH_ALL
+%token TRY_OLD DO DELEGATE
 %token CALL CALL_INDIRECT RETURN RETURN_CALL RETURN_CALL_INDIRECT
 %token LOCAL_GET LOCAL_SET LOCAL_TEE GLOBAL_GET GLOBAL_SET
 %token TABLE_GET TABLE_SET
@@ -396,6 +397,7 @@ plain_instr :
   | RETURN_CALL var { fun c -> return_call ($2 c func) }
   | THROW var { fun c -> throw ($2 c tag) }
   | RETHROW { fun c -> rethrow }
+  | RETHROW var { fun c -> rethrow_old ($2 c label)  }
   | LOCAL_GET var { fun c -> local_get ($2 c local) }
   | LOCAL_SET var { fun c -> local_set ($2 c local) }
   | LOCAL_TEE var { fun c -> local_tee ($2 c local) }
@@ -523,6 +525,12 @@ block_instr :
   | TRY labeling_opt handler_block END labeling_end_opt
     { fun c -> let c' = $2 c $5 in
       let bt, (cs, xo, es) = $3 c c' in try_ bt cs xo es }
+  | TRY_OLD labeling_opt block handler_instr_old END labeling_end_opt
+    { fun c -> let c' = $2 c $6 in
+      let bt, es = $3 c' in let cs, ca = $4 c c' in try_catch_old bt es cs ca }
+  | TRY_OLD labeling_opt block DELEGATE var
+    { fun c -> let c' = $2 c [] in
+      let bt, es = $3 c' in try_delegate_old bt es ($5 c label) }
 
 block :
   | type_use block_param_body
@@ -589,6 +597,28 @@ handler_block_body :
     { fun c c' -> let cs, xo, es = $6 c c' in
       ($3 c tag, $4 c label) :: cs, xo, es }
 
+handler_old :
+  | /* empty */
+    { fun c c' -> [], None }
+  | LPAR catch_all_old RPAR
+    { fun c c' -> [], Some ($2 c c') }
+  | LPAR catch_old RPAR handler_old
+    { fun c c' -> let cs, ca = $4 c c' in $2 c c' :: cs, ca }
+ 
+handler_instr_old :
+  | /* empty */
+    { fun c c' -> [], None }
+  | catch_all_old
+    { fun c c' -> [], Some ($1 c c') }
+  | catch_old handler_instr_old
+    { fun c c' -> let cs, ca = $2 c c' in $1 c c' :: cs, ca }
+
+catch_old :
+  | CATCH var instr_list { fun c c' -> ($2 c tag, $3 c') }
+
+catch_all_old :
+  | CATCH_ALL instr_list { fun c c' -> $2 c' }
+
 
 expr :  /* Sugar */
   | LPAR expr1 RPAR
@@ -618,6 +648,12 @@ expr1 :  /* Sugar */
   | TRY labeling_opt try_block
     { fun c -> let c' = $2 c [] in 
       let bt, (cs, xo, es) = $3 c c' in [], try_ bt cs xo es }
+  | TRY_OLD labeling_opt try_block_old
+     { fun c -> let c' = $2 c [] in 
+      let bt, (es, esh) = $3 c c' in
+      match esh with
+      | `Catch (cs, ca) -> [], try_catch_old bt es cs ca
+      | `Delegate x -> [], try_delegate_old bt es x }
 
 select_expr_results :
   | LPAR RESULT value_type_list RPAR select_expr_results
@@ -726,6 +762,42 @@ try_block_handler_body :
   | LPAR CATCH var var RPAR try_block_handler_body
     { fun c c' -> let cs, xo, es = $6 c c' in
       ($3 c tag, $4 c label) :: cs, xo, es }
+
+try_block_old :
+  | type_use try_block_param_body_old
+    { let at = at () in
+      fun c c' ->
+      let ft, esh = $2 c c' in
+      let bt = VarBlockType (inline_type_explicit c' ($1 c' type_) ft at) in
+      bt, esh }
+  | try_block_param_body_old  /* Sugar */
+    { let at = at () in
+      fun c c' ->
+      let ft, esh = $1 c c' in
+      let bt =
+        match ft with
+        | FuncType ([], []) -> ValBlockType None
+        | FuncType ([], [t]) -> ValBlockType (Some t)
+        | _ ->  VarBlockType (inline_type c' ft at)
+      in bt, esh }
+
+try_block_param_body_old :
+  | try_block_result_body_old { $1 }
+  | LPAR PARAM value_type_list RPAR try_block_param_body_old
+    { fun c c' -> let FuncType (ins, out), esh = $5 c c' in
+      FuncType ($3 @ ins, out), esh }
+
+try_block_result_body_old :
+  | try_block_body_handler_old { fun c c' -> FuncType ([], []), $1 c c' }
+  | LPAR RESULT value_type_list RPAR try_block_result_body_old
+    { fun c c' -> let FuncType (ins, out), esh = $5 c c' in
+      FuncType (ins, $3 @ out), esh }
+
+try_block_body_handler_old :
+  | LPAR DO instr_list RPAR handler_old
+    { fun c c' -> $3 c', `Catch ($5 c c') }
+  | LPAR DO instr_list RPAR LPAR DELEGATE var RPAR
+    { fun c c' -> $3 c', `Delegate ($7 c label) }
 
 
 expr_list :
