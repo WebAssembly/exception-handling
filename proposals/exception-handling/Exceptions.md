@@ -338,7 +338,7 @@ document](https://github.com/WebAssembly/design/blob/master/BinaryEncoding.md).
 
 ##### exnref
 
-The type `exnref` is represented by the type opcode `-0x1c`.
+The type `exnref` is represented by the type opcode `-0x17`.
 
 ##### tag_type
 
