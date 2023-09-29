@@ -109,7 +109,7 @@ struct
 
   let ref_type = function
     | FuncRefType -> s7 (-0x10)
-    | ExnRefType -> s7 (-0x1c)
+    | ExnRefType -> s7 (-0x17)
     | ExternRefType -> s7 (-0x11)
 
   let value_type = function

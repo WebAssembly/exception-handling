@@ -164,7 +164,7 @@ let ref_type s =
   match s7 s with
   | -0x10 -> FuncRefType
   | -0x11 -> ExternRefType
-  | -0x1c -> ExnRefType
+  | -0x17 -> ExnRefType
   | _ -> error s (pos s - 1) "malformed reference type"
 
 let value_type s =
