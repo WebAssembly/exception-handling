@@ -68,7 +68,7 @@ and admin_instr' =
   | Throwing of Tag.t * value stack
   | Label of int32 * instr list * code
   | Frame of int32 * frame * code
-  | Catch of int32 * (Tag.t * var) list * var option * code
+  | Handle of int32 * catch list * code
   | Rethrowing_old of int32 * (admin_instr -> admin_instr)
   | Catch_old of int32 * (Tag.t * instr list) list * instr list option * code
   | Caught_old of int32 * Tag.t * value stack * code
@@ -238,22 +238,21 @@ let rec step (c : config) : config =
         let args, vs' = take n vs e.at, drop n vs e.at in
         vs', [Throwing (t, args) @@ e.at]
 
-      | Rethrow, Ref (NullRef _) :: vs ->
+      | ThrowRef, Ref (NullRef _) :: vs ->
         vs, [Trapping "null exception reference" @@ e.at]
 
-      | Rethrow, Ref (ExnRef (t, args)) :: vs ->
+      | ThrowRef, Ref (ExnRef (t, args)) :: vs ->
         vs, [Throwing (t, args) @@ e.at]
 
       | Rethrow_old x, vs ->
         vs, [Rethrowing_old (x.it, fun e -> e) @@ e.at]
 
-      | Try (bt, cs, xo, es'), vs ->
+      | Try (bt, cs, es'), vs ->
         let FuncType (ts1, ts2) = block_type frame.inst bt in
         let n1 = Lib.List32.length ts1 in
         let n2 = Lib.List32.length ts2 in
         let args, vs' = take n1 vs e.at, drop n1 vs e.at in
-        let cs' = List.map (fun (x1, x2) -> ((tag frame.inst x1), x2)) cs in
-        vs', [Catch (n2, cs', xo, (args, [Label (n2, [], ([], List.map plain es')) @@ e.at])) @@ e.at]
+        vs', [Handle (n2, cs, (args, [Label (n2, [], ([], List.map plain es')) @@ e.at])) @@ e.at]
 
       | TryCatch_old (bt, es', cts, ca), vs ->
         let FuncType (ts1, ts2) = block_type frame.inst bt in
@@ -730,27 +729,36 @@ let rec step (c : config) : config =
       let c' = step {frame = frame'; code = code'; budget = c.budget - 1} in
       vs, [Frame (n, c'.frame, c'.code) @@ e.at]
 
-    | Catch (n, cs, xo, (vs', [])), vs ->
+    | Handle (n, cs, (vs', [])), vs ->
       vs' @ vs, []
 
-    | Catch (n, cs, xo, (vs', ({it = Trapping _ | Breaking _ | Returning _ | ReturningInvoke _ | Delegating_old _; at} as e) :: es')), vs ->
+    | Handle (n, cs, (vs', ({it = Trapping _ | Breaking _ | Returning _ | ReturningInvoke _ | Delegating_old _; at} as e) :: es')), vs ->
       vs, [e]
 
-    | Catch (n, (a', x) :: cs, xo, (vs', {it = Throwing (a, vs0); at} :: es')), vs ->
-      if a == a' then
-        Ref (ExnRef (a, vs0)) :: vs0 @ vs, [Plain (Br x) @@ e.at]
+    | Handle (n, {it = Catch (x1, x2); _} :: cs, (vs', {it = Throwing (a, vs0); at} :: es')), vs ->
+      if a == tag frame.inst x1 then
+        vs0 @ vs, [Plain (Br x2) @@ e.at]
       else
-        vs, [Catch (n, cs, xo, (vs', {it = Throwing (a, vs0); at} :: es')) @@ e.at]
+        vs, [Handle (n, cs, (vs', {it = Throwing (a, vs0); at} :: es')) @@ e.at]
 
-    | Catch (n, [], Some x, (vs', {it = Throwing (a, vs0); at} :: es')), vs ->
+    | Handle (n, {it = CatchRef (x1, x2); _} :: cs, (vs', {it = Throwing (a, vs0); at} :: es')), vs ->
+      if a == tag frame.inst x1 then
+        Ref (ExnRef (a, vs0)) :: vs0 @ vs, [Plain (Br x2) @@ e.at]
+      else
+        vs, [Handle (n, cs, (vs', {it = Throwing (a, vs0); at} :: es')) @@ e.at]
+
+    | Handle (n, {it = CatchAll x; _} :: cs, (vs', {it = Throwing (a, vs0); at} :: es')), vs ->
+      vs, [Plain (Br x) @@ e.at]
+
+    | Handle (n, {it = CatchAllRef x; _} :: cs, (vs', {it = Throwing (a, vs0); at} :: es')), vs ->
       Ref (ExnRef (a, vs0)) :: vs, [Plain (Br x) @@ e.at]
 
-    | Catch (n, [], None, (vs', {it = Throwing (a, vs0); at} :: es')), vs ->
+    | Handle (n, [], (vs', {it = Throwing (a, vs0); at} :: es')), vs ->
       vs, [Throwing (a, vs0) @@ at]
 
-    | Catch (n, cs, xo, code'), vs ->
+    | Handle (n, cs, code'), vs ->
       let c' = step {c with code = code'} in
-      vs, [Catch (n, cs, xo, c'.code) @@ e.at]
+      vs, [Handle (n, cs, c'.code) @@ e.at]
 
     | Catch_old (n, cts, ca, (vs', {it = Rethrowing_old (k, cont); at} :: es')), vs ->
       vs, [Rethrowing_old (k, (fun e -> Catch_old (n, cts, ca, (vs', (cont e) :: es')) @@ e.at)) @@ at]

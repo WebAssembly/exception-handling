@@ -5,8 +5,8 @@
   (tag $e1)
 
   (func (export "delegate-no-throw") (result i32)
-    (try_old $t (result i32)
-      (do (try_old (result i32) (do (i32.const 1)) (delegate $t)))
+    (try $t (result i32)
+      (do (try (result i32) (do (i32.const 1)) (delegate $t)))
       (catch $e0 (i32.const 2))
     )
   )
@@ -17,9 +17,9 @@
   )
 
   (func (export "delegate-throw") (param i32) (result i32)
-    (try_old $t (result i32)
+    (try $t (result i32)
       (do
-        (try_old (result i32)
+        (try (result i32)
           (do (local.get 0) (call $throw-if) (i32.const 1))
           (delegate $t)
         )
@@ -29,11 +29,11 @@
   )
 
   (func (export "delegate-skip") (result i32)
-    (try_old $t (result i32)
+    (try $t (result i32)
       (do
-        (try_old (result i32)
+        (try (result i32)
           (do
-            (try_old (result i32)
+            (try (result i32)
               (do (throw $e0) (i32.const 1))
               (delegate $t)
             )
@@ -47,29 +47,29 @@
 
 (;
   (func (export "delegate-to-block") (result i32)
-    (try_old (result i32)
-      (do (block (try_old (do (throw $e0)) (delegate 0)))
+    (try (result i32)
+      (do (block (try (do (throw $e0)) (delegate 0)))
           (i32.const 0))
       (catch_all (i32.const 1)))
   )
 
   (func (export "delegate-to-catch") (result i32)
-    (try_old (result i32)
-      (do (try_old
+    (try (result i32)
+      (do (try
             (do (throw $e0))
             (catch $e0
-              (try_old (do (rethrow 1)) (delegate 0))))
+              (try (do (rethrow 1)) (delegate 0))))
           (i32.const 0))
       (catch_all (i32.const 1)))
   )
 
   (func (export "delegate-to-caller-trivial")
-    (try_old
+    (try
       (do (throw $e0))
       (delegate 0)))
 
   (func (export "delegate-to-caller-skipping")
-    (try_old (do (try_old (do (throw $e0)) (delegate 1))) (catch_all))
+    (try (do (try (do (throw $e0)) (delegate 1))) (catch_all))
   )
 ;)
 
@@ -79,11 +79,11 @@
   )
 
   (func (export "delegate-merge") (param i32 i32) (result i32)
-    (try_old $t (result i32)
+    (try $t (result i32)
       (do
         (local.get 0)
         (call $select-tag)
-        (try_old
+        (try
           (result i32)
           (do (local.get 1) (call $select-tag) (i32.const 1))
           (delegate $t)
@@ -94,26 +94,26 @@
   )
 
   (func (export "delegate-throw-no-catch") (result i32)
-    (try_old (result i32)
-      (do (try_old (result i32) (do (throw $e0) (i32.const 1)) (delegate 0)))
+    (try (result i32)
+      (do (try (result i32) (do (throw $e0) (i32.const 1)) (delegate 0)))
       (catch $e1 (i32.const 2))
     )
   )
 
 (;
   (func (export "delegate-correct-targets") (result i32)
-    (try_old (result i32)
-      (do (try_old $l3
-            (do (try_old $l2
-                  (do (try_old $l1
-                        (do (try_old $l0
-                              (do (try_old
+    (try (result i32)
+      (do (try $l3
+            (do (try $l2
+                  (do (try $l1
+                        (do (try $l0
+                              (do (try
                                     (do (throw $e0))
                                     (delegate $l1)))
                               (catch_all unreachable)))
                         (delegate $l3)))
                   (catch_all unreachable)))
-            (catch_all (try_old
+            (catch_all (try
                          (do (throw $e0))
                          (delegate $l3))))
           unreachable)
@@ -122,9 +122,9 @@
 
   (func $throw-void (throw $e0))
   (func (export "return-call-in-try-delegate")
-    (try_old $l
+    (try $l
       (do
-        (try_old
+        (try
           (do
             (return_call $throw-void)
           )
@@ -137,9 +137,9 @@
 
   (table funcref (elem $throw-void))
   (func (export "return-call-indirect-in-try-delegate")
-    (try_old $l
+    (try $l
       (do
-        (try_old
+        (try
           (do
             (return_call_indirect (param) (i32.const 0))
           )
@@ -185,21 +185,21 @@
 )
 
 (assert_malformed
-  (module quote "(module (tag $e) (func (try_old (do) (catch $e) (delegate 0))))")
+  (module quote "(module (tag $e) (func (try (do) (catch $e) (delegate 0))))")
   "unexpected token"
 )
 
 (assert_malformed
-  (module quote "(module (func (try_old (do) (catch_all) (delegate 0))))")
+  (module quote "(module (func (try (do) (catch_all) (delegate 0))))")
   "unexpected token"
 )
 
 (assert_malformed
-  (module quote "(module (func (try_old (do) (delegate) (delegate 0))))")
+  (module quote "(module (func (try (do) (delegate) (delegate 0))))")
   "unexpected token"
 )
 
 (assert_invalid
-  (module (func (try_old (do) (delegate 1))))
+  (module (func (try (do) (delegate 1))))
   "unknown label"
 )

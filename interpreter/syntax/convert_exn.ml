@@ -8,7 +8,7 @@ type block =
   label : int32;            (* respective label's index after shift *)
   exnref : int32;           (* for catch blocks: local holding exnref (-1 otherwise) *)
   used : bool ref;          (* true if exnref is used *)
-  handlers : (var * var) list * var option (* for try blocks: its handlers ([], -1 otherwise) *)
+  handlers : catch list     (* for try blocks: its handlers ([] otherwise) *)
 }
 
 type env =
@@ -30,10 +30,13 @@ let lookup_type (env : env) x = lookup_type' env.types x
 let lookup_tag (env : env) x = Lib.List32.nth env.tags x.it
 let lookup_block (env : env) l = Lib.List32.nth env.blocks l.it
 
-let shift_handlers n (cs, ca) =
-  ( List.map (fun (x, l) -> (x, (l.it +$ n) @@ l.at)) cs,
-  	Option.map (fun l -> (l.it +$ n) @@ l.at) ca
-  )
+let shift_handler n c =
+  match c.it with
+  | Catch (x, l) -> Catch (x, (l.it +$ n) @@ l.at) @@ c.at
+  | CatchRef (x, l) -> CatchRef (x, (l.it +$ n) @@ l.at) @@ c.at
+  | CatchAll l -> CatchAll ((l.it +$ n) @@ l.at) @@ c.at
+  | CatchAllRef l -> CatchAllRef ((l.it +$ n) @@ l.at) @@ c.at
+let shift_handlers n cs = List.map (shift_handler n) cs
 let shift_block n block = {block with label = block.label +$ n; handlers = shift_handlers n block.handlers}
 let shift_env n env = {env with blocks = List.map (shift_block n) env.blocks}
 let extend_env block env = {env with blocks = block :: (shift_env 1l env).blocks}
@@ -68,34 +71,33 @@ let rec convert_instr env (e : instr) : instr list =
   | Rethrow_old l ->
     let block = lookup_block env l in
     block.used := true;
-    [LocalGet (block.exnref @@ l.at) @@ e.at; Rethrow @@ e.at]
+    [LocalGet (block.exnref @@ l.at) @@ e.at; ThrowRef @@ e.at]
   | Block (bt, es) ->
     [Block (bt, convert_block env es) @@ e.at]
   | Loop (bt, es) ->
     [Loop (bt, convert_block env es) @@ e.at]
   | If (bt, es1, es2) ->
     [If (bt, convert_block env es1, convert_block env es2) @@ e.at]
-  | Try (bt, cs, ca, es) ->
-    [Try (bt, cs, ca, convert_block env es) @@ e.at]
+  | Try (bt, cs, es) ->
+    [Try (bt, cs, convert_block env es) @@ e.at]
   | TryDelegate_old (bt, es, l) ->
     let block = lookup_block env l in
-    if block.handlers = ([], None) then
+    if block.handlers = [] then
       failwith ("unsupported delegate at " ^ string_of_region e.at);
-    let cs, ca = block.handlers in
-    [Try (bt, cs, ca, convert_block env es) @@ e.at]
+    [Try (bt, block.handlers, convert_block env es) @@ e.at]
   | TryCatch_old (bt, es, cs, ca) ->
     let n = Lib.List32.length cs +$ Lib.List32.length (Option.to_list ca) in
     let env' = shift_env (n +$ 1l) env in
     let xs, ess = List.split cs in
     let ess' = List.map (convert_catch env' e.at) ess in
     let eso' = Option.map (convert_catch env' e.at) ca in
-    let cs' = Lib.List32.mapi (fun i x -> (x, i @@ x.at)) xs in
-    let ca' = Option.map (fun _ -> (n -$ 1l) @@ e.at) eso' in
-    let block = {label = 0l; exnref = -1l; used = ref false; handlers = shift_handlers 1l (cs', ca')} in
+    let cs' = Lib.List32.mapi (fun i x -> CatchRef (x, i @@ x.at) @@ x.at) xs in
+    let ca' = List.map (fun _ -> CatchAllRef ((n -$ 1l) @@ e.at) @@ e.at) (Option.to_list eso') in
+    let block = {label = 0l; exnref = -1l; used = ref false; handlers = shift_handlers 1l (cs' @ ca')} in
     let es' = List.concat_map (convert_instr (extend_env block env')) es in
     let FuncType (ts1, _) = expand_block_type env bt in
     let body =
-      [ Try (bt, cs', ca', es') @@ e.at;
+      [ Try (bt, cs' @ ca', es') @@ e.at;
         Br (n @@ e.at) @@ e.at
       ]
     in
@@ -117,12 +119,12 @@ let rec convert_instr env (e : instr) : instr list =
     [e]
 
 and convert_block env (es : instr list) : instr list =
-  let block = {label = 0l; exnref = -1l; used = ref false; handlers = [], None} in
+  let block = {label = 0l; exnref = -1l; used = ref false; handlers = []} in
   List.concat_map (convert_instr (extend_env block env)) es
 
 and convert_catch env at (es : instr list) : instr list =
   let env' = {env with nest = env.nest +$ 1l} in
-  let block = {label = 0l; exnref = env.locals +$ env.nest; used = ref false; handlers = [], None} in
+  let block = {label = 0l; exnref = env.locals +$ env.nest; used = ref false; handlers = []} in
   let es' = List.concat_map (convert_instr (extend_env block env')) es in
   if !(block.used) then
   ( env.maxnest := max !(env.maxnest) env'.nest;

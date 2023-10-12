@@ -36,7 +36,7 @@ succeeding instructions to process the data.
 A WebAssembly exception is created when you throw it with the `throw`
 instruction. Thrown exceptions are handled as follows:
 
-1. They can be caught by one of `catch`/`catch_all` handlers in an enclosing try
+1. They can be caught by one of the *catch clauses* in an enclosing try
    block of a function body.
 
 1. Throws not caught within a function body continue up the call stack, popping
@@ -86,55 +86,50 @@ Exception tag indices are used by:
 1. The `throw` instruction which creates a WebAssembly exception with the
    corresponding exception tag, and then throws it.
 
-2. The `catch` clause uses the tag to identify if the thrown exception is one it
-   can catch. If true it pushes the corresponding argument values of the
+2. Catch clauses use a tag to identify the thrown exception it
+   can catch. If it matches, it pushes the corresponding argument values of the
    exception onto the stack.
 
 ### Exception references
 
 When caught, an exception is reified into an _exception reference_, a value of the new type `exnref`.
-Exception references can be used to `rethrow` the caught exception.
+Exception references can be used to rethrow the caught exception.
 
-### Try-catch blocks
+### Try blocks
 
 A _try block_ defines a list of instructions that may need to process exceptions
 and/or clean up state when an exception is thrown. Like other higher-level
-constructs, a try block begins with a `try` instruction, and ends with an `end`
-instruction. That is, a try-catch block is sequence of instructions having the
+constructs, a try block begins with a `try_table` instruction, and ends with an `end`
+instruction. That is, a try block is sequence of instructions having the
 following form:
 
 ```
-try blocktype
-catch i li
-catch j lj
-...
-catch_all l
+try_table blocktype catch*
   instruction*
 end
 ```
 
-A try-catch block contains zero or more `catch` clauses and zero or one
-`catch_all` clause. All `catch` clauses must precede the `catch_all` clause, if
-any. The `catch`/`catch_all` clauses (within the try construct) are called
-the _catching_ clauses. There may be no `catch` or `catch_all` clauses
-after a `try`, in which case the `try` block does not catch any exceptions.
+A try block contains zero or more _catch clauses_. If there are no catch clauses, then the try block does not catch any exceptions.
 
 The _body_ of the try block is the list of instructions after the last
-catching clause, if any.
+catch clause, if any.
 
-Each `catch` clause has an exception tag associated with it. The tag
-identifies what exceptions it can catch. That is, any exception created with the
-corresponding exception tag.
-
-The last catching clause of a try-catch block can be the `catch_all`
-clause. If present, it defines the
-_default_ handler. The default handler has no tag index, and is used to
-catch all exceptions not caught by any of the tagged catch clauses.
+Each `catch` clause can be in one of 4 forms:
+```
+catch tag label
+catch_ref tag label
+catch_all label
+catch_all_ref label
+```
+All forms have a label which is branched to when an exception is cought (see below).
+The former two forms have an exception tag associated with it that
+identifies what exceptions it will catch.
+The latter two forms catch any exception, so that they can be used to define a _default_ handler.
 
 Try blocks, like control-flow blocks, have a _block type_. The block type of a
 try block defines the values yielded by evaluating the try block when either no
 exception is thrown, or the exception is successfully caught by the catch clause.
-Because `try` and `end` define a control-flow block, they can be
+Because `try_table` defines a control-flow block, it can be
 targets for branches (`br` and `br_if`) as well.
 
 ### Throwing an exception
@@ -166,39 +161,35 @@ is popped back to the size the operand stack had when the try block was entered
 after possible block parameters were popped.
 
 Then catch clauses are tried in the order
-they appear in the catching try block, until one matches. If a matching catch clause is found, control is transferred to the label that catch clause, and
+they appear in the catching try block, until one matches. If a matching catch clause is found, control is transferred to the label of that catch clause.
+In case of `catch` or `catch_ref`,
 the arguments of the exception are pushed back onto the stack.
-In addition, an exception reference is pushed to the stack that represents the caught exception.
+For `catch_ref` and `catch_all_ref`, an exception reference is then pushed to the stack, which represents the caught exception.
 
-Otherwise, control is transferred to the label of the `catch_all` clause, if present.
-However, unlike regular catch blocks, the constructor arguments are not pushed
-onto the operand stack.
-However, an exception reference is still pushed to the stack.
+If no catch clauses were matched, the exception is implicitly rethrown.
 
-If no catch clauses were matched, the exception is rethrown.
-
-Note that a caught exception can be rethrown using the `rethrow` instruction.
+Note that a caught exception can be rethrown explicitly using the `exnref` and the `throw_ref` instruction.
 
 ### Rethrowing an exception
 
-The `rethrow` takes an operand of type `exnref` and re-throws the corresponding caught exception.
+The `throw_ref` takes an operand of type `exnref` and re-throws the corresponding caught exception.
 If the operand is null, a trap occurs.
 
 ### JS API
 
 #### Traps
 
-The `catch`/`catch_all` clauses catch exceptions generated by the `throw`
+Catch clauses handle exceptions generated by the `throw`
 instruction, but do not catch traps. The rationale for this is that in general
 traps are not locally recoverable and are not needed to be handled in local
-scopes like try-catch.
+scopes like try blocks.
 
-The `try` instruction catches foreign exceptions generated from calls to
+The `try_table` instruction catches foreign exceptions generated from calls to
 function imports as well, including JavaScript exceptions, with a few
 exceptions:
 1. In order to be consistent before and after a trap reaches a JavaScript frame,
-   the `try` instruction does not catch exceptions generated from traps.
-1. The `try` instruction does not catch JavaScript exceptions generated from
+   the `try_table` instruction does not catch exceptions generated from traps.
+1. The `try_table` instruction does not catch JavaScript exceptions generated from
    stack overflow and out of memory.
 
 Filtering these exceptions should be based on a predicate that is not observable
@@ -255,8 +246,8 @@ When `ExceptionOption` is not provided or it does not contain `traceStack`
 entry, `traceStack` is considered `false` by default.
 
 To preserve stack trace info when crossing the JS to Wasm boundary, exceptions
-can internally contain a stack trace, which is propagated when caught by `catch`
-and rethrown by `rethrow`.
+can internally contain a stack trace, which is propagated when caught by a `catch[_all]_ref` clause
+and rethrown by `throw_ref`.
 
 More formally, the added interfaces look like the following:
 
@@ -299,16 +290,16 @@ document](https://github.com/WebAssembly/spec/blob/master/document/core/text/ins
 The following rules are added to *instructions*:
 
 ```
-  try blocktype (catch tag_index label)* (catch_all label)? instruction* end |
+  try_table blocktype catch* instruction* end |
   throw tag_index |
-  rethrow label |
+  throw_ref label |
 ```
 
-Like the `block`, `loop`, and `if` instructions, the `try` instruction is
+Like the `block`, `loop`, and `if` instructions, the `try_table` instruction is
 *structured* control flow instruction, and can be labeled. This allows branch
 instructions to exit try blocks.
 
-The `tag_index` of the `throw` and `catch` instructions denotes the exception
+The `tag_index` of the `throw` and `catch[_ref]` clauses denotes the exception
 tag to use when creating/extract from an exception. See [tag index
 space](#tag-index-space) for further clarification of exception tags.
 
@@ -439,30 +430,25 @@ follows:
 The tag names subsection is a `name_map` which assigns names to a subset of
 the tag indices (Used for both imports and module-defined).
 
-### Control flow operators
+### Control flow instructions
 
-The control flow operators are extended to define try blocks, catch blocks,
-throws, and rethrows as follows:
+The control flow instructions are extended to define try blocks and
+throws as follows:
 
 | Name | Opcode | Immediates | Description |
 | ---- | ---- | ---- | ---- |
-| `try` | `0x1f` | sig : `blocktype`, n : `varuint32`, catch : `catch^n`, catch_all : `catch_all` | begins a block which can handle thrown exceptions |
+| `try_table` | `0x1f` | sig : `blocktype`, n : `varuint32`, catch : `catch^n` | begins a block which can handle thrown exceptions |
 | `throw` | `0x08` | index : `varuint32` | Creates an exception defined by the tag and then throws it |
-| `rethrow` | `0x0a` | | Pops an `exnref` from the stack and throws it |
+| `throw_ref` | `0x0a` | | Pops an `exnref` from the stack and throws it |
 
-The *sig* fields of `block`, `if`, and `try` operators are block signatures
+The *sig* fields of `block`, `if`, and `try_table` instructions are block types
 which describe their use of the operand stack.
 
 A `catch` handler is a pair of tag and label index:
 
-| Field | Type | Description |
-| ----- | ---- | ----------- |
-| tag | `varuint32` | tag index |
-| label | `varuint32` | label index |
-
-A `catch_all` handler is a byte, optionally followed by a label index:
-
-| Field | Type | Description |
-| ----- | ---- | ----------- |
-| flag | `uint8` | 0 if no catch_all handler is present, 1 otherwise |
-| label | `varuint32?` | label index, only present if `flag = 1` |
+| Name    | Opcode | Immediates |
+| ------- | ------ | ----------- |
+| `catch` | `0x00` | tag : `varuint32`, label : `varuint32` |
+| `catch_ref` | `0x01` | tag : `varuint32`, label : `varuint32` |
+| `catch_all` | `0x02` | label : `varuint32` |
+| `catch_all_ref` | `0x02` | label : `varuint32` |

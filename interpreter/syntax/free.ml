@@ -83,11 +83,10 @@ let rec instr (e : instr) =
   | CallIndirect (x, y) | ReturnCallIndirect (x, y) ->
     tables (var x) ++ types (var y)
   | Throw x -> tags (var x)
-  | Rethrow -> empty
+  | ThrowRef -> empty
   | Rethrow_old x -> labels (var x)
-  | Try (bt, cs, xo, es) ->
-    block_type bt ++
-    list catch cs ++ opt (fun x -> labels (var x)) xo ++ block es
+  | Try (bt, cs, es) ->
+    block_type bt ++ list catch cs ++ block es
   | TryCatch_old (bt, es, ct, ca) ->
     let catch (tag, es) = tags (var tag) ++ block es in
     let catch_all = function
@@ -117,7 +116,10 @@ let rec instr (e : instr) =
 and block (es : instr list) =
   let free = list instr es in {free with labels = shift free.labels}
 
-and catch (x1, x2) = tags (var x1) ++ labels (var x2)
+and catch (c : catch) =
+  match c.it with
+  | Catch (x1, x2) | CatchRef (x1, x2) -> tags (var x1) ++ labels (var x2)
+  | CatchAll x | CatchAllRef x -> labels (var x)
 
 let const (c : const) = block c.it
 

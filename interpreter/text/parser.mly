@@ -213,8 +213,9 @@ let inline_type_explicit (c : context) x ft at =
 %token<V128.shape> VEC_SHAPE
 %token FUNCREF EXNREF EXTERNREF EXN EXTERN MUT
 %token UNREACHABLE NOP DROP SELECT
-%token BLOCK END IF THEN ELSE LOOP BR BR_IF BR_TABLE TRY CATCH CATCH_ALL
-%token TRY_OLD DO DELEGATE
+%token BLOCK END IF THEN ELSE LOOP BR BR_IF BR_TABLE
+%token TRY_TABLE CATCH CATCH_REF CATCH_ALL CATCH_ALL_REF THROW THROW_REF
+%token TRY DO DELEGATE RETHROW
 %token CALL CALL_INDIRECT RETURN RETURN_CALL RETURN_CALL_INDIRECT
 %token LOCAL_GET LOCAL_SET LOCAL_TEE GLOBAL_GET GLOBAL_SET
 %token TABLE_GET TABLE_SET
@@ -225,7 +226,6 @@ let inline_type_explicit (c : context) x ft at =
 %token<string Source.phrase -> Ast.instr' * Values.num> CONST
 %token<Ast.instr'> UNARY BINARY TEST COMPARE CONVERT
 %token REF_NULL REF_FUNC REF_EXTERN REF_IS_NULL
-%token THROW RETHROW
 %token<int option -> Memory.offset -> Ast.instr'> VEC_LOAD VEC_STORE
 %token<int option -> Memory.offset -> int -> Ast.instr'> VEC_LOAD_LANE VEC_STORE_LANE
 %token<V128.shape -> string Source.phrase list -> Source.region -> Ast.instr' * Values.vec> VEC_CONST
@@ -396,7 +396,7 @@ plain_instr :
   | CALL var { fun c -> call ($2 c func) }
   | RETURN_CALL var { fun c -> return_call ($2 c func) }
   | THROW var { fun c -> throw ($2 c tag) }
-  | RETHROW { fun c -> rethrow }
+  | THROW_REF { fun c -> throw_ref }
   | RETHROW var { fun c -> rethrow_old ($2 c label)  }
   | LOCAL_GET var { fun c -> local_get ($2 c local) }
   | LOCAL_SET var { fun c -> local_set ($2 c local) }
@@ -522,13 +522,13 @@ block_instr :
   | IF labeling_opt block ELSE labeling_end_opt instr_list END labeling_end_opt
     { fun c -> let c' = $2 c ($5 @ $8) in
       let ts, es1 = $3 c' in if_ ts es1 ($6 c') }
-  | TRY labeling_opt handler_block END labeling_end_opt
+  | TRY_TABLE labeling_opt handler_block END labeling_end_opt
     { fun c -> let c' = $2 c $5 in
-      let bt, (cs, xo, es) = $3 c c' in try_ bt cs xo es }
-  | TRY_OLD labeling_opt block handler_instr_old END labeling_end_opt
+      let bt, (cs, es) = $3 c c' in try_table bt cs es }
+  | TRY labeling_opt block handler_instr_old END labeling_end_opt
     { fun c -> let c' = $2 c $6 in
       let bt, es = $3 c' in let cs, ca = $4 c c' in try_catch_old bt es cs ca }
-  | TRY_OLD labeling_opt block DELEGATE var
+  | TRY labeling_opt block DELEGATE var
     { fun c -> let c' = $2 c [] in
       let bt, es = $3 c' in try_delegate_old bt es ($5 c label) }
 
@@ -590,12 +590,19 @@ handler_block_result_body :
 
 handler_block_body :
   | instr_list
-    { fun c c' -> [], None, $1 c' }
-  | LPAR CATCH_ALL var RPAR instr_list
-    { fun c c' -> [], Some ($3 c label), $5 c' }
+    { fun c c' -> [], $1 c' }
   | LPAR CATCH var var RPAR handler_block_body
-    { fun c c' -> let cs, xo, es = $6 c c' in
-      ($3 c tag, $4 c label) :: cs, xo, es }
+    { fun c c' -> let cs, es = $6 c c' in
+      (catch ($3 c tag) ($4 c label) @@ ati 2) :: cs, es }
+  | LPAR CATCH_REF var var RPAR handler_block_body
+    { fun c c' -> let cs, es = $6 c c' in
+      (catch_ref ($3 c tag) ($4 c label) @@ ati 2) :: cs, es }
+  | LPAR CATCH_ALL var RPAR handler_block_body
+    { fun c c' -> let cs, es = $5 c c' in
+      (catch_all ($3 c label) @@ ati 2) :: cs, es }
+  | LPAR CATCH_ALL_REF var RPAR handler_block_body
+    { fun c c' -> let cs, es = $5 c c' in
+      (catch_all_ref ($3 c label) @@ ati 2) :: cs, es }
 
 handler_old :
   | /* empty */
@@ -645,10 +652,10 @@ expr1 :  /* Sugar */
   | IF labeling_opt if_block
     { fun c -> let c' = $2 c [] in
       let bt, (es, es1, es2) = $3 c c' in es, if_ bt es1 es2 }
-  | TRY labeling_opt try_block
+  | TRY_TABLE labeling_opt try_block
     { fun c -> let c' = $2 c [] in 
-      let bt, (cs, xo, es) = $3 c c' in [], try_ bt cs xo es }
-  | TRY_OLD labeling_opt try_block_old
+      let bt, (cs, es) = $3 c c' in [], try_table bt cs es }
+  | TRY labeling_opt try_block_old
      { fun c -> let c' = $2 c [] in 
       let bt, (es, esh) = $3 c c' in
       match esh with
@@ -756,12 +763,19 @@ try_block_result_body :
 
 try_block_handler_body :
   | instr_list
-    { fun c c' -> [], None, $1 c' }
-  | LPAR CATCH_ALL var RPAR instr_list
-    { fun c c' -> [], Some ($3 c label), $5 c' }
+    { fun c c' -> [], $1 c' }
   | LPAR CATCH var var RPAR try_block_handler_body
-    { fun c c' -> let cs, xo, es = $6 c c' in
-      ($3 c tag, $4 c label) :: cs, xo, es }
+    { fun c c' -> let cs, es = $6 c c' in
+      (catch ($3 c tag) ($4 c label) @@ ati 2) :: cs, es }
+  | LPAR CATCH_REF var var RPAR try_block_handler_body
+    { fun c c' -> let cs, es = $6 c c' in
+      (catch_ref ($3 c tag) ($4 c label) @@ ati 2) :: cs, es }
+  | LPAR CATCH_ALL var RPAR try_block_handler_body
+    { fun c c' -> let cs, es = $5 c c' in
+      (catch_all ($3 c label) @@ ati 2) :: cs, es }
+  | LPAR CATCH_ALL_REF var RPAR try_block_handler_body
+    { fun c c' -> let cs, es = $5 c c' in
+      (catch_all_ref ($3 c label) @@ ati 2) :: cs, es }
 
 try_block_old :
   | type_use try_block_param_body_old

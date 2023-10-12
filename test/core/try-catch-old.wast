@@ -24,31 +24,31 @@
     (i32.const 0)
   )
 
-  (func (export "empty-catch") (try_old (do) (catch $e0)))
+  (func (export "empty-catch") (try (do) (catch $e0)))
 
   (func (export "simple-throw-catch") (param i32) (result i32)
-    (try_old (result i32)
+    (try (result i32)
       (do (local.get 0) (i32.eqz) (if (then (throw $e0)) (else)) (i32.const 42))
       (catch $e0 (i32.const 23))
     )
   )
 
-  (func (export "unreachable-not-caught") (try_old (do (unreachable)) (catch_all)))
+  (func (export "unreachable-not-caught") (try (do (unreachable)) (catch_all)))
 
   (func $div (param i32 i32) (result i32)
     (local.get 0) (local.get 1) (i32.div_u)
   )
   (func (export "trap-in-callee") (param i32 i32) (result i32)
-    (try_old (result i32)
+    (try (result i32)
       (do (local.get 0) (local.get 1) (call $div))
       (catch_all (i32.const 11))
     )
   )
 
   (func (export "catch-complex-1") (param i32) (result i32)
-    (try_old (result i32)
+    (try (result i32)
       (do
-        (try_old (result i32)
+        (try (result i32)
           (do
             (local.get 0)
             (i32.eqz)
@@ -71,7 +71,7 @@
   )
 
   (func (export "catch-complex-2") (param i32) (result i32)
-    (try_old (result i32)
+    (try (result i32)
       (do
         (local.get 0)
         (i32.eqz)
@@ -92,28 +92,28 @@
   )
 
   (func (export "throw-catch-param-i32") (param i32) (result i32)
-    (try_old (result i32)
+    (try (result i32)
       (do (local.get 0) (throw $e-i32) (i32.const 2))
       (catch $e-i32 (return))
     )
   )
 
   (func (export "throw-catch-param-f32") (param f32) (result f32)
-    (try_old (result f32)
+    (try (result f32)
       (do (local.get 0) (throw $e-f32) (f32.const 0))
       (catch $e-f32 (return))
     )
   )
 
   (func (export "throw-catch-param-i64") (param i64) (result i64)
-    (try_old (result i64)
+    (try (result i64)
       (do (local.get 0) (throw $e-i64) (i64.const 2))
       (catch $e-i64 (return))
     )
   )
 
   (func (export "throw-catch-param-f64") (param f64) (result f64)
-    (try_old (result f64)
+    (try (result f64)
       (do (local.get 0) (throw $e-f64) (f64.const 0))
       (catch $e-f64 (return))
     )
@@ -121,14 +121,14 @@
 
   (func $throw-param-i32 (param i32) (local.get 0) (throw $e-i32))
   (func (export "catch-param-i32") (param i32) (result i32)
-    (try_old (result i32)
+    (try (result i32)
       (do (i32.const 0) (local.get 0) (call $throw-param-i32))
       (catch $e-i32)
     )
   )
 
   (func (export "catch-imported") (result i32)
-    (try_old (result i32)
+    (try (result i32)
       (do
         (i32.const 1)
         (call $imported-throw)
@@ -138,9 +138,9 @@
   )
 
   (func (export "catchless-try") (param i32) (result i32)
-    (try_old (result i32)
+    (try (result i32)
       (do
-        (try_old (result i32)
+        (try (result i32)
           (do (local.get 0) (call $throw-if))
         )
       )
@@ -150,7 +150,7 @@
 
   (func $throw-void (throw $e0))
   (func (export "return-call-in-try-catch")
-    (try_old
+    (try
       (do
         (return_call $throw-void)
       )
@@ -160,7 +160,7 @@
 
   (table funcref (elem $throw-void))
   (func (export "return-call-indirect-in-try-catch")
-    (try_old
+    (try
       (do
         (return_call_indirect (param) (i32.const 0))
       )
@@ -216,9 +216,9 @@
   (tag $e0)
 
   (func (export "imported-mismatch") (result i32)
-    (try_old (result i32)
+    (try (result i32)
       (do
-        (try_old (result i32)
+        (try (result i32)
           (do
             (i32.const 1)
             (call $imported-throw)
@@ -245,21 +245,21 @@
 
 (assert_malformed
   (module quote
-    "(module (func (try_old (do) (catch_all) (catch_all))))"
+    "(module (func (try (do) (catch_all) (catch_all))))"
   )
   "unexpected token"
 )
 
-(assert_invalid (module (func (result i32) (try_old (result i32) (do))))
+(assert_invalid (module (func (result i32) (try (result i32) (do))))
                 "type mismatch: instruction requires [i32] but stack has []")
-(assert_invalid (module (func (result i32) (try_old (result i32) (do (i64.const 42)))))
+(assert_invalid (module (func (result i32) (try (result i32) (do (i64.const 42)))))
                 "type mismatch: instruction requires [i32] but stack has [i64]")
-(assert_invalid (module (tag) (func (try_old (do) (catch 0 (i32.const 42)))))
+(assert_invalid (module (tag) (func (try (do) (catch 0 (i32.const 42)))))
                 "type mismatch: block requires [] but stack has [i32]")
 (assert_invalid (module
                   (tag (param i64))
                   (func (result i32)
-                    (try_old (result i32) (do (i32.const 42)) (catch 0))))
+                    (try (result i32) (do (i32.const 42)) (catch 0))))
                 "type mismatch: instruction requires [i32] but stack has [i64]")
-(assert_invalid (module (func (try_old (do) (catch_all (i32.const 42)))))
+(assert_invalid (module (func (try (do) (catch_all (i32.const 42)))))
                 "type mismatch: block requires [] but stack has [i32]")

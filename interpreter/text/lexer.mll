@@ -172,6 +172,17 @@ rule token = parse
       | "call_indirect" -> CALL_INDIRECT
       | "return_call" -> RETURN_CALL
       | "return_call_indirect" -> RETURN_CALL_INDIRECT
+      | "try_table" -> TRY_TABLE
+      | "catch" -> CATCH
+      | "catch_ref" -> CATCH_REF
+      | "catch_all" -> CATCH_ALL
+      | "catch_all_ref" -> CATCH_ALL_REF
+      | "throw" -> THROW
+      | "throw_ref" -> THROW_REF
+      | "try" -> TRY
+      | "do" -> DO
+      | "delegate" -> DELEGATE
+      | "rethrow" -> RETHROW
 
       | "local.get" -> LOCAL_GET
       | "local.set" -> LOCAL_SET
@@ -656,15 +667,6 @@ rule token = parse
       | "i64x2.replace_lane" -> VEC_REPLACE i64x2_replace_lane
       | "f32x4.replace_lane" -> VEC_REPLACE f32x4_replace_lane
       | "f64x2.replace_lane" -> VEC_REPLACE f64x2_replace_lane
-
-      | "try" -> TRY
-      | "try_old" -> TRY_OLD
-      | "do" -> DO
-      | "catch" -> CATCH
-      | "catch_all" -> CATCH_ALL
-      | "delegate" -> DELEGATE
-      | "throw" -> THROW
-      | "rethrow" -> RETHROW
 
       | "type" -> TYPE
       | "func" -> FUNC
