@@ -268,7 +268,7 @@ let rec instr s =
   | 0x06 | 0x07 as b -> illegal s pos b
   | 0x08 -> throw (at var s)
   | 0x09 as b -> illegal s pos b
-  | 0x0a -> rethrow
+  | 0x0a -> throw_ref
   | 0x0b -> error s pos "misplaced END opcode"
 
   | 0x0c -> br (at var s)
@@ -300,11 +300,10 @@ let rec instr s =
 
   | 0x1f ->
     let bt = block_type s in
-    let cs = vec catch s in
-    let xo = catch_all s in
+    let cs = vec (at catch) s in
     let es = instr_block s in
     end_ s;
-    try_ bt cs xo es
+    try_table bt cs es
 
   | 0x20 -> local_get (at var s)
   | 0x21 -> local_set (at var s)
@@ -806,15 +805,18 @@ and instr_block' s es =
     instr_block' s ((e' @@ region s pos pos) :: es)
 
 and catch s =
-  let x1 = at var s in
-  let x2 = at var s in
-  (x1, x2)
-
-and catch_all s =
   match byte s with
-  | 0x0 -> None
-  | 0x1 -> Some (at var s)
-  | _ -> error s (pos s - 1) "malformed catch_all"
+  | 0x00 ->
+    let x1 = at var s in
+    let x2 = at var s in
+    Operators.catch x1 x2
+  | 0x01 ->
+    let x1 = at var s in
+    let x2 = at var s in
+    catch_ref x1 x2
+  | 0x02 -> catch_all (at var s)
+  | 0x03 -> catch_all_ref (at var s)
+  | _ -> error s (pos s - 1) "malformed catch clause"
 
 let const s =
   let c = at instr_block s in

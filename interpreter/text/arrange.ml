@@ -457,10 +457,9 @@ let rec instr e =
     | ReturnCallIndirect (x, y) ->
       "return_call_indirect " ^ var x, [Node ("type " ^ var y, [])]
     | Throw x -> "throw " ^ var x, []
-    | Rethrow -> "rethrow", []
-    | Try (bt, cs, xo, es) ->
-      "try", block_type bt @
-        list catch cs @ opt catch_all xo @ list instr es
+    | ThrowRef -> "throw_ref", []
+    | Try (bt, cs, es) ->
+      "try_table", block_type bt @ list catch cs @ list instr es
     | LocalGet x -> "local.get " ^ var x, []
     | LocalSet x -> "local.set " ^ var x, []
     | LocalTee x -> "local.tee " ^ var x, []
@@ -512,8 +511,12 @@ let rec instr e =
     | VecReplace op -> vec_replaceop op, []
   in Node (head, inner)
 
-and catch (x1, x2) = Node ("catch " ^ var x1 ^ " " ^ var x2, [])
-and catch_all x = Node ("catch_all " ^ var x, [])
+and catch c =
+  match c.it with
+  | Catch (x1, x2) -> Node ("catch " ^ var x1 ^ " " ^ var x2, [])
+  | CatchRef (x1, x2) -> Node ("catch_ref " ^ var x1 ^ " " ^ var x2, [])
+  | CatchAll x -> Node ("catch_all " ^ var x, [])
+  | CatchAllRef x -> Node ("catch_all_ref " ^ var x, [])
 
 let const head c =
   match c.it with

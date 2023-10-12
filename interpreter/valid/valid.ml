@@ -316,17 +316,13 @@ let rec check_instr (c : context) (e : instr) (s : infer_result_type) : op_type 
     let FuncType (ts1, _) = type_ c (y @@ e.at) in
     ts1 -->... []
 
-  | Rethrow ->
+  | ThrowRef ->
     [RefType ExnRefType] -->... []
 
-  | Try (bt, cs, xo, es) ->
+  | Try (bt, cs, es) ->
     let FuncType (ts1, ts2) as ft = check_block_type c bt in
     let c' = {c with labels = ts2 :: c.labels} in
     List.iter (fun ct -> check_catch c ct ts2 e.at) cs;
-    Option.iter (fun x ->
-      require (label c x = [RefType ExnRefType]) x.at
-        "type mismatch for catch_all label"
-    ) xo;
     check_block c' es ft e.at;
     ts1 --> ts2
 
@@ -569,13 +565,30 @@ and check_block (c : context) (es : instr list) (ft : func_type) at =
     ("type mismatch: block requires " ^ string_of_result_type ts2 ^
      " but stack has " ^ string_of_infer_types (snd s))
 
-and check_catch (c : context) (x1, x2 : var * var) (ts : value_type list) at =
-  let TagType y = tag c x1 in
-  let FuncType (ts1, _) = type_ c (y @@ at) in
-  require (label c x2 = ts1 @ [RefType ExnRefType]) at
-    ("type mismatch: catch handler requires " ^
-        string_of_result_type (ts1 @ [RefType ExnRefType]) ^
-     " but label has " ^ string_of_result_type (label c x2))
+and check_catch (c : context) (cc : catch) (ts : value_type list) at =
+  match cc.it with
+  | Catch (x1, x2) ->
+    let TagType y = tag c x1 in
+    let FuncType (ts1, _) = type_ c (y @@ at) in
+    require (label c x2 = ts1) at
+      ("type mismatch: catch handler requires " ^ string_of_result_type ts1 ^
+       " but label has " ^ string_of_result_type (label c x2))
+  | CatchRef (x1, x2) ->
+    let TagType y = tag c x1 in
+    let FuncType (ts1, _) = type_ c (y @@ at) in
+    require (label c x2 = ts1 @ [RefType ExnRefType]) at
+      ("type mismatch: catch handler requires " ^
+          string_of_result_type (ts1 @ [RefType ExnRefType]) ^
+       " but label has " ^ string_of_result_type (label c x2))
+  | CatchAll x ->
+    require (label c x = []) at
+      ("type mismatch: catch handler requires " ^ string_of_result_type [] ^
+       " but label has " ^ string_of_result_type (label c x))
+  | CatchAllRef x ->
+    require (label c x = [RefType ExnRefType]) at
+      ("type mismatch: catch handler requires " ^
+       string_of_result_type [RefType ExnRefType] ^
+       " but label has " ^ string_of_result_type (label c x))
 
 
 (* Types *)
