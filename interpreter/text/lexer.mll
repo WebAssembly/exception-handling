@@ -285,6 +285,7 @@ rule token = parse
 
       | "ref.null" -> REF_NULL
       | "ref.func" -> REF_FUNC
+      | "ref.exn" -> REF_EXN
       | "ref.extern" -> REF_EXTERN
       | "ref.is_null" -> REF_IS_NULL
 

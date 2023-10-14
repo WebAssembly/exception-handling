@@ -224,7 +224,7 @@ let inline_type_explicit (c : context) x ft at =
 %token<string> OFFSET_EQ_NAT ALIGN_EQ_NAT
 %token<string Source.phrase -> Ast.instr' * Values.num> CONST
 %token<Ast.instr'> UNARY BINARY TEST COMPARE CONVERT
-%token REF_NULL REF_FUNC REF_EXTERN REF_IS_NULL
+%token REF_NULL REF_FUNC REF_EXN REF_EXTERN REF_IS_NULL
 %token<int option -> Memory.offset -> Ast.instr'> VEC_LOAD VEC_STORE
 %token<int option -> Memory.offset -> int -> Ast.instr'> VEC_LOAD_LANE VEC_STORE_LANE
 %token<V128.shape -> string Source.phrase list -> Source.region -> Ast.instr' * Values.vec> VEC_CONST
@@ -1260,6 +1260,7 @@ result :
   | LPAR CONST NAN RPAR { NumResult (NanPat (nanop $2 ($3 @@ ati 3))) @@ at () }
   | literal_ref { RefResult (RefPat ($1 @@ at ())) @@ at () }
   | LPAR REF_FUNC RPAR { RefResult (RefTypePat FuncRefType) @@ at () }
+/*| LPAR REF_EXN RPAR { RefResult (RefTypePat ExnRefType) @@ at () }*/
   | LPAR REF_EXTERN RPAR { RefResult (RefTypePat ExternRefType) @@ at () }
   | LPAR VEC_CONST VEC_SHAPE numpat_list RPAR {
     if V128.num_lanes $3 <> List.length $4 then

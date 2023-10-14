@@ -68,7 +68,7 @@ and admin_instr' =
   | Throwing of Tag.t * value stack
   | Label of int32 * instr list * code
   | Frame of int32 * frame * code
-  | Handle of int32 * catch list * code
+  | Handler of int32 * catch list * code
 
 type config =
 {
@@ -244,7 +244,7 @@ let rec step (c : config) : config =
         let n1 = Lib.List32.length ts1 in
         let n2 = Lib.List32.length ts2 in
         let args, vs' = take n1 vs e.at, drop n1 vs e.at in
-        vs', [Handle (n2, cs, (args, [Label (n2, [], ([], List.map plain es')) @@ e.at])) @@ e.at]
+        vs', [Handler (n2, cs, (args, [Label (n2, [], ([], List.map plain es')) @@ e.at])) @@ e.at]
 
       | Drop, v :: vs' ->
         vs', []
@@ -691,36 +691,36 @@ let rec step (c : config) : config =
       let c' = step {frame = frame'; code = code'; budget = c.budget - 1} in
       vs, [Frame (n, c'.frame, c'.code) @@ e.at]
 
-    | Handle (n, cs, (vs', [])), vs ->
+    | Handler (n, cs, (vs', [])), vs ->
       vs' @ vs, []
 
-    | Handle (n, cs, (vs', ({it = Trapping _ | Breaking _ | Returning _ | ReturningInvoke _; at} as e) :: es')), vs ->
+    | Handler (n, cs, (vs', ({it = Trapping _ | Breaking _ | Returning _ | ReturningInvoke _; at} as e) :: es')), vs ->
       vs, [e]
 
-    | Handle (n, {it = Catch (x1, x2); _} :: cs, (vs', {it = Throwing (a, vs0); at} :: es')), vs ->
+    | Handler (n, {it = Catch (x1, x2); _} :: cs, (vs', {it = Throwing (a, vs0); at} :: es')), vs ->
       if a == tag frame.inst x1 then
         vs0 @ vs, [Plain (Br x2) @@ e.at]
       else
-        vs, [Handle (n, cs, (vs', {it = Throwing (a, vs0); at} :: es')) @@ e.at]
+        vs, [Handler (n, cs, (vs', {it = Throwing (a, vs0); at} :: es')) @@ e.at]
 
-    | Handle (n, {it = CatchRef (x1, x2); _} :: cs, (vs', {it = Throwing (a, vs0); at} :: es')), vs ->
+    | Handler (n, {it = CatchRef (x1, x2); _} :: cs, (vs', {it = Throwing (a, vs0); at} :: es')), vs ->
       if a == tag frame.inst x1 then
         Ref (ExnRef (a, vs0)) :: vs0 @ vs, [Plain (Br x2) @@ e.at]
       else
-        vs, [Handle (n, cs, (vs', {it = Throwing (a, vs0); at} :: es')) @@ e.at]
+        vs, [Handler (n, cs, (vs', {it = Throwing (a, vs0); at} :: es')) @@ e.at]
 
-    | Handle (n, {it = CatchAll x; _} :: cs, (vs', {it = Throwing (a, vs0); at} :: es')), vs ->
+    | Handler (n, {it = CatchAll x; _} :: cs, (vs', {it = Throwing (a, vs0); at} :: es')), vs ->
       vs, [Plain (Br x) @@ e.at]
 
-    | Handle (n, {it = CatchAllRef x; _} :: cs, (vs', {it = Throwing (a, vs0); at} :: es')), vs ->
+    | Handler (n, {it = CatchAllRef x; _} :: cs, (vs', {it = Throwing (a, vs0); at} :: es')), vs ->
       Ref (ExnRef (a, vs0)) :: vs, [Plain (Br x) @@ e.at]
 
-    | Handle (n, [], (vs', {it = Throwing (a, vs0); at} :: es')), vs ->
+    | Handler (n, [], (vs', {it = Throwing (a, vs0); at} :: es')), vs ->
       vs, [Throwing (a, vs0) @@ at]
 
-    | Handle (n, cs, code'), vs ->
+    | Handler (n, cs, code'), vs ->
       let c' = step {c with code = code'} in
-      vs, [Handle (n, cs, c'.code) @@ e.at]
+      vs, [Handler (n, cs, c'.code) @@ e.at]
 
     | Invoke func, vs when c.budget = 0 ->
       Exhaustion.error e.at "call stack exhausted"
