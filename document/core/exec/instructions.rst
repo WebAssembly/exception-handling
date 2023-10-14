@@ -2805,13 +2805,13 @@ Control Instructions
 
     b. If :math:`\catch_1` is of the form :math:`\CATCH~x~l` and the :ref:`exception address <syntax-exnaddr>` :math:`a` equals :math:`F.\AMODULE.\MITAGS[x]`, then:
 
-       i. Pop the values :math:`\X{exn}.\EIFIELDS` to the stack.
+       i. Push the values :math:`\X{exn}.\EIFIELDS` to the stack.
 
        ii. Execute the instruction :math:`\BR~l`.
 
     c. Else if :math:`\catch_1` is of the form :math:`\CATCHREF~x~l` and the :ref:`exception address <syntax-exnaddr>` :math:`a` equals :math:`F.\AMODULE.\MITAGS[x]`, then:
 
-       i. Pop the values :math:`\X{exn}.\EIFIELDS` to the stack.
+       i. Push the values :math:`\X{exn}.\EIFIELDS` to the stack.
 
        ii. Push the exception reference :math:`\REFEXNADDR~\X{ea}` to the stack.
 
