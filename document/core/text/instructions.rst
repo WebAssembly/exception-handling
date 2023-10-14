@@ -63,6 +63,7 @@ Control Instructions
 .. _text-if:
 .. _text-instr-block:
 .. _text-try_table:
+.. _text-catch:
 
 :ref:`Structured control instructions <syntax-instr-control>` can bind an optional symbolic :ref:`label identifier <text-label>`.
 The same label identifier may optionally be repeated after the corresponding :math:`\T{end}` or :math:`\T{else}` keywords, to indicate the matching delimiters.
@@ -93,15 +94,19 @@ However, the special case of a type use that is syntactically empty or consists 
      \text{try\_table}~~I'{:}\Tlabel_I~~\X{bt}{:}\Tblocktype~~(c{:}\Tcatch_I)^\ast~~(\X{in}{:}\Tinstr_{I'})^\ast~~\text{end}~~\Tid^?
        \\ &&&\qquad \Rightarrow\quad \TRYTABLE~\X{bt}~c^\ast~\X{in}^\ast~~\END
        \qquad\qquad (\iff \Tid^? = \epsilon \vee \Tid^? = \Tlabel) \\
-   \production{catch clause} & \Tcatch_I &::=&
-     \text{(}~\text{catch}~~x{:}\Ttagidx_I~~l:\Tlabelidx_I~\text{)}
-       \Rightarrow \CATCH~x~l \\
-     \text{(}~\text{catch\_ref}~~x{:}\Ttagidx_I~~l:\Tlabelidx_I~\text{)}
-       \Rightarrow \CATCHREF~x~l \\
-     \text{(}~\text{catch\_all}~~l:\Tlabelidx_I~\text{)}
-       \Rightarrow \CATCHALL~l \\
-     \text{(}~\text{catch\_all\_ref}~~l:\Tlabelidx_I~\text{)}
-       \Rightarrow \CATCHALLREF~l \\
+   \production{catch clause} & \Tcatch_I &
+   \begin{array}[t]{@{}c@{}} ::= \\ | \\ | \\ | \\ \end{array}
+   &
+   \begin{array}[t]{@{}lcll@{}}
+     \text{(}~\text{catch}~~x{:}\Ttagidx_I~~l{:}\Tlabelidx_I~\text{)}
+       &\Rightarrow& \CATCH~x~l \\
+     \text{(}~\text{catch\_ref}~~x{:}\Ttagidx_I~~l{:}\Tlabelidx_I~\text{)}
+       &\Rightarrow& \CATCHREF~x~l \\
+     \text{(}~\text{catch\_all}~~l{:}\Tlabelidx_I~\text{)}
+       &\Rightarrow& \CATCHALL~l \\
+     \text{(}~\text{catch\_all\_ref}~~l{:}\Tlabelidx_I~\text{)}
+       &\Rightarrow& \CATCHALLREF~l \\
+   \end{array} \\
    \end{array}
 
 .. note::

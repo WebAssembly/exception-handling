@@ -64,7 +64,7 @@ Results
 
 * The value :math:`\REFEXNADDR~a` must be :ref:`valid <valid-val>`.
 
-* Then the result is valid with :ref:`result type <syntax-resulttype>` :math:`[t^\ast]`, for any sequence :math:`t^\ast` of :ref:`value types <syntax-valtype>`.
+* Then the result is valid with :ref:`result type <syntax-resulttype>` :math:`[t^\ast]`, for any sequence :math:`{t'}^\ast` of :ref:`value types <syntax-valtype>`.
 
 
 .. math::
@@ -360,8 +360,8 @@ Module instances are classified by *module contexts*, which are regular :ref:`co
 .. index:: exception instance, tag, tag address
 .. _valid-exninst:
 
-:ref:`Exception Instances <syntax-exninst>` :math:`\{ \EITAG~a, EIFIELDS~\val^\ast \}`
-......................................................................................
+:ref:`Exception Instances <syntax-exninst>` :math:`\{ \EITAG~a, \EIFIELDS~\val^\ast \}`
+.......................................................................................
 
 * The store entry :math:`S.\STAGS[a]` must exist.
 

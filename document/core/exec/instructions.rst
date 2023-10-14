@@ -2702,10 +2702,10 @@ Control Instructions
 
 .. math::
    ~\\[-1ex]
-   \begin{array}{l}
+   \begin{array}{r}
    F; \val^m~(\TRYTABLE~\X{bt}~\catch^\ast~\instr^\ast~\END
-   \quad \stepto \\
-   \qquad F; \HANDLER_n\{\catch^\ast\}~\LABEL_n\{\epsilon\}~(\val^m~\instr^\ast~\END)~\END \\
+   \quad \stepto \quad
+   F; \HANDLER_n\{\catch^\ast\}~(\LABEL_n\{\epsilon\}~\val^m~\instr^\ast~\END)~\END \\ \qquad\qquad
    (\iff \expand_F(\X{bt}) = [t_1^m] \to [t_2^n] \land (F.\AMODULE.\MITAGS[x]=a_x)^\ast)
    \end{array}
 
@@ -2837,19 +2837,19 @@ Control Instructions
 
 .. math::
    ~\\[-1ex]
-   \begin{array}{rclll}
+   \begin{array}{rcl}
    (\REFNULL~\X{ht})~\THROWREF &\stepto&
      \TRAP \\
    \HANDLER_n\{\}~\XT[(\REFEXNADDR~a)~\THROWREF]~\END &\stepto&
      (\REFEXNADDR~a)~\THROWREF \\
    S; F; \HANDLER_n\{(\CATCH~x~l)~\catch^\ast\}~\XT[(\REFEXNADDR~a)~\THROWREF]~\END &\stepto&
-     \X{exn}.\EIFIELDS~(\BR~l) &
+     \X{exn}.\EIFIELDS~(\BR~l) \\ &&
      (\begin{array}[t]{@{}r@{~}l@{}}
       \iff & \X{exn} = S.\SEXNS[a] \\
       \land & \X{exn}.\EITAG = F.\AMODULE.\MITAGS[x]) \\
       \end{array} \\
    S; F; \HANDLER_n\{(\CATCHREF~x~l)~\catch^\ast\}~\XT[(\REFEXNADDR~a)~\THROWREF]~\END &\stepto&
-     \X{exn}.\EIFIELDS~(\REFEXNADDR~a)~(\BR~l) &
+     \X{exn}.\EIFIELDS~(\REFEXNADDR~a)~(\BR~l) \\ &&
      (\begin{array}[t]{@{}r@{~}l@{}}
       \iff & \X{exn} = S.\SEXNS[a] \\
       \land & \X{exn}.\EITAG = F.\AMODULE.\MITAGS[x]) \\
@@ -2859,7 +2859,7 @@ Control Instructions
    \HANDLER_n\{(\CATCHALLREF~l)~\catch^\ast\}~\XT[(\REFEXNADDR~a)~\THROWREF]~\END &\stepto&
      (\REFEXNADDR~a)~(\BR~l) \\
    \HANDLER_n\{\catch_1~\catch^\ast\}~\XT[(\REFEXNADDR~a)~\THROWREF]~\END &\stepto&
-     \HANDLER_n\{\catch^\ast\}~\XT[(\REFEXNADDR~a)~\THROWREF]~\END &
+     \HANDLER_n\{\catch^\ast\}~\XT[(\REFEXNADDR~a)~\THROWREF]~\END \\ &&
      (\otherwise) \\
    \end{array}
 

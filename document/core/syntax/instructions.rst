@@ -662,9 +662,9 @@ Instructions in this group affect the flow of control.
      \CALL~\funcidx \\&&|&
      \CALLINDIRECT~\tableidx~\typeidx \\
    \production{catch clause} & \catch &::=&
-     \CATCH~\tagidx~\labelidx \\
-     \CATCHREF~\tagidx~\labelidx \\
-     \CATCHALL~\labelidx \\
+     \CATCH~\tagidx~\labelidx \\ &&|&
+     \CATCHREF~\tagidx~\labelidx \\ &&|&
+     \CATCHALL~\labelidx \\ &&|&
      \CATCHALLREF~\labelidx \\
    \end{array}
 

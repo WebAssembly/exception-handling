@@ -1402,21 +1402,21 @@ Control Instructions
 
 * The tag :math:`C.\CTAGS[x]` must be defined in the context.
 
-* Let :math:`[t_1^\ast] \to [t_2^\ast]` be the :ref:`tag type <syntax-tagtype>` :math:`C.\CTAGS[x]`.
+* Let :math:`[t^\ast] \to [{t'}^\ast]` be the :ref:`tag type <syntax-tagtype>` :math:`C.\CTAGS[x]`.
 
-* The :ref:`result type <syntax-resulttype>` :math:`[t_2^\ast]` must be empty.
+* The :ref:`result type <syntax-resulttype>` :math:`[{t'}^\ast]` must be empty.
 
 * The label :math:`C.\CLABELS[l]` must be defined in the context.
 
-* The :ref:`result type <syntax-resulttype>` :math:`[t_1^\ast]` must be the same as :math:`C.CLABLES[l]`.
+* The :ref:`result type <syntax-resulttype>` :math:`[t^\ast]` must be the same as :math:`C.\CLABELS[l]`.
 
 * Then the catch clause is valid.
 
 .. math::
    \frac{
-     C.\CTAGS[x] = [t_1^\ast] \toF [t_2^\ast]
+     C.\CTAGS[x] = [t^\ast] \toF []
      \qquad
-     C.\CLABELS[l] = [t_1^\ast]
+     C.\CLABELS[l] = [t^\ast]
    }{
      C \vdashcatch \CATCH~x~l \ok
    }
@@ -1426,21 +1426,21 @@ Control Instructions
 
 * The tag :math:`C.\CTAGS[x]` must be defined in the context.
 
-* Let :math:`[t_1^\ast] \to [t_2^\ast]` be the :ref:`tag type <syntax-tagtype>` :math:`C.\CTAGS[x]`.
+* Let :math:`[t^\ast] \to [{t'}^\ast]` be the :ref:`tag type <syntax-tagtype>` :math:`C.\CTAGS[x]`.
 
-* The :ref:`result type <syntax-resulttype>` :math:`[t_2^\ast]` must be empty.
+* The :ref:`result type <syntax-resulttype>` :math:`[{t'}^\ast]` must be empty.
 
 * The label :math:`C.\CLABELS[l]` must be defined in the context.
 
-* The :ref:`result type <syntax-resulttype>` :math:`[t_1^\ast]` must be the same as :math:`C.CLABLES[l]` with |EXNREF| appended.
+* The :ref:`result type <syntax-resulttype>` :math:`[t^\ast]` must be the same as :math:`C.\CLABELS[l]` with |EXNREF| appended.
 
 * Then the catch clause is valid.
 
 .. math::
    \frac{
-     C.\CTAGS[x] = [t_1^\ast] \toF [t_2^\ast]
+     C.\CTAGS[x] = [t^\ast] \toF []
      \qquad
-     C.\CLABELS[l] = [t_1^\ast~\EXNREF]
+     C.\CLABELS[l] = [t^\ast~\EXNREF]
    }{
      C \vdashcatch \CATCHREF~x~l \ok
    }
@@ -1450,7 +1450,7 @@ Control Instructions
 
 * The label :math:`C.\CLABELS[l]` must be defined in the context.
 
-* The :ref:`result type <syntax-resulttype>` :math:`C.CLABLES[l]` must be empty.
+* The :ref:`result type <syntax-resulttype>` :math:`C.\CLABELS[l]` must be empty.
 
 * Then the catch clause is valid.
 
@@ -1466,7 +1466,7 @@ Control Instructions
 
 * The label :math:`C.\CLABELS[l]` must be defined in the context.
 
-* The :ref:`result type <syntax-resulttype>` :math:`C.CLABLES[l] must be :math:`[\EXNREF]`.
+* The :ref:`result type <syntax-resulttype>` :math:`C.\CLABELS[l] must be :math:`[\EXNREF]`.
 
 * Then the catch clause is valid.
 
@@ -1485,7 +1485,9 @@ Control Instructions
 
 * The tag :math:`C.\CTAGS[x]` must be defined in the context.
 
-* Let :math:`[t^\ast] \to []` be its :ref:`tag type <syntax-tagtype>`.
+* Let :math:`[t^\ast] \to [{t'}^\ast]` be the :ref:`tag type <syntax-tagtype>` :math:`C.\CTAGS[x]`.
+
+* The :ref:`result type <syntax-resulttype>` :math:`[{t'}^\ast]` must be empty.
 
 * Then the instruction is valid with type :math:`[t_1^\ast t^\ast] \to [t_2^\ast]`, for any sequences of  :ref:`value types <syntax-valtype>` :math:`t_1^\ast` and :math:`t_2^\ast`.
 
@@ -1493,7 +1495,7 @@ Control Instructions
    \frac{
      C.\CTAGS[x] = [t^\ast] \to []
    }{
-     C \vdashinstr \THROW~x : [t_1^\ast t^\ast] \to [t_2^\ast]
+     C \vdashinstr \THROW~x : [t_1^\ast~t^\ast] \to [t_2^\ast]
    }
 
 

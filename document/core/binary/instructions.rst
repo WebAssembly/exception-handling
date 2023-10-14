@@ -43,11 +43,11 @@ Control Instructions
 .. _binary-catch:
 
 .. math::
-   \begin{array}{llcllll}
+   \begin{array}{@{}l@{}lclll@{}}
    \production{block type} & \Bblocktype &::=&
      \hex{40} &\Rightarrow& \epsilon \\ &&|&
      t{:}\Bvaltype &\Rightarrow& t \\ &&|&
-     x{:}\Bs33 &\Rightarrow& x & (\iff x \geq 0) \\
+     x{:}\Bs33 &\Rightarrow& x \qquad\qquad (\iff x \geq 0) \\
    \production{instruction} & \Binstr &::=&
      \hex{00} &\Rightarrow& \UNREACHABLE \\ &&|&
      \hex{01} &\Rightarrow& \NOP \\ &&|&
