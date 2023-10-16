@@ -84,7 +84,7 @@ let rec instr (e : instr) =
     tables (var x) ++ types (var y)
   | Throw x -> tags (var x)
   | ThrowRef -> empty
-  | Try (bt, cs, es) ->
+  | TryTable (bt, cs, es) ->
     block_type bt ++ list catch cs ++ block es
   | LocalGet x | LocalSet x | LocalTee x -> locals (var x)
   | GlobalGet x | GlobalSet x -> globals (var x)

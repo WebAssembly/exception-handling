@@ -185,7 +185,7 @@ and instr' =
   | Unary of unop                     (* unary numeric operator *)
   | Binary of binop                   (* binary numeric operator *)
   | Convert of cvtop                  (* conversion *)
-  | Try of block_type * catch list * instr list  (* try *)
+  | TryTable of block_type * catch list * instr list  (* handle exceptions *)
   | Throw of var                      (* throw exception *)
   | ThrowRef                          (* rethrow exception *)
   | VecConst of vec                   (* constant *)

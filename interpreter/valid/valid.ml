@@ -319,7 +319,7 @@ let rec check_instr (c : context) (e : instr) (s : infer_result_type) : op_type 
   | ThrowRef ->
     [RefType ExnRefType] -->... []
 
-  | Try (bt, cs, es) ->
+  | TryTable (bt, cs, es) ->
     let FuncType (ts1, ts2) as ft = check_block_type c bt in
     let c' = {c with labels = ts2 :: c.labels} in
     List.iter (fun ct -> check_catch c ct ts2 e.at) cs;

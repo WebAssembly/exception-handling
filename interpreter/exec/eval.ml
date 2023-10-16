@@ -239,7 +239,7 @@ let rec step (c : config) : config =
       | ThrowRef, Ref (ExnRef (t, args)) :: vs ->
         vs, [Throwing (t, args) @@ e.at]
 
-      | Try (bt, cs, es'), vs ->
+      | TryTable (bt, cs, es'), vs ->
         let FuncType (ts1, ts2) = block_type frame.inst bt in
         let n1 = Lib.List32.length ts1 in
         let n2 = Lib.List32.length ts2 in

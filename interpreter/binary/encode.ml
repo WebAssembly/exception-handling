@@ -168,7 +168,7 @@ struct
       op 0x04; block_type bt; list instr es1;
       if es2 <> [] then op 0x05;
       list instr es2; end_ ()
-    | Try (bt, cs, es) ->
+    | TryTable (bt, cs, es) ->
       op 0x1f; block_type bt; vec catch cs; list instr es; end_ ()
     | Br x -> op 0x0c; var x
     | BrIf x -> op 0x0d; var x
