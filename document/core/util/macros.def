@@ -1280,7 +1280,7 @@
 
 .. |vdashadmininstr| mathdef:: \xref{appendix/properties}{valid-instr-admin}{\vdash}
 
-.. |vdashval| mathdef:: \xref{appendix/properties}{valid-val}{\vdash}
+.. |vdashval| mathdef:: \xref{exec/modules}{valid-val}{\vdash}
 .. |vdashresult| mathdef:: \xref{appendix/properties}{valid-result}{\vdash}
 
 .. |vdashfuncinst| mathdef:: \xref{appendix/properties}{valid-funcinst}{\vdash}
