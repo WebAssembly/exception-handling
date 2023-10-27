@@ -4,9 +4,9 @@
   <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
   <title>WebAssembly JavaScript Interface: Exception Handling</title>
   <meta content="ED" name="w3c-status">
-  <meta content="Bikeshed version 5fcd28d6d, updated Tue May 30 13:12:11 2023 -0700" name="generator">
+  <meta content="Bikeshed version 82ce88815, updated Thu Sep 7 16:33:55 2023 -0700" name="generator">
   <link href="https://www.w3.org/TR/wasm-js-api-2/" rel="canonical">
-  <meta content="51c721661b671bb7dc4b3a3acb9e079b49778d36" name="document-revision">
+  <meta content="123ac59cb650e9537ce129bb2977243bcbe9a773" name="document-revision">
 <style>
 emu-const {
     font-family: serif;
@@ -518,33 +518,12 @@ a.self-link::before            { content: "¶"; }
 .heading > a.self-link::before { content: "§"; }
 dfn > a.self-link::before      { content: "#"; }
 </style>
-<style>/* Boilerplate: style-style-syntax-highlighting */
+<style>/* Boilerplate: style-syntax-highlighting */
 
             pre.idl.highlight {
                 background: var(--borderedblock-bg, var(--def-bg));
             }
             
-</style>
-<style>/* Boilerplate: style-style-var-click-highlighting */
-/*
-Colors were chosen in Lab using https://nixsensor.com/free-color-converter/
-D50 2deg illuminant, L in [0,100], a and b in [-128, 128]
-0 = lab(85,0,85)
-1 = lab(85,80,30)
-2 = lab(85,-40,40)
-3 = lab(85,-50,0)
-4 = lab(85,5,15)
-5 = lab(85,-10,-50)
-6 = lab(85,35,-15)
-*/
-var { cursor: pointer; }
-var.selected0 { background-color: #F4D200; box-shadow: 0 0 0 2px #F4D200; }
-var.selected1 { background-color: #FF87A2; box-shadow: 0 0 0 2px #FF87A2; }
-var.selected2 { background-color: #96E885; box-shadow: 0 0 0 2px #96E885; }
-var.selected3 { background-color: #3EEED2; box-shadow: 0 0 0 2px #3EEED2; }
-var.selected4 { background-color: #EACFB6; box-shadow: 0 0 0 2px #EACFB6; }
-var.selected5 { background-color: #82DDFF; box-shadow: 0 0 0 2px #82DDFF; }
-var.selected6 { background-color: #FFBCF2; box-shadow: 0 0 0 2px #FFBCF2; }
 </style>
 <style>/* Boilerplate: style-syntax-highlighting */
 
@@ -669,12 +648,33 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
     c-[il] { color: #657b83 } /* Literal.Number.Integer.Long */
 }
 </style>
+<style>/* Boilerplate: style-var-click-highlighting */
+/*
+Colors were chosen in Lab using https://nixsensor.com/free-color-converter/
+D50 2deg illuminant, L in [0,100], a and b in [-128, 128]
+0 = lab(85,0,85)
+1 = lab(85,80,30)
+2 = lab(85,-40,40)
+3 = lab(85,-50,0)
+4 = lab(85,5,15)
+5 = lab(85,-10,-50)
+6 = lab(85,35,-15)
+*/
+var { cursor: pointer; }
+var.selected0 { background-color: #F4D200; box-shadow: 0 0 0 2px #F4D200; }
+var.selected1 { background-color: #FF87A2; box-shadow: 0 0 0 2px #FF87A2; }
+var.selected2 { background-color: #96E885; box-shadow: 0 0 0 2px #96E885; }
+var.selected3 { background-color: #3EEED2; box-shadow: 0 0 0 2px #3EEED2; }
+var.selected4 { background-color: #EACFB6; box-shadow: 0 0 0 2px #EACFB6; }
+var.selected5 { background-color: #82DDFF; box-shadow: 0 0 0 2px #82DDFF; }
+var.selected6 { background-color: #FFBCF2; box-shadow: 0 0 0 2px #FFBCF2; }
+</style>
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
  <body class="h-entry">
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">WebAssembly JavaScript Interface: Exception Handling</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2023-06-06">6 June 2023</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2023-10-27">27 October 2023</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -693,7 +693,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
     </div>
    </details>
    <div data-fill-with="warning"></div>
-   <p class="copyright" data-fill-with="copyright"><a href="https://www.w3.org/Consortium/Legal/ipr-notice#Copyright">Copyright</a> © 2023 <a href="https://www.w3.org/">World Wide Web Consortium</a>. <abbr title="World Wide Web Consortium">W3C</abbr><sup>®</sup> <a href="https://www.w3.org/Consortium/Legal/ipr-notice#Legal_Disclaimer">liability</a>, <a href="https://www.w3.org/Consortium/Legal/ipr-notice#W3C_Trademarks">trademark</a> and <a href="https://www.w3.org/Consortium/Legal/2015/copyright-software-and-document" rel="license">permissive document license</a> rules apply. </p>
+   <p class="copyright" data-fill-with="copyright"><a href="https://www.w3.org/Consortium/Legal/ipr-notice#Copyright">Copyright</a> © 2023 <a href="https://www.w3.org/">World Wide Web Consortium</a>. <abbr title="World Wide Web Consortium">W3C</abbr><sup>®</sup> <a href="https://www.w3.org/Consortium/Legal/ipr-notice#Legal_Disclaimer">liability</a>, <a href="https://www.w3.org/Consortium/Legal/ipr-notice#W3C_Trademarks">trademark</a> and <a href="https://www.w3.org/Consortium/Legal/copyright-software" rel="license" title="W3C Software and Document License">permissive document license</a> rules apply. </p>
    <hr title="Separator for header">
   </div>
   <div class="p-summary" data-fill-with="abstract">
@@ -718,7 +718,7 @@ and the <a href="https://www.w3.org/TR/wasm-web-api/">WebAssembly Web API</a>.
 	W3C maintains a <a href="https://www.w3.org/2004/01/pp-impl/101196/status" rel="disclosure">public list of any patent disclosures</a> made in connection with the deliverables of the group;
 	that page also includes instructions for disclosing a patent.
 	An individual who has actual knowledge of a patent which the individual believes contains <a href="https://www.w3.org/Consortium/Patent-Policy-20170801/#def-essential">Essential Claim(s)</a> must disclose the information in accordance with <a href="https://www.w3.org/Consortium/Patent-Policy-20170801/#sec-Disclosure">section 6 of the W3C Patent Policy</a>. </p>
-   <p> This document is governed by the <a href="https://www.w3.org/2021/Process-20211102/" id="w3c_process_revision">2 November 2021 W3C Process Document</a>. </p>
+   <p> This document is governed by the <a href="https://www.w3.org/2023/Process-20230612/" id="w3c_process_revision">12 June 2023 W3C Process Document</a>. </p>
    <p></p>
   </div>
   <div data-fill-with="at-risk"></div>
@@ -1742,6 +1742,14 @@ Each <code class="idl"><a data-link-type="idl" href="#table" id="ref-for-table�
      <li data-md>
       <p>Let <var>store</var> be the <a data-link-type="dfn" href="https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#surrounding-agent" id="ref-for-surrounding-agent①⑧">surrounding agent</a>'s <a data-link-type="dfn" href="#associated-store" id="ref-for-associated-store①③">associated store</a>.</p>
      <li data-md>
+      <p>Let (<var>limits</var>, <var>elementType</var>) be <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/appendix/embedding.html#embed-table-type" id="ref-for-embed-table-type①">table_type</a>(<var>store</var>, <var>tableaddr</var>).</p>
+     <li data-md>
+      <p>If <var>elementType</var> is <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-reftype" id="ref-for-syntax-reftype①">exnref</a>,</p>
+      <ol>
+       <li data-md>
+        <p><a data-link-type="dfn" href="#webassembly-throw" id="ref-for-webassembly-throw①">Throw</a> a <code class="idl"><a data-link-type="idl" href="https://tc39.github.io/ecma262/#sec-native-error-types-used-in-this-standard-typeerror" id="ref-for-sec-native-error-types-used-in-this-standard-typeerror③">TypeError</a></code> exception.</p>
+      </ol>
+     <li data-md>
       <p>Let <var>result</var> be <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/appendix/embedding.html#embed-table-read" id="ref-for-embed-table-read">table_read</a>(<var>store</var>, <var>tableaddr</var>, <var>index</var>).</p>
      <li data-md>
       <p>If <var>result</var> is <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/appendix/embedding.html#embed-error" id="ref-for-embed-error①①">error</a>, throw a <code class="idl"><a data-link-type="idl" href="https://tc39.github.io/ecma262/#sec-native-error-types-used-in-this-standard-rangeerror" id="ref-for-sec-native-error-types-used-in-this-standard-rangeerror⑤">RangeError</a></code> exception.</p>
@@ -1755,7 +1763,15 @@ Each <code class="idl"><a data-link-type="idl" href="#table" id="ref-for-table�
      <li data-md>
       <p>Let <var>tableaddr</var> be <strong>this</strong>.[[Table]].</p>
      <li data-md>
-      <p>Let (<var>limits</var>, <var>elementType</var>) be <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/appendix/embedding.html#embed-table-type" id="ref-for-embed-table-type①">table_type</a>(<var>tableaddr</var>).</p>
+      <p>Let <var>store</var> be the <a data-link-type="dfn" href="https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#surrounding-agent" id="ref-for-surrounding-agent①⑨">surrounding agent</a>'s <a data-link-type="dfn" href="#associated-store" id="ref-for-associated-store①④">associated store</a>.</p>
+     <li data-md>
+      <p>Let (<var>limits</var>, <var>elementType</var>) be <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/appendix/embedding.html#embed-table-type" id="ref-for-embed-table-type②">table_type</a>(<var>store</var>, <var>tableaddr</var>).</p>
+     <li data-md>
+      <p>If <var>elementType</var> is <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-reftype" id="ref-for-syntax-reftype②">exnref</a>,</p>
+      <ol>
+       <li data-md>
+        <p><a data-link-type="dfn" href="#webassembly-throw" id="ref-for-webassembly-throw②">Throw</a> a <code class="idl"><a data-link-type="idl" href="https://tc39.github.io/ecma262/#sec-native-error-types-used-in-this-standard-typeerror" id="ref-for-sec-native-error-types-used-in-this-standard-typeerror④">TypeError</a></code> exception.</p>
+      </ol>
      <li data-md>
       <p>If <var>value</var> is missing,</p>
       <ol>
@@ -1768,8 +1784,6 @@ Each <code class="idl"><a data-link-type="idl" href="#table" id="ref-for-table�
        <li data-md>
         <p>Let <var>ref</var> be <a data-link-type="dfn" href="https://tc39.github.io/ecma262/#sec-returnifabrupt-shorthands" id="ref-for-sec-returnifabrupt-shorthands⑧">?</a> <a data-link-type="dfn" href="#towebassemblyvalue" id="ref-for-towebassemblyvalue③">ToWebAssemblyValue</a>(<var>value</var>, <var>elementType</var>).</p>
       </ol>
-     <li data-md>
-      <p>Let <var>store</var> be the <a data-link-type="dfn" href="https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#surrounding-agent" id="ref-for-surrounding-agent①⑨">surrounding agent</a>'s <a data-link-type="dfn" href="#associated-store" id="ref-for-associated-store①④">associated store</a>.</p>
      <li data-md>
       <p>Let <var>store</var> be <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/appendix/embedding.html#embed-table-write" id="ref-for-embed-table-write">table_write</a>(<var>store</var>, <var>tableaddr</var>, <var>index</var>, <var>ref</var>).</p>
      <li data-md>
@@ -1853,9 +1867,9 @@ Each <code class="idl"><a data-link-type="idl" href="#table" id="ref-for-table�
      <li data-md>
       <p>If <var>s</var> equals "v128", return <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#vector-types" id="ref-for-vector-types①">v128</a>.</p>
      <li data-md>
-      <p>If <var>s</var> equals "anyfunc", return <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-reftype" id="ref-for-syntax-reftype①">funcref</a>.</p>
+      <p>If <var>s</var> equals "anyfunc", return <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-reftype" id="ref-for-syntax-reftype③">funcref</a>.</p>
      <li data-md>
-      <p>If <var>s</var> equals "externref", return <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-reftype" id="ref-for-syntax-reftype②">externref</a>.</p>
+      <p>If <var>s</var> equals "externref", return <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-reftype" id="ref-for-syntax-reftype④">externref</a>.</p>
      <li data-md>
       <p class="assertion">Assert: This step is not reached.</p>
     </ol>
@@ -1872,9 +1886,9 @@ Each <code class="idl"><a data-link-type="idl" href="#table" id="ref-for-table�
      <li data-md>
       <p>If <var>valuetype</var> equals <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-numtype" id="ref-for-syntax-numtype⑨">f64</a>, return <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/exec/runtime.html#values" id="ref-for-values④">f64.const</a> 0.</p>
      <li data-md>
-      <p>If <var>valuetype</var> equals <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-reftype" id="ref-for-syntax-reftype③">funcref</a>, return <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/exec/runtime.html#values" id="ref-for-values⑤">ref.null</a> <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-reftype" id="ref-for-syntax-reftype④">funcref</a>.</p>
+      <p>If <var>valuetype</var> equals <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-reftype" id="ref-for-syntax-reftype⑤">funcref</a>, return <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/exec/runtime.html#values" id="ref-for-values⑤">ref.null</a> <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-reftype" id="ref-for-syntax-reftype⑥">funcref</a>.</p>
      <li data-md>
-      <p>If <var>valuetype</var> equals <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-reftype" id="ref-for-syntax-reftype⑤">externref</a>, return <a data-link-type="dfn" href="#towebassemblyvalue" id="ref-for-towebassemblyvalue④">ToWebAssemblyValue</a>(undefined, <var>valuetype</var>).</p>
+      <p>If <var>valuetype</var> equals <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-reftype" id="ref-for-syntax-reftype⑦">externref</a>, return <a data-link-type="dfn" href="#towebassemblyvalue" id="ref-for-towebassemblyvalue④">ToWebAssemblyValue</a>(undefined, <var>valuetype</var>).</p>
      <li data-md>
       <p class="assertion">Assert: This step is not reached.</p>
     </ol>
@@ -1887,10 +1901,10 @@ Each <code class="idl"><a data-link-type="idl" href="#table" id="ref-for-table�
      <li data-md>
       <p>Let <var>valuetype</var> be <a data-link-type="dfn" href="#tovaluetype" id="ref-for-tovaluetype①">ToValueType</a>(<var>descriptor</var>["value"]).</p>
      <li data-md>
-      <p>If <var>valuetype</var> is <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#vector-types" id="ref-for-vector-types②">v128</a>,</p>
+      <p>If <var>valuetype</var> is <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#vector-types" id="ref-for-vector-types②">v128</a> or <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-reftype" id="ref-for-syntax-reftype⑧">exnref</a>,</p>
       <ol>
        <li data-md>
-        <p>Throw a <code class="idl"><a data-link-type="idl" href="https://tc39.github.io/ecma262/#sec-native-error-types-used-in-this-standard-typeerror" id="ref-for-sec-native-error-types-used-in-this-standard-typeerror③">TypeError</a></code> exception.</p>
+        <p>Throw a <code class="idl"><a data-link-type="idl" href="https://tc39.github.io/ecma262/#sec-native-error-types-used-in-this-standard-typeerror" id="ref-for-sec-native-error-types-used-in-this-standard-typeerror⑤">TypeError</a></code> exception.</p>
       </ol>
      <li data-md>
       <p>If <var>v</var> is missing,</p>
@@ -1926,7 +1940,7 @@ Each <code class="idl"><a data-link-type="idl" href="#table" id="ref-for-table�
      <li data-md>
       <p>Let <var>globaltype</var> be <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/appendix/embedding.html#embed-global-type" id="ref-for-embed-global-type">global_type</a>(<var>store</var>, <var>globaladdr</var>).</p>
      <li data-md>
-      <p>If <var>globaltype</var> is of the form <var>mut</var> <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#vector-types" id="ref-for-vector-types③">v128</a>, throw a <code class="idl"><a data-link-type="idl" href="https://tc39.github.io/ecma262/#sec-native-error-types-used-in-this-standard-typeerror" id="ref-for-sec-native-error-types-used-in-this-standard-typeerror④">TypeError</a></code>.</p>
+      <p>If <var>globaltype</var> is of the form <var>mut</var> <var>valuetype</var> where <var>valuetype</var> is <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#vector-types" id="ref-for-vector-types③">v128</a> or <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-reftype" id="ref-for-syntax-reftype⑨">exnref</a>, throw a <code class="idl"><a data-link-type="idl" href="https://tc39.github.io/ecma262/#sec-native-error-types-used-in-this-standard-typeerror" id="ref-for-sec-native-error-types-used-in-this-standard-typeerror⑥">TypeError</a></code>.</p>
      <li data-md>
       <p>Let <var>value</var> be <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/appendix/embedding.html#embed-global-read" id="ref-for-embed-global-read">global_read</a>(<var>store</var>, <var>globaladdr</var>).</p>
      <li data-md>
@@ -1948,9 +1962,9 @@ Each <code class="idl"><a data-link-type="idl" href="#table" id="ref-for-table�
      <li data-md>
       <p>Let <var>mut</var> <var>valuetype</var> be <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/appendix/embedding.html#embed-global-type" id="ref-for-embed-global-type①">global_type</a>(<var>store</var>, <var>globaladdr</var>).</p>
      <li data-md>
-      <p>If <var>valuetype</var> is <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#vector-types" id="ref-for-vector-types④">v128</a>, throw a <code class="idl"><a data-link-type="idl" href="https://tc39.github.io/ecma262/#sec-native-error-types-used-in-this-standard-typeerror" id="ref-for-sec-native-error-types-used-in-this-standard-typeerror⑤">TypeError</a></code>.</p>
+      <p>If <var>valuetype</var> is <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#vector-types" id="ref-for-vector-types④">v128</a> or <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-reftype" id="ref-for-syntax-reftype①⓪">exnref</a>, throw a <code class="idl"><a data-link-type="idl" href="https://tc39.github.io/ecma262/#sec-native-error-types-used-in-this-standard-typeerror" id="ref-for-sec-native-error-types-used-in-this-standard-typeerror⑦">TypeError</a></code>.</p>
      <li data-md>
-      <p>If <var>mut</var> is <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-mut" id="ref-for-syntax-mut③">const</a>, throw a <code class="idl"><a data-link-type="idl" href="https://tc39.github.io/ecma262/#sec-native-error-types-used-in-this-standard-typeerror" id="ref-for-sec-native-error-types-used-in-this-standard-typeerror⑥">TypeError</a></code>.</p>
+      <p>If <var>mut</var> is <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-mut" id="ref-for-syntax-mut③">const</a>, throw a <code class="idl"><a data-link-type="idl" href="https://tc39.github.io/ecma262/#sec-native-error-types-used-in-this-standard-typeerror" id="ref-for-sec-native-error-types-used-in-this-standard-typeerror⑧">TypeError</a></code>.</p>
      <li data-md>
       <p>Let <var>value</var> be <a data-link-type="dfn" href="#towebassemblyvalue" id="ref-for-towebassemblyvalue⑥">ToWebAssemblyValue</a>(<strong>the given value</strong>, <var>valuetype</var>).</p>
      <li data-md>
@@ -2046,7 +2060,7 @@ This slot holds a <a data-link-type="dfn" href="https://webassembly.github.io/ex
      <li data-md>
       <p>Let [<var>parameters</var>] → [<var>results</var>] be <var>functype</var>.</p>
      <li data-md>
-      <p>If <var>parameters</var> or <var>results</var> contain <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#vector-types" id="ref-for-vector-types⑤">v128</a>, throw a <code class="idl"><a data-link-type="idl" href="https://tc39.github.io/ecma262/#sec-native-error-types-used-in-this-standard-typeerror" id="ref-for-sec-native-error-types-used-in-this-standard-typeerror⑦">TypeError</a></code>.</p>
+      <p>If <var>parameters</var> or <var>results</var> contain <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#vector-types" id="ref-for-vector-types⑤">v128</a> or <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-reftype" id="ref-for-syntax-reftype①①">exnref</a>, throw a <code class="idl"><a data-link-type="idl" href="https://tc39.github.io/ecma262/#sec-native-error-types-used-in-this-standard-typeerror" id="ref-for-sec-native-error-types-used-in-this-standard-typeerror⑨">TypeError</a></code>.</p>
       <p class="note" role="note"><span class="marker">Note:</span> the above error is thrown each time the [[Call]] method is invoked.</p>
      <li data-md>
       <p>Let <var>args</var> be « ».</p>
@@ -2076,7 +2090,7 @@ This slot holds a <a data-link-type="dfn" href="https://webassembly.github.io/ex
       <p>If <var>ret</var> is exception <var>exntag</var> <var>payload</var> <var>opaqueData</var>, then</p>
       <ol>
        <li data-md>
-        <p>If <var>opaqueData</var> is not <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/exec/runtime.html#values" id="ref-for-values⑥">ref.null</a> <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-reftype" id="ref-for-syntax-reftype⑥">externref</a>,</p>
+        <p>If <var>opaqueData</var> is not <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/exec/runtime.html#values" id="ref-for-values⑥">ref.null</a> <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-reftype" id="ref-for-syntax-reftype①②">externref</a>,</p>
         <ol>
          <li data-md>
           <p>Let « <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/exec/runtime.html#values" id="ref-for-values⑦">ref.extern</a> <var>externaddr</var> » be <var>opaqueData</var>.</p>
@@ -2118,7 +2132,7 @@ This slot holds a <a data-link-type="dfn" href="https://webassembly.github.io/ex
      <li data-md>
       <p>Let [<var>parameters</var>] → [<var>results</var>] be <var>functype</var>.</p>
      <li data-md>
-      <p>If <var>parameters</var> or <var>results</var> contain <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#vector-types" id="ref-for-vector-types⑥">v128</a>, throw a <code class="idl"><a data-link-type="idl" href="https://tc39.github.io/ecma262/#sec-native-error-types-used-in-this-standard-typeerror" id="ref-for-sec-native-error-types-used-in-this-standard-typeerror⑧">TypeError</a></code>.</p>
+      <p>If <var>parameters</var> or <var>results</var> contain <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#vector-types" id="ref-for-vector-types⑥">v128</a> or <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-reftype" id="ref-for-syntax-reftype①③">exnref</a>, throw a <code class="idl"><a data-link-type="idl" href="https://tc39.github.io/ecma262/#sec-native-error-types-used-in-this-standard-typeerror" id="ref-for-sec-native-error-types-used-in-this-standard-typeerror①⓪">TypeError</a></code>.</p>
      <li data-md>
       <p>Let <var>jsArguments</var> be « ».</p>
      <li data-md>
@@ -2141,13 +2155,13 @@ This slot holds a <a data-link-type="dfn" href="https://webassembly.github.io/ex
        <li data-md>
         <p>Let <var>method</var> be <a data-link-type="dfn" href="https://tc39.github.io/ecma262/#sec-returnifabrupt-shorthands" id="ref-for-sec-returnifabrupt-shorthands①④">?</a> <a data-link-type="abstract-op" href="https://tc39.es/ecma262/multipage/abstract-operations.html#sec-getmethod" id="ref-for-sec-getmethod">GetMethod</a>(<var>ret</var>, <code class="idl"><a data-link-type="idl" href="https://tc39.es/ecma262/multipage/ecmascript-data-types-and-values.html#sec-well-known-symbols" id="ref-for-sec-well-known-symbols">@@iterator</a></code>).</p>
        <li data-md>
-        <p>If <var>method</var> is undefined, <a data-link-type="dfn" href="#webassembly-throw" id="ref-for-webassembly-throw①">throw</a> a <code class="idl"><a data-link-type="idl" href="https://tc39.github.io/ecma262/#sec-native-error-types-used-in-this-standard-typeerror" id="ref-for-sec-native-error-types-used-in-this-standard-typeerror⑨">TypeError</a></code>.</p>
+        <p>If <var>method</var> is undefined, <a data-link-type="dfn" href="#webassembly-throw" id="ref-for-webassembly-throw③">throw</a> a <code class="idl"><a data-link-type="idl" href="https://tc39.github.io/ecma262/#sec-native-error-types-used-in-this-standard-typeerror" id="ref-for-sec-native-error-types-used-in-this-standard-typeerror①①">TypeError</a></code>.</p>
        <li data-md>
         <p>Let <var>values</var> be <a data-link-type="dfn" href="https://tc39.github.io/ecma262/#sec-returnifabrupt-shorthands" id="ref-for-sec-returnifabrupt-shorthands①⑤">?</a> <a data-link-type="abstract-op">IterableToList</a>(<var>ret</var>, <var>method</var>).</p>
        <li data-md>
         <p>Let <var>wasmValues</var> be a new, empty <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list③">list</a>.</p>
        <li data-md>
-        <p>If <var>values</var>’s <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-size" id="ref-for-list-size④">size</a> is not <var>resultsSize</var>, throw a <code class="idl"><a data-link-type="idl" href="https://tc39.github.io/ecma262/#sec-native-error-types-used-in-this-standard-typeerror" id="ref-for-sec-native-error-types-used-in-this-standard-typeerror①⓪">TypeError</a></code> exception.</p>
+        <p>If <var>values</var>’s <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-size" id="ref-for-list-size④">size</a> is not <var>resultsSize</var>, throw a <code class="idl"><a data-link-type="idl" href="https://tc39.github.io/ecma262/#sec-native-error-types-used-in-this-standard-typeerror" id="ref-for-sec-native-error-types-used-in-this-standard-typeerror①②">TypeError</a></code> exception.</p>
        <li data-md>
         <p>For each <var>value</var> and <var>resultType</var> in <var>values</var> and <var>results</var>, paired linearly,</p>
         <ol>
@@ -2207,9 +2221,9 @@ This slot holds a <a data-link-type="dfn" href="https://webassembly.github.io/ex
             <p>Let <var>payload</var> be « ».</p>
           </ol>
          <li data-md>
-          <p>Let <var>opaqueData</var> be <a data-link-type="dfn" href="#towebassemblyvalue" id="ref-for-towebassemblyvalue①⓪">ToWebAssemblyValue</a>(<var>v</var>, <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-reftype" id="ref-for-syntax-reftype⑦">externref</a>)</p>
+          <p>Let <var>opaqueData</var> be <a data-link-type="dfn" href="#towebassemblyvalue" id="ref-for-towebassemblyvalue①⓪">ToWebAssemblyValue</a>(<var>v</var>, <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-reftype" id="ref-for-syntax-reftype①④">externref</a>)</p>
          <li data-md>
-          <p><a data-link-type="dfn" href="#webassembly-throw" id="ref-for-webassembly-throw②">Throw</a> with <var>type</var>, <var>payload</var> and <var>opaqueData</var>.</p>
+          <p><a data-link-type="dfn" href="#webassembly-throw" id="ref-for-webassembly-throw④">Throw</a> with <var>type</var>, <var>payload</var> and <var>opaqueData</var>.</p>
         </ol>
        <li data-md>
         <p>Otherwise, return <var>result</var>.[[Value]].</p>
@@ -2229,6 +2243,8 @@ This slot holds a <a data-link-type="dfn" href="https://webassembly.github.io/ex
     <ol>
      <li data-md>
       <p class="assertion">Assert: <var>w</var> is not of  the form <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/exec/runtime.html#values" id="ref-for-values①⓪">v128.const</a> <var>v128</var>.</p>
+     <li data-md>
+      <p class="assertion">Assert: <var>w</var> is not of  the form <a data-link-type="dfn">ref.exn</a> <var>exnaddr</var>.</p>
      <li data-md>
       <p>If <var>w</var> is of the form <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/exec/runtime.html#values" id="ref-for-values①①">i64.const</a> <var>i64</var>,</p>
       <ol>
@@ -2284,6 +2300,8 @@ This slot holds a <a data-link-type="dfn" href="https://webassembly.github.io/ex
     <ol>
      <li data-md>
       <p class="assertion">Assert: <var>type</var> is not <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#vector-types" id="ref-for-vector-types⑦">v128</a>.</p>
+     <li data-md>
+      <p class="assertion">Assert: <var>type</var> is not <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-reftype" id="ref-for-syntax-reftype①⑤">exnref</a>.</p>
      <li data-md>
       <p>If <var>type</var> is <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-numtype" id="ref-for-syntax-numtype①⓪">i64</a>,</p>
       <ol>
@@ -2345,13 +2363,13 @@ This slot holds a <a data-link-type="dfn" href="https://webassembly.github.io/ex
         <p>Return <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/exec/runtime.html#values" id="ref-for-values②②">f64.const</a> <var>f64</var>.</p>
       </ol>
      <li data-md>
-      <p>If <var>type</var> is <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-reftype" id="ref-for-syntax-reftype⑧">funcref</a>,</p>
+      <p>If <var>type</var> is <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-reftype" id="ref-for-syntax-reftype①⑥">funcref</a>,</p>
       <ol>
        <li data-md>
         <p>If <var>v</var> is null,</p>
         <ol>
          <li data-md>
-          <p>Return <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/exec/runtime.html#values" id="ref-for-values②③">ref.null</a> <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-reftype" id="ref-for-syntax-reftype⑨">funcref</a>.</p>
+          <p>Return <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/exec/runtime.html#values" id="ref-for-values②③">ref.null</a> <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-reftype" id="ref-for-syntax-reftype①⑦">funcref</a>.</p>
         </ol>
        <li data-md>
         <p>If <var>v</var> is an <a data-link-type="dfn" href="#exported-function" id="ref-for-exported-function②">Exported Function</a>,</p>
@@ -2362,16 +2380,16 @@ This slot holds a <a data-link-type="dfn" href="https://webassembly.github.io/ex
           <p>Return <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/exec/runtime.html#values" id="ref-for-values②④">ref.func</a> <var>funcaddr</var>.</p>
         </ol>
        <li data-md>
-        <p>Throw a <code class="idl"><a data-link-type="idl" href="https://tc39.github.io/ecma262/#sec-native-error-types-used-in-this-standard-typeerror" id="ref-for-sec-native-error-types-used-in-this-standard-typeerror①①">TypeError</a></code>.</p>
+        <p>Throw a <code class="idl"><a data-link-type="idl" href="https://tc39.github.io/ecma262/#sec-native-error-types-used-in-this-standard-typeerror" id="ref-for-sec-native-error-types-used-in-this-standard-typeerror①③">TypeError</a></code>.</p>
       </ol>
      <li data-md>
-      <p>If <var>type</var> is <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-reftype" id="ref-for-syntax-reftype①⓪">externref</a>,</p>
+      <p>If <var>type</var> is <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-reftype" id="ref-for-syntax-reftype①⑧">externref</a>,</p>
       <ol>
        <li data-md>
         <p>If <var>v</var> is null,</p>
         <ol>
          <li data-md>
-          <p>Return <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/exec/runtime.html#values" id="ref-for-values②⑤">ref.null</a> <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-reftype" id="ref-for-syntax-reftype①①">externref</a>.</p>
+          <p>Return <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/exec/runtime.html#values" id="ref-for-values②⑤">ref.null</a> <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-reftype" id="ref-for-syntax-reftype①⑨">externref</a>.</p>
         </ol>
        <li data-md>
         <p>Let <var>map</var> be the <a data-link-type="dfn" href="https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#surrounding-agent" id="ref-for-surrounding-agent③①">surrounding agent</a>'s associated <a data-link-type="dfn" href="#extern-value-cache" id="ref-for-extern-value-cache①">extern value cache</a>.</p>
@@ -2535,7 +2553,7 @@ WebAssembly values <var>payload</var>, perform the following steps:</p>
       <p>If <var>types</var>’s <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-size" id="ref-for-list-size⑦">size</a> is not <var>payload</var>’s <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-size" id="ref-for-list-size⑧">size</a>,</p>
       <ol>
        <li data-md>
-        <p>Throw a <code class="idl"><a data-link-type="idl" href="https://tc39.github.io/ecma262/#sec-native-error-types-used-in-this-standard-typeerror" id="ref-for-sec-native-error-types-used-in-this-standard-typeerror①②">TypeError</a></code>.</p>
+        <p>Throw a <code class="idl"><a data-link-type="idl" href="https://tc39.github.io/ecma262/#sec-native-error-types-used-in-this-standard-typeerror" id="ref-for-sec-native-error-types-used-in-this-standard-typeerror①④">TypeError</a></code>.</p>
       </ol>
      <li data-md>
       <p>Let <var>wasmPayload</var> be « ».</p>
@@ -2570,7 +2588,7 @@ WebAssembly values <var>payload</var>, perform the following steps:</p>
       <p>If <strong>this</strong>.[[Type]] is not equal to <var>exceptionTag</var>.[[Address]],</p>
       <ol>
        <li data-md>
-        <p>Throw a <code class="idl"><a data-link-type="idl" href="https://tc39.github.io/ecma262/#sec-native-error-types-used-in-this-standard-typeerror" id="ref-for-sec-native-error-types-used-in-this-standard-typeerror①③">TypeError</a></code>.</p>
+        <p>Throw a <code class="idl"><a data-link-type="idl" href="https://tc39.github.io/ecma262/#sec-native-error-types-used-in-this-standard-typeerror" id="ref-for-sec-native-error-types-used-in-this-standard-typeerror①⑤">TypeError</a></code>.</p>
       </ol>
      <li data-md>
       <p>Let <var>payload</var> be <strong>this</strong>.[[Payload]].</p>
@@ -2609,7 +2627,7 @@ WebAssembly values <var>payload</var>, perform the following steps:</p>
 specification to distinguish exceptions originating from JavaScript.</p>
    <p>For any <a data-link-type="dfn" href="#associated-store" id="ref-for-associated-store③③">associated store</a> <var>store</var>, the result of <a data-link-type="dfn" href="#tag_parameters" id="ref-for-tag_parameters③">tag_parameters</a>(<var>store</var>, <a data-link-type="dfn" href="#javascript-exception-tag" id="ref-for-javascript-exception-tag①">JavaScript exception tag</a>) must be « ».</p>
    <div class="algorithm" data-algorithm="throw" data-algorithm-for="WebAssembly">
-    <p>To <dfn class="dfn-paneled" data-dfn-for="WebAssembly" data-dfn-type="dfn" data-noexport id="webassembly-throw">throw</dfn> with a <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/exec/runtime.html#syntax-tagaddr" id="ref-for-syntax-tagaddr⑦">tag address</a> <var>type</var>, a matching <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list⑥">list</a> of WebAssembly values <var>payload</var>, and an <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-reftype" id="ref-for-syntax-reftype①②">externref</a> <var>opaqueData</var>, perform the following steps:</p>
+    <p>To <dfn class="dfn-paneled" data-dfn-for="WebAssembly" data-dfn-type="dfn" data-noexport id="webassembly-throw">throw</dfn> with a <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/exec/runtime.html#syntax-tagaddr" id="ref-for-syntax-tagaddr⑦">tag address</a> <var>type</var>, a matching <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list⑥">list</a> of WebAssembly values <var>payload</var>, and an <a data-link-type="dfn" href="https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-reftype" id="ref-for-syntax-reftype②⓪">externref</a> <var>opaqueData</var>, perform the following steps:</p>
     <ol>
      <li data-md>
       <p>Unwind the stack until reaching the <em>catching try block</em> given <var>type</var>.</p>
@@ -2636,7 +2654,7 @@ specification to distinguish exceptions originating from JavaScript.</p>
     </ol>
    </div>
    <p class="note" role="note"><span class="marker">Note:</span> This defines <code class="idl"><a data-link-type="idl" href="#exceptiondef-compileerror" id="ref-for-exceptiondef-compileerror②">CompileError</a></code>, <code class="idl"><a data-link-type="idl" href="#exceptiondef-linkerror" id="ref-for-exceptiondef-linkerror⑨">LinkError</a></code>, and <code class="idl"><a data-link-type="idl" href="#exceptiondef-runtimeerror" id="ref-for-exceptiondef-runtimeerror②">RuntimeError</a></code> classes on the <code class="idl"><a data-link-type="idl" href="#namespacedef-webassembly" id="ref-for-namespacedef-webassembly⑧">WebAssembly</a></code> namespace, which are produced by the APIs defined in this specification.
-They expose the same interface as native JavaScript errors like <code class="idl"><a data-link-type="idl" href="https://tc39.github.io/ecma262/#sec-native-error-types-used-in-this-standard-typeerror" id="ref-for-sec-native-error-types-used-in-this-standard-typeerror①④">TypeError</a></code> and <code class="idl"><a data-link-type="idl" href="https://tc39.github.io/ecma262/#sec-native-error-types-used-in-this-standard-rangeerror" id="ref-for-sec-native-error-types-used-in-this-standard-rangeerror⑨">RangeError</a></code>.</p>
+They expose the same interface as native JavaScript errors like <code class="idl"><a data-link-type="idl" href="https://tc39.github.io/ecma262/#sec-native-error-types-used-in-this-standard-typeerror" id="ref-for-sec-native-error-types-used-in-this-standard-typeerror①⑥">TypeError</a></code> and <code class="idl"><a data-link-type="idl" href="https://tc39.github.io/ecma262/#sec-native-error-types-used-in-this-standard-rangeerror" id="ref-for-sec-native-error-types-used-in-this-standard-rangeerror⑨">RangeError</a></code>.</p>
    <p class="note" role="note"><span class="marker">Note:</span> It is not currently possible to define this behavior using Web IDL.</p>
    <h2 class="heading settled" data-level="5" id="errors"><span class="secno">5. </span><span class="content">Error Condition Mappings to JavaScript</span><a class="self-link" href="#errors"></a></h2>
    <p>Running WebAssembly programs encounter certain events which halt execution of the WebAssembly code.
@@ -3019,6 +3037,7 @@ In practice, an implementation may run out of resources for valid modules below 
      <li><span class="dfn-paneled" id="a77ae14e">customsec</span>
      <li><span class="dfn-paneled" id="7b8e6024">error</span>
      <li><span class="dfn-paneled" id="cf03009b">exception</span>
+     <li><span class="dfn-paneled" id="6edada30">exnref</span>
      <li><span class="dfn-paneled" id="e8d18dfd">extern address</span>
      <li><span class="dfn-paneled" id="ba26917b">external value</span>
      <li><span class="dfn-paneled" id="3b0b30b1">externref</span>
@@ -3629,7 +3648,7 @@ window.dfnpanelData['b29f5d72'] = {"dfnID": "b29f5d72", "url": "https://tc39.es/
 window.dfnpanelData['06f63be9'] = {"dfnID": "06f63be9", "url": "https://tc39.es/ecma262/multipage/abstract-operations.html#sec-toint32", "dfnText": "ToInt32", "refSections": [{"refs": [{"id": "ref-for-sec-toint32"}], "title": "4.6. Exported Functions"}], "external": true};
 window.dfnpanelData['9ab06711'] = {"dfnID": "9ab06711", "url": "https://tc39.es/ecma262/multipage/abstract-operations.html#sec-tonumber", "dfnText": "ToNumber", "refSections": [{"refs": [{"id": "ref-for-sec-tonumber"}, {"id": "ref-for-sec-tonumber\u2460"}], "title": "4.6. Exported Functions"}], "external": true};
 window.dfnpanelData['4a854a91'] = {"dfnID": "4a854a91", "url": "https://tc39.es/ecma262/multipage/abstract-operations.html#sec-tostring", "dfnText": "ToString", "refSections": [{"refs": [{"id": "ref-for-sec-tostring"}], "title": "4.6. Exported Functions"}], "external": true};
-window.dfnpanelData['58788f9d'] = {"dfnID": "58788f9d", "url": "https://tc39.github.io/ecma262/#sec-native-error-types-used-in-this-standard-typeerror", "dfnText": "TypeError", "refSections": [{"refs": [{"id": "ref-for-sec-native-error-types-used-in-this-standard-typeerror"}, {"id": "ref-for-sec-native-error-types-used-in-this-standard-typeerror\u2460"}], "title": "4. The WebAssembly Namespace"}, {"refs": [{"id": "ref-for-sec-native-error-types-used-in-this-standard-typeerror\u2461"}], "title": "4.4. Tables"}, {"refs": [{"id": "ref-for-sec-native-error-types-used-in-this-standard-typeerror\u2462"}, {"id": "ref-for-sec-native-error-types-used-in-this-standard-typeerror\u2463"}, {"id": "ref-for-sec-native-error-types-used-in-this-standard-typeerror\u2464"}, {"id": "ref-for-sec-native-error-types-used-in-this-standard-typeerror\u2465"}], "title": "4.5. Globals"}, {"refs": [{"id": "ref-for-sec-native-error-types-used-in-this-standard-typeerror\u2466"}, {"id": "ref-for-sec-native-error-types-used-in-this-standard-typeerror\u2467"}, {"id": "ref-for-sec-native-error-types-used-in-this-standard-typeerror\u2468"}, {"id": "ref-for-sec-native-error-types-used-in-this-standard-typeerror\u2460\u24ea"}, {"id": "ref-for-sec-native-error-types-used-in-this-standard-typeerror\u2460\u2460"}], "title": "4.6. Exported Functions"}, {"refs": [{"id": "ref-for-sec-native-error-types-used-in-this-standard-typeerror\u2460\u2461"}, {"id": "ref-for-sec-native-error-types-used-in-this-standard-typeerror\u2460\u2462"}], "title": "4.7.2. Runtime exceptions"}, {"refs": [{"id": "ref-for-sec-native-error-types-used-in-this-standard-typeerror\u2460\u2463"}], "title": "4.8. Error Objects"}], "external": true};
+window.dfnpanelData['58788f9d'] = {"dfnID": "58788f9d", "url": "https://tc39.github.io/ecma262/#sec-native-error-types-used-in-this-standard-typeerror", "dfnText": "TypeError", "refSections": [{"refs": [{"id": "ref-for-sec-native-error-types-used-in-this-standard-typeerror"}, {"id": "ref-for-sec-native-error-types-used-in-this-standard-typeerror\u2460"}], "title": "4. The WebAssembly Namespace"}, {"refs": [{"id": "ref-for-sec-native-error-types-used-in-this-standard-typeerror\u2461"}, {"id": "ref-for-sec-native-error-types-used-in-this-standard-typeerror\u2462"}, {"id": "ref-for-sec-native-error-types-used-in-this-standard-typeerror\u2463"}], "title": "4.4. Tables"}, {"refs": [{"id": "ref-for-sec-native-error-types-used-in-this-standard-typeerror\u2464"}, {"id": "ref-for-sec-native-error-types-used-in-this-standard-typeerror\u2465"}, {"id": "ref-for-sec-native-error-types-used-in-this-standard-typeerror\u2466"}, {"id": "ref-for-sec-native-error-types-used-in-this-standard-typeerror\u2467"}], "title": "4.5. Globals"}, {"refs": [{"id": "ref-for-sec-native-error-types-used-in-this-standard-typeerror\u2468"}, {"id": "ref-for-sec-native-error-types-used-in-this-standard-typeerror\u2460\u24ea"}, {"id": "ref-for-sec-native-error-types-used-in-this-standard-typeerror\u2460\u2460"}, {"id": "ref-for-sec-native-error-types-used-in-this-standard-typeerror\u2460\u2461"}, {"id": "ref-for-sec-native-error-types-used-in-this-standard-typeerror\u2460\u2462"}], "title": "4.6. Exported Functions"}, {"refs": [{"id": "ref-for-sec-native-error-types-used-in-this-standard-typeerror\u2460\u2463"}, {"id": "ref-for-sec-native-error-types-used-in-this-standard-typeerror\u2460\u2464"}], "title": "4.7.2. Runtime exceptions"}, {"refs": [{"id": "ref-for-sec-native-error-types-used-in-this-standard-typeerror\u2460\u2465"}], "title": "4.8. Error Objects"}], "external": true};
 window.dfnpanelData['fa5c4242'] = {"dfnID": "fa5c4242", "url": "https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-agent-clusters", "dfnText": "agent cluster", "refSections": [{"refs": [{"id": "ref-for-sec-agent-clusters"}], "title": "3.1. Interaction of the WebAssembly Store with JavaScript"}], "external": true};
 window.dfnpanelData['e8f0aed3'] = {"dfnID": "e8f0aed3", "url": "https://tc39.github.io/ecma262/#sec-built-in-function-objects", "dfnText": "built-in function objects", "refSections": [{"refs": [{"id": "ref-for-sec-built-in-function-objects"}, {"id": "ref-for-sec-built-in-function-objects\u2460"}], "title": "4.6. Exported Functions"}], "external": true};
 window.dfnpanelData['b107f911'] = {"dfnID": "b107f911", "url": "https://tc39.github.io/ecma262/#current-realm", "dfnText": "current realm", "refSections": [{"refs": [{"id": "ref-for-current-realm"}], "title": "4.6. Exported Functions"}], "external": true};
@@ -3667,9 +3686,10 @@ window.dfnpanelData['3854fb40'] = {"dfnID": "3854fb40", "url": "https://webassem
 window.dfnpanelData['a77ae14e'] = {"dfnID": "a77ae14e", "url": "https://webassembly.github.io/exception-handling/core/binary/modules.html#binary-customsec", "dfnText": "customsec", "refSections": [{"refs": [{"id": "ref-for-binary-customsec"}], "title": "4.1. Modules"}], "external": true};
 window.dfnpanelData['7b8e6024'] = {"dfnID": "7b8e6024", "url": "https://webassembly.github.io/exception-handling/core/appendix/embedding.html#embed-error", "dfnText": "error", "refSections": [{"refs": [{"id": "ref-for-embed-error"}, {"id": "ref-for-embed-error\u2460"}, {"id": "ref-for-embed-error\u2461"}, {"id": "ref-for-embed-error\u2462"}, {"id": "ref-for-embed-error\u2463"}, {"id": "ref-for-embed-error\u2464"}, {"id": "ref-for-embed-error\u2465"}, {"id": "ref-for-embed-error\u2466"}], "title": "4. The WebAssembly Namespace"}, {"refs": [{"id": "ref-for-embed-error\u2467"}], "title": "4.1. Modules"}, {"refs": [{"id": "ref-for-embed-error\u2468"}], "title": "4.3. Memories"}, {"refs": [{"id": "ref-for-embed-error\u2460\u24ea"}, {"id": "ref-for-embed-error\u2460\u2460"}, {"id": "ref-for-embed-error\u2460\u2461"}], "title": "4.4. Tables"}, {"refs": [{"id": "ref-for-embed-error\u2460\u2462"}], "title": "4.5. Globals"}, {"refs": [{"id": "ref-for-embed-error\u2460\u2463"}, {"id": "ref-for-embed-error\u2460\u2464"}], "title": "4.6. Exported Functions"}], "external": true};
 window.dfnpanelData['cf03009b'] = {"dfnID": "cf03009b", "url": "https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-tagtype", "dfnText": "exception", "refSections": [{"refs": [{"id": "ref-for-syntax-tagtype"}, {"id": "ref-for-syntax-tagtype\u2460"}], "title": "4. The WebAssembly Namespace"}], "external": true};
+window.dfnpanelData['6edada30'] = {"dfnID": "6edada30", "url": "https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-reftype", "dfnText": "exnref", "refSections": [{"refs": [{"id": "ref-for-syntax-reftype"}, {"id": "ref-for-syntax-reftype\u2460"}, {"id": "ref-for-syntax-reftype\u2461"}], "title": "4.4. Tables"}, {"refs": [{"id": "ref-for-syntax-reftype\u2462"}, {"id": "ref-for-syntax-reftype\u2463"}, {"id": "ref-for-syntax-reftype\u2464"}, {"id": "ref-for-syntax-reftype\u2465"}, {"id": "ref-for-syntax-reftype\u2466"}, {"id": "ref-for-syntax-reftype\u2467"}, {"id": "ref-for-syntax-reftype\u2468"}, {"id": "ref-for-syntax-reftype\u2460\u24ea"}], "title": "4.5. Globals"}, {"refs": [{"id": "ref-for-syntax-reftype\u2460\u2460"}, {"id": "ref-for-syntax-reftype\u2460\u2461"}, {"id": "ref-for-syntax-reftype\u2460\u2462"}, {"id": "ref-for-syntax-reftype\u2460\u2463"}, {"id": "ref-for-syntax-reftype\u2460\u2464"}, {"id": "ref-for-syntax-reftype\u2460\u2465"}, {"id": "ref-for-syntax-reftype\u2460\u2466"}, {"id": "ref-for-syntax-reftype\u2460\u2467"}, {"id": "ref-for-syntax-reftype\u2460\u2468"}], "title": "4.6. Exported Functions"}, {"refs": [{"id": "ref-for-syntax-reftype\u2461\u24ea"}], "title": "4.7.3. JavaScript exceptions"}], "external": true};
 window.dfnpanelData['e8d18dfd'] = {"dfnID": "e8d18dfd", "url": "https://webassembly.github.io/exception-handling/core/exec/runtime.html#syntax-externaddr", "dfnText": "extern address", "refSections": [{"refs": [{"id": "ref-for-syntax-externaddr"}], "title": "3.2. WebAssembly JS Object Caches"}, {"refs": [{"id": "ref-for-syntax-externaddr\u2460"}, {"id": "ref-for-syntax-externaddr\u2461"}, {"id": "ref-for-syntax-externaddr\u2462"}], "title": "4.6. Exported Functions"}], "external": true};
 window.dfnpanelData['ba26917b'] = {"dfnID": "ba26917b", "url": "https://webassembly.github.io/exception-handling/core/exec/runtime.html#syntax-externval", "dfnText": "external value", "refSections": [{"refs": [{"id": "ref-for-syntax-externval"}, {"id": "ref-for-syntax-externval\u2460"}, {"id": "ref-for-syntax-externval\u2461"}, {"id": "ref-for-syntax-externval\u2462"}, {"id": "ref-for-syntax-externval\u2463"}, {"id": "ref-for-syntax-externval\u2464"}, {"id": "ref-for-syntax-externval\u2465"}, {"id": "ref-for-syntax-externval\u2466"}, {"id": "ref-for-syntax-externval\u2467"}, {"id": "ref-for-syntax-externval\u2468"}, {"id": "ref-for-syntax-externval\u2460\u24ea"}, {"id": "ref-for-syntax-externval\u2460\u2460"}, {"id": "ref-for-syntax-externval\u2460\u2461"}, {"id": "ref-for-syntax-externval\u2460\u2462"}, {"id": "ref-for-syntax-externval\u2460\u2463"}, {"id": "ref-for-syntax-externval\u2460\u2464"}, {"id": "ref-for-syntax-externval\u2460\u2465"}, {"id": "ref-for-syntax-externval\u2460\u2466"}, {"id": "ref-for-syntax-externval\u2460\u2467"}], "title": "4. The WebAssembly Namespace"}], "external": true};
-window.dfnpanelData['3b0b30b1'] = {"dfnID": "3b0b30b1", "url": "https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-reftype", "dfnText": "externref", "refSections": [{"refs": [{"id": "ref-for-syntax-reftype"}], "title": "4.4. Tables"}, {"refs": [{"id": "ref-for-syntax-reftype\u2460"}, {"id": "ref-for-syntax-reftype\u2461"}, {"id": "ref-for-syntax-reftype\u2462"}, {"id": "ref-for-syntax-reftype\u2463"}, {"id": "ref-for-syntax-reftype\u2464"}], "title": "4.5. Globals"}, {"refs": [{"id": "ref-for-syntax-reftype\u2465"}, {"id": "ref-for-syntax-reftype\u2466"}, {"id": "ref-for-syntax-reftype\u2467"}, {"id": "ref-for-syntax-reftype\u2468"}, {"id": "ref-for-syntax-reftype\u2460\u24ea"}, {"id": "ref-for-syntax-reftype\u2460\u2460"}], "title": "4.6. Exported Functions"}, {"refs": [{"id": "ref-for-syntax-reftype\u2460\u2461"}], "title": "4.7.3. JavaScript exceptions"}], "external": true};
+window.dfnpanelData['3b0b30b1'] = {"dfnID": "3b0b30b1", "url": "https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-reftype", "dfnText": "externref", "refSections": [{"refs": [{"id": "ref-for-syntax-reftype"}, {"id": "ref-for-syntax-reftype\u2460"}, {"id": "ref-for-syntax-reftype\u2461"}], "title": "4.4. Tables"}, {"refs": [{"id": "ref-for-syntax-reftype\u2462"}, {"id": "ref-for-syntax-reftype\u2463"}, {"id": "ref-for-syntax-reftype\u2464"}, {"id": "ref-for-syntax-reftype\u2465"}, {"id": "ref-for-syntax-reftype\u2466"}, {"id": "ref-for-syntax-reftype\u2467"}, {"id": "ref-for-syntax-reftype\u2468"}, {"id": "ref-for-syntax-reftype\u2460\u24ea"}], "title": "4.5. Globals"}, {"refs": [{"id": "ref-for-syntax-reftype\u2460\u2460"}, {"id": "ref-for-syntax-reftype\u2460\u2461"}, {"id": "ref-for-syntax-reftype\u2460\u2462"}, {"id": "ref-for-syntax-reftype\u2460\u2463"}, {"id": "ref-for-syntax-reftype\u2460\u2464"}, {"id": "ref-for-syntax-reftype\u2460\u2465"}, {"id": "ref-for-syntax-reftype\u2460\u2466"}, {"id": "ref-for-syntax-reftype\u2460\u2467"}, {"id": "ref-for-syntax-reftype\u2460\u2468"}], "title": "4.6. Exported Functions"}, {"refs": [{"id": "ref-for-syntax-reftype\u2461\u24ea"}], "title": "4.7.3. JavaScript exceptions"}], "external": true};
 window.dfnpanelData['17ff3dca'] = {"dfnID": "17ff3dca", "url": "https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-numtype", "dfnText": "f32", "refSections": [{"refs": [{"id": "ref-for-syntax-numtype"}, {"id": "ref-for-syntax-numtype\u2460"}], "title": "4. The WebAssembly Namespace"}, {"refs": [{"id": "ref-for-syntax-numtype\u2461"}, {"id": "ref-for-syntax-numtype\u2462"}, {"id": "ref-for-syntax-numtype\u2463"}, {"id": "ref-for-syntax-numtype\u2464"}, {"id": "ref-for-syntax-numtype\u2465"}, {"id": "ref-for-syntax-numtype\u2466"}, {"id": "ref-for-syntax-numtype\u2467"}, {"id": "ref-for-syntax-numtype\u2468"}], "title": "4.5. Globals"}, {"refs": [{"id": "ref-for-syntax-numtype\u2460\u24ea"}, {"id": "ref-for-syntax-numtype\u2460\u2460"}, {"id": "ref-for-syntax-numtype\u2460\u2461"}, {"id": "ref-for-syntax-numtype\u2460\u2462"}], "title": "4.6. Exported Functions"}], "external": true};
 window.dfnpanelData['061511d8'] = {"dfnID": "061511d8", "url": "https://webassembly.github.io/exception-handling/core/exec/runtime.html#values", "dfnText": "f32.const", "refSections": [{"refs": [{"id": "ref-for-values"}], "title": "4.3. Memories"}, {"refs": [{"id": "ref-for-values\u2460"}, {"id": "ref-for-values\u2461"}, {"id": "ref-for-values\u2462"}, {"id": "ref-for-values\u2463"}, {"id": "ref-for-values\u2464"}], "title": "4.5. Globals"}, {"refs": [{"id": "ref-for-values\u2465"}, {"id": "ref-for-values\u2466"}, {"id": "ref-for-values\u2467"}, {"id": "ref-for-values\u2468"}, {"id": "ref-for-values\u2460\u24ea"}, {"id": "ref-for-values\u2460\u2460"}, {"id": "ref-for-values\u2460\u2461"}, {"id": "ref-for-values\u2460\u2462"}, {"id": "ref-for-values\u2460\u2463"}, {"id": "ref-for-values\u2460\u2464"}, {"id": "ref-for-values\u2460\u2465"}, {"id": "ref-for-values\u2460\u2466"}, {"id": "ref-for-values\u2460\u2467"}, {"id": "ref-for-values\u2460\u2468"}, {"id": "ref-for-values\u2461\u24ea"}, {"id": "ref-for-values\u2461\u2460"}, {"id": "ref-for-values\u2461\u2461"}, {"id": "ref-for-values\u2461\u2462"}, {"id": "ref-for-values\u2461\u2463"}, {"id": "ref-for-values\u2461\u2464"}, {"id": "ref-for-values\u2461\u2465"}, {"id": "ref-for-values\u2461\u2466"}], "title": "4.6. Exported Functions"}], "external": true};
 window.dfnpanelData['24ed9d2a'] = {"dfnID": "24ed9d2a", "url": "https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-numtype", "dfnText": "f64", "refSections": [{"refs": [{"id": "ref-for-syntax-numtype"}, {"id": "ref-for-syntax-numtype\u2460"}], "title": "4. The WebAssembly Namespace"}, {"refs": [{"id": "ref-for-syntax-numtype\u2461"}, {"id": "ref-for-syntax-numtype\u2462"}, {"id": "ref-for-syntax-numtype\u2463"}, {"id": "ref-for-syntax-numtype\u2464"}, {"id": "ref-for-syntax-numtype\u2465"}, {"id": "ref-for-syntax-numtype\u2466"}, {"id": "ref-for-syntax-numtype\u2467"}, {"id": "ref-for-syntax-numtype\u2468"}], "title": "4.5. Globals"}, {"refs": [{"id": "ref-for-syntax-numtype\u2460\u24ea"}, {"id": "ref-for-syntax-numtype\u2460\u2460"}, {"id": "ref-for-syntax-numtype\u2460\u2461"}, {"id": "ref-for-syntax-numtype\u2460\u2462"}], "title": "4.6. Exported Functions"}], "external": true};
@@ -3678,7 +3698,7 @@ window.dfnpanelData['d62c469f'] = {"dfnID": "d62c469f", "url": "https://webassem
 window.dfnpanelData['a32d22b4'] = {"dfnID": "a32d22b4", "url": "https://webassembly.github.io/exception-handling/core/appendix/embedding.html#embed-func-alloc", "dfnText": "func_alloc", "refSections": [{"refs": [{"id": "ref-for-embed-func-alloc"}], "title": "4.6. Exported Functions"}], "external": true};
 window.dfnpanelData['a77af972'] = {"dfnID": "a77af972", "url": "https://webassembly.github.io/exception-handling/core/appendix/embedding.html#embed-func-invoke", "dfnText": "func_invoke", "refSections": [{"refs": [{"id": "ref-for-embed-func-invoke"}, {"id": "ref-for-embed-func-invoke\u2460"}], "title": "4.6. Exported Functions"}], "external": true};
 window.dfnpanelData['3e98617e'] = {"dfnID": "3e98617e", "url": "https://webassembly.github.io/exception-handling/core/appendix/embedding.html#embed-func-type", "dfnText": "func_type", "refSections": [{"refs": [{"id": "ref-for-embed-func-type"}, {"id": "ref-for-embed-func-type\u2460"}], "title": "4.6. Exported Functions"}], "external": true};
-window.dfnpanelData['02fc9e53'] = {"dfnID": "02fc9e53", "url": "https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-reftype", "dfnText": "funcref", "refSections": [{"refs": [{"id": "ref-for-syntax-reftype"}], "title": "4.4. Tables"}, {"refs": [{"id": "ref-for-syntax-reftype\u2460"}, {"id": "ref-for-syntax-reftype\u2461"}, {"id": "ref-for-syntax-reftype\u2462"}, {"id": "ref-for-syntax-reftype\u2463"}, {"id": "ref-for-syntax-reftype\u2464"}], "title": "4.5. Globals"}, {"refs": [{"id": "ref-for-syntax-reftype\u2465"}, {"id": "ref-for-syntax-reftype\u2466"}, {"id": "ref-for-syntax-reftype\u2467"}, {"id": "ref-for-syntax-reftype\u2468"}, {"id": "ref-for-syntax-reftype\u2460\u24ea"}, {"id": "ref-for-syntax-reftype\u2460\u2460"}], "title": "4.6. Exported Functions"}, {"refs": [{"id": "ref-for-syntax-reftype\u2460\u2461"}], "title": "4.7.3. JavaScript exceptions"}], "external": true};
+window.dfnpanelData['02fc9e53'] = {"dfnID": "02fc9e53", "url": "https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-reftype", "dfnText": "funcref", "refSections": [{"refs": [{"id": "ref-for-syntax-reftype"}, {"id": "ref-for-syntax-reftype\u2460"}, {"id": "ref-for-syntax-reftype\u2461"}], "title": "4.4. Tables"}, {"refs": [{"id": "ref-for-syntax-reftype\u2462"}, {"id": "ref-for-syntax-reftype\u2463"}, {"id": "ref-for-syntax-reftype\u2464"}, {"id": "ref-for-syntax-reftype\u2465"}, {"id": "ref-for-syntax-reftype\u2466"}, {"id": "ref-for-syntax-reftype\u2467"}, {"id": "ref-for-syntax-reftype\u2468"}, {"id": "ref-for-syntax-reftype\u2460\u24ea"}], "title": "4.5. Globals"}, {"refs": [{"id": "ref-for-syntax-reftype\u2460\u2460"}, {"id": "ref-for-syntax-reftype\u2460\u2461"}, {"id": "ref-for-syntax-reftype\u2460\u2462"}, {"id": "ref-for-syntax-reftype\u2460\u2463"}, {"id": "ref-for-syntax-reftype\u2460\u2464"}, {"id": "ref-for-syntax-reftype\u2460\u2465"}, {"id": "ref-for-syntax-reftype\u2460\u2466"}, {"id": "ref-for-syntax-reftype\u2460\u2467"}, {"id": "ref-for-syntax-reftype\u2460\u2468"}], "title": "4.6. Exported Functions"}, {"refs": [{"id": "ref-for-syntax-reftype\u2461\u24ea"}], "title": "4.7.3. JavaScript exceptions"}], "external": true};
 window.dfnpanelData['adad4e58'] = {"dfnID": "adad4e58", "url": "https://webassembly.github.io/exception-handling/core/exec/runtime.html#syntax-funcaddr", "dfnText": "function address", "refSections": [{"refs": [{"id": "ref-for-syntax-funcaddr"}], "title": "3.2. WebAssembly JS Object Caches"}, {"refs": [{"id": "ref-for-syntax-funcaddr\u2460"}, {"id": "ref-for-syntax-funcaddr\u2461"}, {"id": "ref-for-syntax-funcaddr\u2462"}], "title": "4.6. Exported Functions"}], "external": true};
 window.dfnpanelData['838fa205'] = {"dfnID": "838fa205", "url": "https://webassembly.github.io/exception-handling/core/syntax/types.html#external-types", "dfnText": "global", "refSections": [{"refs": [{"id": "ref-for-external-types"}, {"id": "ref-for-external-types\u2460"}, {"id": "ref-for-external-types\u2461"}, {"id": "ref-for-external-types\u2462"}, {"id": "ref-for-external-types\u2463"}, {"id": "ref-for-external-types\u2464"}, {"id": "ref-for-external-types\u2465"}, {"id": "ref-for-external-types\u2466"}, {"id": "ref-for-external-types\u2467"}, {"id": "ref-for-external-types\u2468"}], "title": "4. The WebAssembly Namespace"}, {"refs": [{"id": "ref-for-external-types\u2460\u24ea"}, {"id": "ref-for-external-types\u2460\u2460"}, {"id": "ref-for-external-types\u2460\u2461"}, {"id": "ref-for-external-types\u2460\u2462"}, {"id": "ref-for-external-types\u2460\u2463"}], "title": "4.1. Modules"}], "external": true};
 window.dfnpanelData['51ef9bb0'] = {"dfnID": "51ef9bb0", "url": "https://webassembly.github.io/exception-handling/core/exec/runtime.html#syntax-globaladdr", "dfnText": "global address", "refSections": [{"refs": [{"id": "ref-for-syntax-globaladdr"}], "title": "3.2. WebAssembly JS Object Caches"}, {"refs": [{"id": "ref-for-syntax-globaladdr\u2460"}, {"id": "ref-for-syntax-globaladdr\u2461"}, {"id": "ref-for-syntax-globaladdr\u2462"}], "title": "4.5. Globals"}], "external": true};
@@ -3715,7 +3735,7 @@ window.dfnpanelData['d7b1f215'] = {"dfnID": "d7b1f215", "url": "https://webassem
 window.dfnpanelData['9291eb1c'] = {"dfnID": "9291eb1c", "url": "https://webassembly.github.io/exception-handling/core/exec/runtime.html#values", "dfnText": "ref.extern", "refSections": [{"refs": [{"id": "ref-for-values"}], "title": "4.3. Memories"}, {"refs": [{"id": "ref-for-values\u2460"}, {"id": "ref-for-values\u2461"}, {"id": "ref-for-values\u2462"}, {"id": "ref-for-values\u2463"}, {"id": "ref-for-values\u2464"}], "title": "4.5. Globals"}, {"refs": [{"id": "ref-for-values\u2465"}, {"id": "ref-for-values\u2466"}, {"id": "ref-for-values\u2467"}, {"id": "ref-for-values\u2468"}, {"id": "ref-for-values\u2460\u24ea"}, {"id": "ref-for-values\u2460\u2460"}, {"id": "ref-for-values\u2460\u2461"}, {"id": "ref-for-values\u2460\u2462"}, {"id": "ref-for-values\u2460\u2463"}, {"id": "ref-for-values\u2460\u2464"}, {"id": "ref-for-values\u2460\u2465"}, {"id": "ref-for-values\u2460\u2466"}, {"id": "ref-for-values\u2460\u2467"}, {"id": "ref-for-values\u2460\u2468"}, {"id": "ref-for-values\u2461\u24ea"}, {"id": "ref-for-values\u2461\u2460"}, {"id": "ref-for-values\u2461\u2461"}, {"id": "ref-for-values\u2461\u2462"}, {"id": "ref-for-values\u2461\u2463"}, {"id": "ref-for-values\u2461\u2464"}, {"id": "ref-for-values\u2461\u2465"}, {"id": "ref-for-values\u2461\u2466"}], "title": "4.6. Exported Functions"}], "external": true};
 window.dfnpanelData['4f0eba03'] = {"dfnID": "4f0eba03", "url": "https://webassembly.github.io/exception-handling/core/exec/runtime.html#values", "dfnText": "ref.func", "refSections": [{"refs": [{"id": "ref-for-values"}], "title": "4.3. Memories"}, {"refs": [{"id": "ref-for-values\u2460"}, {"id": "ref-for-values\u2461"}, {"id": "ref-for-values\u2462"}, {"id": "ref-for-values\u2463"}, {"id": "ref-for-values\u2464"}], "title": "4.5. Globals"}, {"refs": [{"id": "ref-for-values\u2465"}, {"id": "ref-for-values\u2466"}, {"id": "ref-for-values\u2467"}, {"id": "ref-for-values\u2468"}, {"id": "ref-for-values\u2460\u24ea"}, {"id": "ref-for-values\u2460\u2460"}, {"id": "ref-for-values\u2460\u2461"}, {"id": "ref-for-values\u2460\u2462"}, {"id": "ref-for-values\u2460\u2463"}, {"id": "ref-for-values\u2460\u2464"}, {"id": "ref-for-values\u2460\u2465"}, {"id": "ref-for-values\u2460\u2466"}, {"id": "ref-for-values\u2460\u2467"}, {"id": "ref-for-values\u2460\u2468"}, {"id": "ref-for-values\u2461\u24ea"}, {"id": "ref-for-values\u2461\u2460"}, {"id": "ref-for-values\u2461\u2461"}, {"id": "ref-for-values\u2461\u2462"}, {"id": "ref-for-values\u2461\u2463"}, {"id": "ref-for-values\u2461\u2464"}, {"id": "ref-for-values\u2461\u2465"}, {"id": "ref-for-values\u2461\u2466"}], "title": "4.6. Exported Functions"}], "external": true};
 window.dfnpanelData['6ef486fb'] = {"dfnID": "6ef486fb", "url": "https://webassembly.github.io/exception-handling/core/exec/runtime.html#values", "dfnText": "ref.null", "refSections": [{"refs": [{"id": "ref-for-values"}], "title": "4.3. Memories"}, {"refs": [{"id": "ref-for-values\u2460"}, {"id": "ref-for-values\u2461"}, {"id": "ref-for-values\u2462"}, {"id": "ref-for-values\u2463"}, {"id": "ref-for-values\u2464"}], "title": "4.5. Globals"}, {"refs": [{"id": "ref-for-values\u2465"}, {"id": "ref-for-values\u2466"}, {"id": "ref-for-values\u2467"}, {"id": "ref-for-values\u2468"}, {"id": "ref-for-values\u2460\u24ea"}, {"id": "ref-for-values\u2460\u2460"}, {"id": "ref-for-values\u2460\u2461"}, {"id": "ref-for-values\u2460\u2462"}, {"id": "ref-for-values\u2460\u2463"}, {"id": "ref-for-values\u2460\u2464"}, {"id": "ref-for-values\u2460\u2465"}, {"id": "ref-for-values\u2460\u2466"}, {"id": "ref-for-values\u2460\u2467"}, {"id": "ref-for-values\u2460\u2468"}, {"id": "ref-for-values\u2461\u24ea"}, {"id": "ref-for-values\u2461\u2460"}, {"id": "ref-for-values\u2461\u2461"}, {"id": "ref-for-values\u2461\u2462"}, {"id": "ref-for-values\u2461\u2463"}, {"id": "ref-for-values\u2461\u2464"}, {"id": "ref-for-values\u2461\u2465"}, {"id": "ref-for-values\u2461\u2466"}], "title": "4.6. Exported Functions"}], "external": true};
-window.dfnpanelData['c2033417'] = {"dfnID": "c2033417", "url": "https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-reftype", "dfnText": "reftype", "refSections": [{"refs": [{"id": "ref-for-syntax-reftype"}], "title": "4.4. Tables"}, {"refs": [{"id": "ref-for-syntax-reftype\u2460"}, {"id": "ref-for-syntax-reftype\u2461"}, {"id": "ref-for-syntax-reftype\u2462"}, {"id": "ref-for-syntax-reftype\u2463"}, {"id": "ref-for-syntax-reftype\u2464"}], "title": "4.5. Globals"}, {"refs": [{"id": "ref-for-syntax-reftype\u2465"}, {"id": "ref-for-syntax-reftype\u2466"}, {"id": "ref-for-syntax-reftype\u2467"}, {"id": "ref-for-syntax-reftype\u2468"}, {"id": "ref-for-syntax-reftype\u2460\u24ea"}, {"id": "ref-for-syntax-reftype\u2460\u2460"}], "title": "4.6. Exported Functions"}, {"refs": [{"id": "ref-for-syntax-reftype\u2460\u2461"}], "title": "4.7.3. JavaScript exceptions"}], "external": true};
+window.dfnpanelData['c2033417'] = {"dfnID": "c2033417", "url": "https://webassembly.github.io/exception-handling/core/syntax/types.html#syntax-reftype", "dfnText": "reftype", "refSections": [{"refs": [{"id": "ref-for-syntax-reftype"}, {"id": "ref-for-syntax-reftype\u2460"}, {"id": "ref-for-syntax-reftype\u2461"}], "title": "4.4. Tables"}, {"refs": [{"id": "ref-for-syntax-reftype\u2462"}, {"id": "ref-for-syntax-reftype\u2463"}, {"id": "ref-for-syntax-reftype\u2464"}, {"id": "ref-for-syntax-reftype\u2465"}, {"id": "ref-for-syntax-reftype\u2466"}, {"id": "ref-for-syntax-reftype\u2467"}, {"id": "ref-for-syntax-reftype\u2468"}, {"id": "ref-for-syntax-reftype\u2460\u24ea"}], "title": "4.5. Globals"}, {"refs": [{"id": "ref-for-syntax-reftype\u2460\u2460"}, {"id": "ref-for-syntax-reftype\u2460\u2461"}, {"id": "ref-for-syntax-reftype\u2460\u2462"}, {"id": "ref-for-syntax-reftype\u2460\u2463"}, {"id": "ref-for-syntax-reftype\u2460\u2464"}, {"id": "ref-for-syntax-reftype\u2460\u2465"}, {"id": "ref-for-syntax-reftype\u2460\u2466"}, {"id": "ref-for-syntax-reftype\u2460\u2467"}, {"id": "ref-for-syntax-reftype\u2460\u2468"}], "title": "4.6. Exported Functions"}, {"refs": [{"id": "ref-for-syntax-reftype\u2461\u24ea"}], "title": "4.7.3. JavaScript exceptions"}], "external": true};
 window.dfnpanelData['ec6fe07e'] = {"dfnID": "ec6fe07e", "url": "https://webassembly.github.io/exception-handling/core/syntax/conventions.html#grammar-notation", "dfnText": "sequence", "refSections": [{"refs": [{"id": "ref-for-grammar-notation"}], "title": "2. Notation"}], "external": true};
 window.dfnpanelData['ce974fac'] = {"dfnID": "ce974fac", "url": "https://webassembly.github.io/exception-handling/core/exec/numerics.html#aux-signed", "dfnText": "signed_32", "refSections": [{"refs": [{"id": "ref-for-aux-signed"}, {"id": "ref-for-aux-signed\u2460"}], "title": "4.6. Exported Functions"}], "external": true};
 window.dfnpanelData['a20d03f5'] = {"dfnID": "a20d03f5", "url": "https://webassembly.github.io/exception-handling/core/exec/numerics.html#aux-signed", "dfnText": "signed_64", "refSections": [{"refs": [{"id": "ref-for-aux-signed"}, {"id": "ref-for-aux-signed\u2460"}], "title": "4.6. Exported Functions"}], "external": true};
@@ -3730,7 +3750,7 @@ window.dfnpanelData['c8a48e34'] = {"dfnID": "c8a48e34", "url": "https://webassem
 window.dfnpanelData['da3b3eb5'] = {"dfnID": "da3b3eb5", "url": "https://webassembly.github.io/exception-handling/core/appendix/embedding.html#embed-table-grow", "dfnText": "table_grow", "refSections": [{"refs": [{"id": "ref-for-embed-table-grow"}], "title": "4.4. Tables"}], "external": true};
 window.dfnpanelData['0f1fd09e'] = {"dfnID": "0f1fd09e", "url": "https://webassembly.github.io/exception-handling/core/appendix/embedding.html#embed-table-read", "dfnText": "table_read", "refSections": [{"refs": [{"id": "ref-for-embed-table-read"}], "title": "4.4. Tables"}], "external": true};
 window.dfnpanelData['19b5bb37'] = {"dfnID": "19b5bb37", "url": "https://webassembly.github.io/exception-handling/core/appendix/embedding.html#embed-table-size", "dfnText": "table_size", "refSections": [{"refs": [{"id": "ref-for-embed-table-size"}, {"id": "ref-for-embed-table-size\u2460"}], "title": "4.4. Tables"}], "external": true};
-window.dfnpanelData['660d1674'] = {"dfnID": "660d1674", "url": "https://webassembly.github.io/exception-handling/core/appendix/embedding.html#embed-table-type", "dfnText": "table_type", "refSections": [{"refs": [{"id": "ref-for-embed-table-type"}, {"id": "ref-for-embed-table-type\u2460"}], "title": "4.4. Tables"}], "external": true};
+window.dfnpanelData['660d1674'] = {"dfnID": "660d1674", "url": "https://webassembly.github.io/exception-handling/core/appendix/embedding.html#embed-table-type", "dfnText": "table_type", "refSections": [{"refs": [{"id": "ref-for-embed-table-type"}, {"id": "ref-for-embed-table-type\u2460"}, {"id": "ref-for-embed-table-type\u2461"}], "title": "4.4. Tables"}], "external": true};
 window.dfnpanelData['4529c626'] = {"dfnID": "4529c626", "url": "https://webassembly.github.io/exception-handling/core/appendix/embedding.html#embed-table-write", "dfnText": "table_write", "refSections": [{"refs": [{"id": "ref-for-embed-table-write"}], "title": "4.4. Tables"}], "external": true};
 window.dfnpanelData['6aa6ca82'] = {"dfnID": "6aa6ca82", "url": "https://webassembly.github.io/exception-handling/core/exec/runtime.html#syntax-externval", "dfnText": "tag (for external value)", "refSections": [{"refs": [{"id": "ref-for-syntax-externval"}, {"id": "ref-for-syntax-externval\u2460"}, {"id": "ref-for-syntax-externval\u2461"}, {"id": "ref-for-syntax-externval\u2462"}, {"id": "ref-for-syntax-externval\u2463"}, {"id": "ref-for-syntax-externval\u2464"}, {"id": "ref-for-syntax-externval\u2465"}, {"id": "ref-for-syntax-externval\u2466"}, {"id": "ref-for-syntax-externval\u2467"}, {"id": "ref-for-syntax-externval\u2468"}, {"id": "ref-for-syntax-externval\u2460\u24ea"}, {"id": "ref-for-syntax-externval\u2460\u2460"}, {"id": "ref-for-syntax-externval\u2460\u2461"}, {"id": "ref-for-syntax-externval\u2460\u2462"}, {"id": "ref-for-syntax-externval\u2460\u2463"}, {"id": "ref-for-syntax-externval\u2460\u2464"}, {"id": "ref-for-syntax-externval\u2460\u2465"}, {"id": "ref-for-syntax-externval\u2460\u2466"}, {"id": "ref-for-syntax-externval\u2460\u2467"}], "title": "4. The WebAssembly Namespace"}], "external": true};
 window.dfnpanelData['7638a6c8'] = {"dfnID": "7638a6c8", "url": "https://webassembly.github.io/exception-handling/core/syntax/types.html#external-types", "dfnText": "tag (for externtype)", "refSections": [{"refs": [{"id": "ref-for-external-types"}, {"id": "ref-for-external-types\u2460"}, {"id": "ref-for-external-types\u2461"}, {"id": "ref-for-external-types\u2462"}, {"id": "ref-for-external-types\u2463"}, {"id": "ref-for-external-types\u2464"}, {"id": "ref-for-external-types\u2465"}, {"id": "ref-for-external-types\u2466"}, {"id": "ref-for-external-types\u2467"}, {"id": "ref-for-external-types\u2468"}], "title": "4. The WebAssembly Namespace"}, {"refs": [{"id": "ref-for-external-types\u2460\u24ea"}, {"id": "ref-for-external-types\u2460\u2460"}, {"id": "ref-for-external-types\u2460\u2461"}, {"id": "ref-for-external-types\u2460\u2462"}, {"id": "ref-for-external-types\u2460\u2463"}], "title": "4.1. Modules"}], "external": true};
@@ -3866,7 +3886,7 @@ window.dfnpanelData['dom-exception-getarg'] = {"dfnID": "dom-exception-getarg", 
 window.dfnpanelData['dom-exception-is'] = {"dfnID": "dom-exception-is", "url": "#dom-exception-is", "dfnText": "is(exceptionTag)", "refSections": [{"refs": [{"id": "ref-for-dom-exception-is"}], "title": "4.7.2. Runtime exceptions"}], "external": false};
 window.dfnpanelData['dom-exception-stack'] = {"dfnID": "dom-exception-stack", "url": "#dom-exception-stack", "dfnText": "stack", "refSections": [{"refs": [{"id": "ref-for-dom-exception-stack"}], "title": "4.7.2. Runtime exceptions"}], "external": false};
 window.dfnpanelData['javascript-exception-tag'] = {"dfnID": "javascript-exception-tag", "url": "#javascript-exception-tag", "dfnText": "JavaScript exception tag", "refSections": [{"refs": [{"id": "ref-for-javascript-exception-tag"}], "title": "4.6. Exported Functions"}, {"refs": [{"id": "ref-for-javascript-exception-tag\u2460"}], "title": "4.7.3. JavaScript exceptions"}], "external": false};
-window.dfnpanelData['webassembly-throw'] = {"dfnID": "webassembly-throw", "url": "#webassembly-throw", "dfnText": "throw", "refSections": [{"refs": [{"id": "ref-for-webassembly-throw"}], "title": "4.4. Tables"}, {"refs": [{"id": "ref-for-webassembly-throw\u2460"}, {"id": "ref-for-webassembly-throw\u2461"}], "title": "4.6. Exported Functions"}], "external": false};
+window.dfnpanelData['webassembly-throw'] = {"dfnID": "webassembly-throw", "url": "#webassembly-throw", "dfnText": "throw", "refSections": [{"refs": [{"id": "ref-for-webassembly-throw"}, {"id": "ref-for-webassembly-throw\u2460"}, {"id": "ref-for-webassembly-throw\u2461"}], "title": "4.4. Tables"}, {"refs": [{"id": "ref-for-webassembly-throw\u2462"}, {"id": "ref-for-webassembly-throw\u2463"}], "title": "4.6. Exported Functions"}], "external": false};
 window.dfnpanelData['exceptiondef-compileerror'] = {"dfnID": "exceptiondef-compileerror", "url": "#exceptiondef-compileerror", "dfnText": "CompileError", "refSections": [{"refs": [{"id": "ref-for-exceptiondef-compileerror"}], "title": "4. The WebAssembly Namespace"}, {"refs": [{"id": "ref-for-exceptiondef-compileerror\u2460"}], "title": "4.1. Modules"}, {"refs": [{"id": "ref-for-exceptiondef-compileerror\u2461"}], "title": "4.8. Error Objects"}, {"refs": [{"id": "ref-for-exceptiondef-compileerror\u2462"}], "title": "6. Implementation-defined Limits"}], "external": false};
 window.dfnpanelData['exceptiondef-linkerror'] = {"dfnID": "exceptiondef-linkerror", "url": "#exceptiondef-linkerror", "dfnText": "LinkError", "refSections": [{"refs": [{"id": "ref-for-exceptiondef-linkerror"}, {"id": "ref-for-exceptiondef-linkerror\u2460"}, {"id": "ref-for-exceptiondef-linkerror\u2461"}, {"id": "ref-for-exceptiondef-linkerror\u2462"}, {"id": "ref-for-exceptiondef-linkerror\u2463"}, {"id": "ref-for-exceptiondef-linkerror\u2464"}, {"id": "ref-for-exceptiondef-linkerror\u2465"}, {"id": "ref-for-exceptiondef-linkerror\u2466"}, {"id": "ref-for-exceptiondef-linkerror\u2467"}], "title": "4. The WebAssembly Namespace"}, {"refs": [{"id": "ref-for-exceptiondef-linkerror\u2468"}], "title": "4.8. Error Objects"}], "external": false};
 window.dfnpanelData['exceptiondef-runtimeerror'] = {"dfnID": "exceptiondef-runtimeerror", "url": "#exceptiondef-runtimeerror", "dfnText": "RuntimeError", "refSections": [{"refs": [{"id": "ref-for-exceptiondef-runtimeerror"}], "title": "4. The WebAssembly Namespace"}, {"refs": [{"id": "ref-for-exceptiondef-runtimeerror\u2460"}], "title": "4.6. Exported Functions"}, {"refs": [{"id": "ref-for-exceptiondef-runtimeerror\u2461"}], "title": "4.8. Error Objects"}, {"refs": [{"id": "ref-for-exceptiondef-runtimeerror\u2462"}], "title": "6. Implementation-defined Limits"}], "external": false};
