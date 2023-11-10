@@ -76,14 +76,16 @@
 <section id="control-instructions">
 <span id="binary-instr-control"></span><h3>Control Instructions<a class="headerlink" href="#control-instructions" title="Permalink to this heading">¶</a></h3>
 <div class="math notranslate nohighlight" id="binary-rethrow">
-<span id="binary-try"></span>\[\begin{split}\begin{array}{llcllll}
+<span id="binary-try"></span>\[\begin{split}\begin{array}{&#64;{}llcllll}
 \def\mathdef45#1{{}}\mathdef45{instruction} &amp; \href{../binary/instructions.html#binary-instr}{\mathtt{instr}} &amp;::=&amp; \dots \\ &amp;&amp;|&amp;
-  \def\mathdef84#1{\mathtt{0x#1}}\mathdef84{06}~~\mathit{bt}{:}\href{../binary/instructions.html#binary-blocktype}{\mathtt{blocktype}}~~(\mathit{in}_1{:}\href{../binary/instructions.html#binary-instr}{\mathtt{instr}})^\ast~~
-    (\def\mathdef85#1{\mathtt{0x#1}}\mathdef85{07}~~x{:}\href{../binary/modules.html#binary-tagidx}{\mathtt{tagidx}}~~(\mathit{in}_2{:}\href{../binary/instructions.html#binary-instr}{\mathtt{instr}})^\ast)^\ast~~
+  \def\mathdef84#1{\mathtt{0x#1}}\mathdef84{06}~~\mathit{bt}{:}\href{../binary/instructions.html#binary-blocktype}{\mathtt{blocktype}}~~
+    (\mathit{in}_1{:}\href{../binary/instructions.html#binary-instr}{\mathtt{instr}})^\ast~~ \\&amp;&amp;&amp;
+    (\def\mathdef85#1{\mathtt{0x#1}}\mathdef85{07}~~x{:}\href{../binary/modules.html#binary-tagidx}{\mathtt{tagidx}}~~(\mathit{in}_2{:}\href{../binary/instructions.html#binary-instr}{\mathtt{instr}})^\ast)^\ast~~ \\&amp;&amp;&amp;
     (\def\mathdef86#1{\mathtt{0x#1}}\mathdef86{19}~~(\mathit{in}_3{:}\href{../binary/instructions.html#binary-instr}{\mathtt{instr}})^\ast)^?~~\def\mathdef87#1{\mathtt{0x#1}}\mathdef87{0B}
     &amp;\Rightarrow&amp; \href{../syntax/instructions.html#syntax-instr-control}{\mathsf{try}}~\mathit{bt}~\mathit{in}_1^\ast~(\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{catch}}~x~\mathit{in}_2^\ast)^\ast~
     (\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{catch\_all}}~\mathit{in}_3^\ast)^?\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{end}} \\ &amp;&amp;|&amp;
-  \def\mathdef88#1{\mathtt{0x#1}}\mathdef88{06}~~\mathit{bt}{:}\href{../binary/instructions.html#binary-blocktype}{\mathtt{blocktype}}~~(\mathit{in}{:}\href{../binary/instructions.html#binary-instr}{\mathtt{instr}})^\ast~~\def\mathdef89#1{\mathtt{0x#1}}\mathdef89{18}~~l{:}\href{../binary/modules.html#binary-labelidx}{\mathtt{labelidx}}
+  \def\mathdef88#1{\mathtt{0x#1}}\mathdef88{06}~~\mathit{bt}{:}\href{../binary/instructions.html#binary-blocktype}{\mathtt{blocktype}}~~(\mathit{in}{:}\href{../binary/instructions.html#binary-instr}{\mathtt{instr}})^\ast~~ \\&amp;&amp;&amp;
+    \def\mathdef89#1{\mathtt{0x#1}}\mathdef89{18}~~l{:}\href{../binary/modules.html#binary-labelidx}{\mathtt{labelidx}}
     &amp;\Rightarrow&amp; \href{../syntax/instructions.html#syntax-instr-control}{\mathsf{try}}~\mathit{bt}~\mathit{in}^\ast~\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{delegate}}~l \\ &amp;&amp;|&amp;
   \def\mathdef90#1{\mathtt{0x#1}}\mathdef90{09}~~l{:}\href{../binary/modules.html#binary-labelidx}{\mathtt{labelidx}} &amp;\Rightarrow&amp; \href{../syntax/instructions.html#syntax-instr-control}{\mathsf{rethrow}}~l \\
 \end{array}\end{split}\]</div>

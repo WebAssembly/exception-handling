@@ -75,8 +75,7 @@
 <span id="syntax-runtime"></span><h2>Runtime Structure<a class="headerlink" href="#runtime-structure" title="Permalink to this heading">¶</a></h2>
 <section id="stack">
 <span id="handler"></span><span id="id1"></span><h3>Stack<a class="headerlink" href="#stack" title="Permalink to this heading">¶</a></h3>
-<section id="exception-handlers">
-<span id="syntax-handler"></span><h4>Exception Handlers<a class="headerlink" href="#exception-handlers" title="Permalink to this heading">¶</a></h4>
+<p id="syntax-handler"><strong>Exception Handlers</strong></p>
 <p>Legacy exception handlers are installed by <span class="math notranslate nohighlight">\(\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{try}}\)</span> instructions.
 Instead of branch labels, their catch clauses have instruction blocks associated with them.
 Furthermore, a <span class="math notranslate nohighlight">\(\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{delegate}}\)</span> handler is associated with a label index to implicitly rewthrow to:</p>
@@ -87,7 +86,6 @@ Furthermore, a <span class="math notranslate nohighlight">\(\href{../syntax/inst
     \href{../syntax/instructions.html#syntax-instr-control}{\mathsf{catch\_all}}~\href{../syntax/modules.html#syntax-tagidx}{\mathit{tagidx}}~\href{../syntax/instructions.html#syntax-instr}{\mathit{instr}}^\ast \\ &amp;&amp;|&amp;
     \href{../syntax/instructions.html#syntax-instr-control}{\mathsf{delegate}}~\href{../syntax/modules.html#syntax-labelidx}{\mathit{labelidx}} \\
 \end{array}\end{split}\]</div>
-</section>
 </section>
 <section id="administrative-instructions">
 <span id="syntax-instr-admin"></span><span id="syntax-caught"></span><h3>Administrative Instructions<a class="headerlink" href="#administrative-instructions" title="Permalink to this heading">¶</a></h3>
