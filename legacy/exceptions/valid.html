@@ -85,7 +85,7 @@
 <p>Existing typing rules are adjusted as follows:</p>
 <ul class="simple">
 <li><p>All rules that extend the context with new labels use an absent <span class="math notranslate nohighlight">\(\href{../valid/conventions.html#context}{\mathsf{catch}}\)</span> flag.</p></li>
-<li><p>All rules that inspect the context for a label ignore the presence of an <span class="math notranslate nohighlight">\(\href{../valid/conventions.html#context}{\mathsf{catch}}\)</span> flag.</p></li>
+<li><p>All rules that inspect the context for a label ignore the presence of a <span class="math notranslate nohighlight">\(\href{../valid/conventions.html#context}{\mathsf{catch}}\)</span> flag.</p></li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -123,7 +123,8 @@ the instruction sequence <span class="math notranslate nohighlight">\(\href{../s
 <li><p>Then the compound instruction is valid with type <span class="math notranslate nohighlight">\([t_1^\ast] \href{../syntax/types.html#syntax-functype}{\rightarrow} [t_2^\ast]\)</span>.</p></li>
 </ul>
 <div class="math notranslate nohighlight">
-\[\begin{split}\frac{
+\[\begin{split}~\\
+\frac{
 \begin{array}{c}
   C \href{../valid/types.html#valid-blocktype}{\vdash} \href{../syntax/instructions.html#syntax-blocktype}{\mathit{blocktype}} : [t_1^\ast] \href{../syntax/types.html#syntax-functype}{\rightarrow} [t_2^\ast]
   \qquad
@@ -137,7 +138,7 @@ C \href{../valid/instructions.html#valid-instr}{\vdash} \href{../syntax/instruct
 }\end{split}\]</div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The <span class="xref std std-ref">notation</span> <span class="math notranslate nohighlight">\(C,\href{../valid/conventions.html#context}{\mathsf{labels}}\,(\href{../valid/conventions.html#context}{\mathsf{catch}}^?~[t^\ast])\)</span> inserts the new label type at index <span class="math notranslate nohighlight">\(0\)</span>, shifting all others.</p>
+<p>The <span class="xref std std-ref">notation</span> <span class="math notranslate nohighlight">\(C,\href{../valid/conventions.html#context}{\mathsf{labels}}\,(\href{../valid/conventions.html#context}{\mathsf{catch}}~[t^\ast])\)</span> inserts the new label type at index <span class="math notranslate nohighlight">\(0\)</span>, shifting all others.</p>
 </div>
 </section>
 <section id="xref-syntax-instructions-syntax-instr-control-mathsf-try-xref-syntax-instructions-syntax-blocktype-mathit-blocktype-xref-syntax-instructions-syntax-instr-mathit-instr-ast-xref-syntax-instructions-syntax-instr-control-mathsf-delegate-l">
@@ -151,7 +152,8 @@ the instruction sequence <span class="math notranslate nohighlight">\(\href{../s
 <li><p>Then the compound instruction is valid with type <span class="math notranslate nohighlight">\([t_1^\ast] \href{../syntax/types.html#syntax-functype}{\rightarrow} [t_2^\ast]\)</span>.</p></li>
 </ul>
 <div class="math notranslate nohighlight">
-\[\frac{
+\[\begin{split}~\\
+\frac{
   C \href{../valid/types.html#valid-blocktype}{\vdash} \href{../syntax/instructions.html#syntax-blocktype}{\mathit{blocktype}} : [t_1^\ast] \href{../syntax/types.html#syntax-functype}{\rightarrow} [t_2^\ast]
   \qquad
   C,\href{../valid/conventions.html#context}{\mathsf{labels}}\,[t_2^\ast] \href{../valid/instructions.html#valid-instr-seq}{\vdash} \href{../syntax/instructions.html#syntax-instr}{\mathit{instr}}^\ast : [t_1^\ast]\href{../syntax/types.html#syntax-functype}{\rightarrow}[t_2^\ast]
@@ -159,7 +161,7 @@ the instruction sequence <span class="math notranslate nohighlight">\(\href{../s
   C.\href{../valid/conventions.html#context}{\mathsf{labels}}[l] = [t_0^\ast]
 }{
 C \href{../valid/instructions.html#valid-instr-seq}{\vdash} \href{../syntax/instructions.html#syntax-instr-control}{\mathsf{try}}~\href{../syntax/instructions.html#syntax-blocktype}{\mathit{blocktype}}~\href{../syntax/instructions.html#syntax-instr}{\mathit{instr}}^\ast~\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{delegate}}~l : [t_1^\ast]\href{../syntax/types.html#syntax-functype}{\rightarrow}[t_2^\ast]
-}\]</div>
+}\end{split}\]</div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The <span class="xref std std-ref">label index</span> space in the <a class="reference internal" href="#context"><span class="std std-ref">context</span></a> <span class="math notranslate nohighlight">\(C\)</span> contains the most recent label first, so that <span class="math notranslate nohighlight">\(C.\href{../valid/conventions.html#context}{\mathsf{labels}}[l]\)</span> performs a relative lookup as expected.</p>
@@ -174,11 +176,12 @@ C \href{../valid/instructions.html#valid-instr-seq}{\vdash} \href{../syntax/inst
 <li><p>Then the instruction is valid with type <span class="math notranslate nohighlight">\([t_1^\ast] \href{../syntax/types.html#syntax-functype}{\rightarrow} [t_2^\ast]\)</span>, for any sequences of  <span class="xref std std-ref">value types</span> <span class="math notranslate nohighlight">\(t_1^\ast\)</span> and <span class="math notranslate nohighlight">\(t_2^\ast\)</span>.</p></li>
 </ul>
 <div class="math notranslate nohighlight">
-\[\frac{
+\[\begin{split}~\\
+\frac{
   C.\href{../valid/conventions.html#context}{\mathsf{labels}}[l] = \href{../valid/conventions.html#context}{\mathsf{catch}}~[t^\ast]
 }{
   C \href{../valid/instructions.html#valid-instr}{\vdash} \href{../syntax/instructions.html#syntax-instr-control}{\mathsf{rethrow}}~l : [t_1^\ast] \href{../syntax/types.html#syntax-functype}{\rightarrow} [t_2^\ast]
-}\]</div>
+}\end{split}\]</div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The <span class="math notranslate nohighlight">\(\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{rethrow}}\)</span> instruction is stack-polymorphic.</p>
