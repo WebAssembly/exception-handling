@@ -25,7 +25,7 @@ Types are representable as an enumeration.
 
 .. code-block:: pseudo
 
-   type val_type = I32 | I64 | F32 | F64 | V128 | Funcref | Externref
+   type val_type = I32 | I64 | F32 | F64 | V128 | Funcref | Exnref | Externref
 
    func is_num(t : val_type | Unknown) : bool =
      return t = I32 || t = I64 || t = F32 || t = F64 || t = Unknown
@@ -212,22 +212,28 @@ Other instructions are checked in a similar manner.
          error_if(frame.opcode =/= if)
          push_ctrl(else, frame.start_types, frame.end_types)
 
-       case (try t1*->t2*)
+       case (try_table t1*->t2* handler*)
          pop_vals([t1*])
+         let rest = pop_vals()
+         foreach (handler in handler*)
+           switch (handler.clause)
+             case (catch x)
+               push_vals(tags[x].type.params)
+             case (catch_ref x)
+               push_vals(tags[x].type.params)
+               push_val(Exnref)
+             case (catch_all)
+               skip
+             case (catch_all_ref)
+               push_val(Exnref)
+           error_if(ctrls.size() < handler.label)
+           pop_vals(label_types(ctrls[handler.label]))
+           error_if(not vals.is_empty())
+         push_vals(rest)
          push_ctrl(try, [t1*], [t2*])
 
-       case (catch x)
-         let frame = pop_ctrl()
-         error_if(frame.opcode =/= try || frame.opcode =/= catch)
-         push_ctrl(catch, tags[x].type.params, frame.end_types)
-
-       case (catch_all)
-         let frame = pop_ctrl()
-         error_if(frame.opcode =/= try || frame.opcode =/= catch)
-         push_ctrl(catch_all, [], frame.end_types)
-
        case (throw x)
-          pop.vals(tags[x].type.params)
+          pop_vals(tags[x].type.params)
           unreachable()
 
        case (br n)
