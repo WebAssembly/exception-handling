@@ -34,7 +34,7 @@ Types are representable as an enumeration.
      return t = V128 || t = Unknown
 
    func is_ref(t : val_type | Unknown) : bool =
-     return t = Funcref || t = Externref || t = Unknown
+     return t = Funcref || t = Exnref || t = Externref || t = Unknown
 
 The algorithm uses two separate stacks: the *value stack* and the *control stack*.
 The former tracks the :ref:`types <syntax-valtype>` of operand values on the :ref:`stack <stack>`,
@@ -214,8 +214,9 @@ Other instructions are checked in a similar manner.
 
        case (try_table t1*->t2* handler*)
          pop_vals([t1*])
-         let rest = pop_vals()
          foreach (handler in handler*)
+           error_if(ctrls.size() < handler.label)
+           push_ctrl(catch, [], label_types(ctrls[handler.label]))
            switch (handler.clause)
              case (catch x)
                push_vals(tags[x].type.params)
@@ -226,11 +227,8 @@ Other instructions are checked in a similar manner.
                skip
              case (catch_all_ref)
                push_val(Exnref)
-           error_if(ctrls.size() < handler.label)
-           pop_vals(label_types(ctrls[handler.label]))
-           error_if(not vals.is_empty())
-         push_vals(rest)
-         push_ctrl(try, [t1*], [t2*])
+           pop_ctrl()
+         push_ctrl(try_table, [t1*], [t2*])
 
        case (throw x)
           pop_vals(tags[x].type.params)
