@@ -29,7 +29,7 @@ Functions :math:`\func` are classified by :ref:`function types <syntax-functype>
 
   * |CLOCALS| set to the sequence of :ref:`value types <syntax-valtype>` :math:`t_1^\ast~t^\ast`, concatenating parameters and locals,
 
-  * |CLABELS| set to the singular sequence containing only :ref:`label type <syntax-labeltype>` :math:`[t_2^\ast]`.
+  * |CLABELS| set to the singular sequence containing only :ref:`result type <syntax-resulttype>` :math:`[t_2^\ast]`.
 
   * |CRETURN| set to the :ref:`result type <syntax-resulttype>` :math:`[t_2^\ast]`.
 
@@ -181,7 +181,7 @@ Element segments :math:`\elem` are classified by the :ref:`reference type <synta
 
   * The expression :math:`e_i` must be :ref:`valid <valid-expr>` with some :ref:`result type <syntax-resulttype>` :math:`[t]`.
 
-  * The expression :math:`e_i` must be :ref:`constant <valid-const>`.
+  * The expression :math:`e_i` must be :ref:`constant <valid-constant>`.
 
 * The element mode :math:`\elemmode` must be valid with :ref:`reference type <syntax-reftype>` :math:`t`.
 

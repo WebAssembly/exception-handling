@@ -63,15 +63,12 @@ and admin_instr' =
   | Invoke of func_inst
   | Trapping of string
   | Returning of value stack
+  | ReturningInvoke of value stack * func_inst
   | Breaking of int32 * value stack
   | Throwing of Tag.t * value stack
-  | Rethrowing of int32 * (admin_instr -> admin_instr)
   | Label of int32 * instr list * code
   | Frame of int32 * frame * code
-  | Catch of int32 * (Tag.t * instr list) list * instr list option * code
-  | Caught of int32 * Tag.t * value stack * code
-  | Delegate of int32 * code
-  | Delegating of int32 * Tag.t * value stack
+  | Handler of int32 * catch list * code
 
 type config =
 {
@@ -214,6 +211,21 @@ let rec step (c : config) : config =
         else
           vs, [Invoke func @@ e.at]
 
+      | ReturnCall x, vs ->
+        (match (step {c with code = (vs, [Plain (Call x) @@ e.at])}).code with
+        | vs', [{it = Invoke a; at}] -> vs', [ReturningInvoke (vs', a) @@ at]
+        | _ -> assert false
+        )
+
+      | ReturnCallIndirect (x, y), vs ->
+        (match
+          (step {c with code = (vs, [Plain (CallIndirect (x, y)) @@ e.at])}).code
+        with
+        | vs', [{it = Invoke a; at}] -> vs', [ReturningInvoke (vs', a) @@ at]
+        | vs', [{it = Trapping s; at}] -> vs', [Trapping s @@ at]
+        | _ -> assert false
+        )
+
       | Throw x, vs ->
         let t = tag frame.inst x in
         let FuncType (ts, _) = Tag.type_of t in
@@ -221,23 +233,18 @@ let rec step (c : config) : config =
         let args, vs' = take n vs e.at, drop n vs e.at in
         vs', [Throwing (t, args) @@ e.at]
 
-      | Rethrow x, vs ->
-        vs, [Rethrowing (x.it, fun e -> e) @@ e.at]
+      | ThrowRef, Ref (NullRef _) :: vs ->
+        vs, [Trapping "null exception reference" @@ e.at]
 
-      | TryCatch (bt, es', cts, ca), vs ->
+      | ThrowRef, Ref (ExnRef (t, args)) :: vs ->
+        vs, [Throwing (t, args) @@ e.at]
+
+      | TryTable (bt, cs, es'), vs ->
         let FuncType (ts1, ts2) = block_type frame.inst bt in
         let n1 = Lib.List32.length ts1 in
         let n2 = Lib.List32.length ts2 in
         let args, vs' = take n1 vs e.at, drop n1 vs e.at in
-        let cts' = List.map (fun (x, es'') -> ((tag frame.inst x), es'')) cts in
-        vs', [Label (n2, [], ([], [Catch (n2, cts', ca, (args, List.map plain es')) @@ e.at])) @@ e.at]
-
-      | TryDelegate (bt, es', x), vs ->
-        let FuncType (ts1, ts2) = block_type frame.inst bt in
-        let n1 = Lib.List32.length ts1 in
-        let n2 = Lib.List32.length ts2 in
-        let args, vs' = take n1 vs e.at, drop n1 vs e.at in
-        vs', [Label (n2, [], ([], [Delegate (x.it, (args, List.map plain es')) @@ e.at])) @@ e.at]
+        vs', [Handler (n2, cs, (args, [Label (n2, [], ([], List.map plain es')) @@ e.at])) @@ e.at]
 
       | Drop, v :: vs' ->
         vs', []
@@ -629,7 +636,8 @@ let rec step (c : config) : config =
     | Trapping msg, vs ->
       assert false
 
-    | Returning vs', vs ->
+    | Returning _, vs
+    | ReturningInvoke _, vs ->
       Crash.error e.at "undefined frame"
 
     | Breaking (k, vs'), vs ->
@@ -637,12 +645,6 @@ let rec step (c : config) : config =
 
     | Throwing _, _ ->
       assert false
-
-    | Rethrowing _, _ ->
-      Crash.error e.at "undefined catch label"
-
-    | Delegating _, _ ->
-      Crash.error e.at "undefined delegate label"
 
     | Label (n, es0, (vs', [])), vs ->
       vs' @ vs, []
@@ -653,6 +655,9 @@ let rec step (c : config) : config =
     | Label (n, es0, (vs', {it = Returning vs0; at} :: es')), vs ->
       vs, [Returning vs0 @@ at]
 
+    | Label (n, es0, (vs', {it = ReturningInvoke (vs0, f); at} :: es')), vs ->
+      vs, [ReturningInvoke (vs0, f) @@ at]
+
     | Label (n, es0, (vs', {it = Breaking (0l, vs0); at} :: es')), vs ->
       take n vs0 e.at @ vs, List.map plain es0
 
@@ -661,15 +666,6 @@ let rec step (c : config) : config =
 
     | Label (n, es0, (vs', {it = Throwing (a, vs0); at} :: es')), vs ->
       vs, [Throwing (a, vs0) @@ at]
-
-    | Label (n, es0, (vs', {it = Delegating (0l, a, vs0); at} :: es')), vs ->
-      vs, [Throwing (a, vs0) @@ at]
-
-    | Label (n, es0, (vs', {it = Delegating (k, a, vs0); at} :: es')), vs ->
-      vs, [Delegating (Int32.sub k 1l, a, vs0) @@ at]
-
-    | Label (n, es0, (vs', {it = Rethrowing (k, cont); at} :: es')), vs ->
-      vs, [Rethrowing (Int32.sub k 1l, (fun e -> Label (n, es0, (vs', cont e :: es')) @@ e.at)) @@ at]
 
     | Label (n, es0, code'), vs ->
       let c' = step {c with code = code'} in
@@ -684,6 +680,10 @@ let rec step (c : config) : config =
     | Frame (n, frame', (vs', {it = Returning vs0; at} :: es')), vs ->
       take n vs0 e.at @ vs, []
 
+    | Frame (n, frame', (vs', {it = ReturningInvoke (vs0, f); at} :: es')), vs ->
+      let FuncType (ins, out) = Func.type_of f in
+      take (Lib.List32.length ins) vs0 e.at @ vs, [Invoke f @@ at]
+
     | Frame (n, frame', (vs', {it = Throwing (a, vs0); at} :: es')), vs ->
       vs, [Throwing (a, vs0) @@ at]
 
@@ -691,59 +691,36 @@ let rec step (c : config) : config =
       let c' = step {frame = frame'; code = code'; budget = c.budget - 1} in
       vs, [Frame (n, c'.frame, c'.code) @@ e.at]
 
-    | Catch (n, cts, ca, (vs', [])), vs ->
+    | Handler (n, cs, (vs', [])), vs ->
       vs' @ vs, []
 
-    | Catch (n, cts, ca, (vs', ({it = Trapping _ | Breaking _ | Returning _ | Delegating _; at} as e) :: es')), vs ->
+    | Handler (n, cs, (vs', ({it = Trapping _ | Breaking _ | Returning _ | ReturningInvoke _; at} as e) :: es')), vs ->
       vs, [e]
 
-    | Catch (n, cts, ca, (vs', {it = Rethrowing (k, cont); at} :: es')), vs ->
-      vs, [Rethrowing (k, (fun e -> Catch (n, cts, ca, (vs', (cont e) :: es')) @@ e.at)) @@ at]
-
-    | Catch (n, (a', es'') :: cts, ca, (vs', {it = Throwing (a, vs0); at} :: es')), vs ->
-      if a == a' then
-        vs, [Caught (n, a, vs0, (vs0, List.map plain es'')) @@ at]
+    | Handler (n, {it = Catch (x1, x2); _} :: cs, (vs', {it = Throwing (a, vs0); at} :: es')), vs ->
+      if a == tag frame.inst x1 then
+        vs0 @ vs, [Plain (Br x2) @@ e.at]
       else
-        vs, [Catch (n, cts, ca, (vs', {it = Throwing (a, vs0); at} :: es')) @@ e.at]
+        vs, [Handler (n, cs, (vs', {it = Throwing (a, vs0); at} :: es')) @@ e.at]
 
-    | Catch (n, [], Some es'', (vs', {it = Throwing (a, vs0); at} :: es')), vs ->
-      vs, [Caught (n, a, vs0, (vs0, List.map plain es'')) @@ at]
+    | Handler (n, {it = CatchRef (x1, x2); _} :: cs, (vs', {it = Throwing (a, vs0); at} :: es')), vs ->
+      if a == tag frame.inst x1 then
+        Ref (ExnRef (a, vs0)) :: vs0 @ vs, [Plain (Br x2) @@ e.at]
+      else
+        vs, [Handler (n, cs, (vs', {it = Throwing (a, vs0); at} :: es')) @@ e.at]
 
-    | Catch (n, [], None, (vs', {it = Throwing (a, vs0); at} :: es')), vs ->
+    | Handler (n, {it = CatchAll x; _} :: cs, (vs', {it = Throwing (a, vs0); at} :: es')), vs ->
+      vs, [Plain (Br x) @@ e.at]
+
+    | Handler (n, {it = CatchAllRef x; _} :: cs, (vs', {it = Throwing (a, vs0); at} :: es')), vs ->
+      Ref (ExnRef (a, vs0)) :: vs, [Plain (Br x) @@ e.at]
+
+    | Handler (n, [], (vs', {it = Throwing (a, vs0); at} :: es')), vs ->
       vs, [Throwing (a, vs0) @@ at]
 
-    | Catch (n, cts, ca, code'), vs ->
+    | Handler (n, cs, code'), vs ->
       let c' = step {c with code = code'} in
-      vs, [Catch (n, cts, ca, c'.code) @@ e.at]
-
-    | Caught (n, a, vs0, (vs', [])), vs ->
-      vs' @ vs, []
-
-    | Caught (n, a, vs0, (vs', ({it = Trapping _ | Breaking _ | Returning _ | Throwing _ | Delegating _; at} as e) :: es')), vs ->
-      vs, [e]
-
-    | Caught (n, a, vs0, (vs', {it = Rethrowing (0l, cont); at} :: es')), vs ->
-      vs, [Caught (n, a, vs0, (vs', (cont (Throwing (a, vs0) @@ at)) :: es')) @@ e.at]
-
-    | Caught (n, a, vs0, (vs', {it = Rethrowing (k, cont); at} :: es')), vs ->
-      vs, [Rethrowing (k, (fun e -> Caught (n, a, vs0, (vs', (cont e) :: es')) @@ e.at)) @@ at]
-
-    | Caught (n, a, vs0, code'), vs ->
-      let c' = step {c with code = code'} in
-      vs, [Caught (n, a, vs0, c'.code) @@ e.at]
-
-    | Delegate (l, (vs', [])), vs ->
-      vs' @ vs, []
-
-    | Delegate (l, (vs', ({it = Trapping _ | Breaking _ | Returning _ | Rethrowing _ | Delegating _; at} as e) :: es')), vs ->
-      vs, [e]
-
-    | Delegate (l, (vs', {it = Throwing (a, vs0); at} :: es')), vs ->
-      vs, [Delegating (l, a, vs0) @@ e.at]
-
-    | Delegate (l, code'), vs ->
-      let c' = step {c with code = code'} in
-      vs, [Delegate (l, c'.code) @@ e.at]
+      vs, [Handler (n, cs, c'.code) @@ e.at]
 
     | Invoke func, vs when c.budget = 0 ->
       Exhaustion.error e.at "call stack exhausted"
