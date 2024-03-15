@@ -1389,7 +1389,7 @@ The <dfn attribute for="Exception">stack</dfn> getter steps are:
 
 The <dfn>JavaScript exception tag</dfn> is a [=tag address=] reserved by this
 specification to distinguish exceptions originating from JavaScript. It is exposed
-to JavaScript code via {{WebAssembly}}.{{JSTag}} a global pre-initailized (TODO: what's ths spec-y way to say this?)
+to JavaScript code via {{WebAssembly}}.{{JSTag}} a global pre-initialized (TODO: what's ths spec-y way to say this?)
 Tag object [=create a Tag object|created=] from the JavaScript exception tag address.
 
 
