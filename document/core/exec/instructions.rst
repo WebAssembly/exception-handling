@@ -220,9 +220,9 @@ Reference Instructions
 
 .. math::
    \begin{array}{lcl@{\qquad}l}
-   \val~\REFISNULL &\stepto& \I32.\CONST~1
+   \val~\REFISNULL &\stepto& (\I32.\CONST~1)
      & (\iff \val = \REFNULL~t) \\
-   \val~\REFISNULL &\stepto& \I32.\CONST~0
+   \val~\REFISNULL &\stepto& (\I32.\CONST~0)
      & (\otherwise) \\
    \end{array}
 
@@ -242,7 +242,7 @@ Reference Instructions
 
 .. math::
    \begin{array}{lcl@{\qquad}l}
-   F; \REFFUNC~x &\stepto& F; \REFFUNCADDR~a
+   F; (\REFFUNC~x) &\stepto& F; (\REFFUNCADDR~a)
      & (\iff a = F.\AMODULE.\MIFUNCS[x]) \\
    \end{array}
 
@@ -379,15 +379,15 @@ Most vector instructions are defined in terms of generic numeric operators appli
 
 2. Pop the value :math:`\V128.\VCONST~c_2` from the stack.
 
-3. Let :math:`i^\ast` be the sequence :math:`\lanes_{i8x16}(c_2)`.
+3. Let :math:`i^\ast` be the result of computing :math:`\lanes_{i8x16}(c_2)`.
 
 4. Pop the value :math:`\V128.\VCONST~c_1` from the stack.
 
-5. Let :math:`j^\ast` be the sequence :math:`\lanes_{i8x16}(c_1)`.
+5. Let :math:`j^\ast` be the result of computing :math:`\lanes_{i8x16}(c_1)`.
 
-6. Let :math:`c^\ast` be the concatenation of the two sequences :math:`j^\ast~0^{240}`
+6. Let :math:`c^\ast` be the concatenation of the two sequences :math:`j^\ast` and :math:`0^{240}`.
 
-7. Let :math:`c'` be the result of :math:`\lanes^{-1}_{i8x16}(c^\ast[ i^\ast[0] ] \dots c^\ast[ i^\ast[15] ])`.
+7. Let :math:`c'` be the result of computing :math:`\lanes^{-1}_{i8x16}(c^\ast[ i^\ast[0] ] \dots c^\ast[ i^\ast[15] ])`.
 
 8. Push the value :math:`\V128.\VCONST~c'` onto the stack.
 
@@ -416,22 +416,22 @@ Most vector instructions are defined in terms of generic numeric operators appli
 
 3. Pop the value :math:`\V128.\VCONST~c_2` from the stack.
 
-4. Let :math:`i_2^\ast` be the sequence :math:`\lanes_{i8x16}(c_2)`.
+4. Let :math:`i_2^\ast` be the result of computing :math:`\lanes_{i8x16}(c_2)`.
 
 5. Pop the value :math:`\V128.\VCONST~c_1` from the stack.
 
-6. Let :math:`i_1^\ast` be the sequence :math:`\lanes_{i8x16}(c_1)`.
+6. Let :math:`i_1^\ast` be the result of computing :math:`\lanes_{i8x16}(c_1)`.
 
-7. Let :math:`i^\ast` be the concatenation of the two sequences :math:`i_1^\ast~i_2^\ast`.
+7. Let :math:`i^\ast` be the concatenation of the two sequences :math:`i_1^\ast` and :math:`i_2^\ast`.
 
-8. Let :math:`c` be the result of :math:`\lanes^{-1}_{i8x16}(i^\ast[x^\ast[0]] \dots i^\ast[x^\ast[15]])`.
+8. Let :math:`c` be the result of computing :math:`\lanes^{-1}_{i8x16}(i^\ast[x^\ast[0]] \dots i^\ast[x^\ast[15]])`.
 
 9. Push the value :math:`\V128.\VCONST~c` onto the stack.
 
 .. math::
    \begin{array}{l}
    \begin{array}{lcl@{\qquad}l}
-   (\V128\K{.}\VCONST~c_1)~(\V128\K{.}\VCONST~c_2)~\I8X16\K{.}\SHUFFLE~x^\ast &\stepto& (\V128\K{.}\VCONST~c)
+   (\V128\K{.}\VCONST~c_1)~(\V128\K{.}\VCONST~c_2)~(\I8X16\K{.}\SHUFFLE~x^\ast) &\stepto& (\V128\K{.}\VCONST~c)
    \end{array}
    \\ \qquad
      \begin{array}[t]{@{}r@{~}l@{}}
@@ -454,7 +454,7 @@ Most vector instructions are defined in terms of generic numeric operators appli
 
 4. Let :math:`N` be the integer :math:`\dim(\shape)`.
 
-5. Let :math:`c` be the result of :math:`\lanes^{-1}_{\shape}(c_1^N)`.
+5. Let :math:`c` be the result of computing :math:`\lanes^{-1}_{\shape}(c_1^N)`.
 
 6. Push the value :math:`\V128.\VCONST~c` to the stack.
 
@@ -478,7 +478,7 @@ Most vector instructions are defined in terms of generic numeric operators appli
 
 3. Pop the value :math:`\V128.\VCONST~c_1` from the stack.
 
-4. Let :math:`i^\ast` be the sequence :math:`\lanes_{t_1\K{x}N}(c_1)`.
+4. Let :math:`i^\ast` be the result of computing :math:`\lanes_{t_1\K{x}N}(c_1)`.
 
 5. Let :math:`t_2` be the type :math:`\unpacked(t_1\K{x}N)`.
 
@@ -489,7 +489,7 @@ Most vector instructions are defined in terms of generic numeric operators appli
 .. math::
    \begin{array}{l}
    \begin{array}{lcl@{\qquad}l}
-   (\V128\K{.}\VCONST~c_1)~t_1\K{x}N\K{.}\EXTRACTLANE~x &\stepto& (t_2\K{.}\CONST~c_2)
+   (\V128\K{.}\VCONST~c_1)~(t_1\K{x}N\K{.}\EXTRACTLANE~x) &\stepto& (t_2\K{.}\CONST~c_2)
    \end{array}
    \\ \qquad
      \begin{array}[t]{@{}r@{~}l@{}}
@@ -516,16 +516,16 @@ Most vector instructions are defined in terms of generic numeric operators appli
 
 6. Pop the value :math:`\V128.\VCONST~c_2` from the stack.
 
-7. Let :math:`i^\ast` be the sequence :math:`\lanes_{\shape}(c_2)`.
+7. Let :math:`i^\ast` be the result of computing :math:`\lanes_{\shape}(c_2)`.
 
-8. Let :math:`c` be the result of computing :math:`\lanes^{-1}_{\shape}(i^\ast \with [x] = c_1)`
+8. Let :math:`c` be the result of computing :math:`\lanes^{-1}_{\shape}(i^\ast \with [x] = c_1)`.
 
 9. Push :math:`\V128.\VCONST~c` on the stack.
 
 .. math::
    \begin{array}{l}
    \begin{array}{lcl@{\qquad}l}
-   (t_1\K{.}\CONST~c_1)~(\V128\K{.}\VCONST~c_2)~\shape\K{.}\REPLACELANE~x &\stepto& (\V128\K{.}\VCONST~c)
+   (t_1\K{.}\CONST~c_1)~(\V128\K{.}\VCONST~c_2)~(\shape\K{.}\REPLACELANE~x) &\stepto& (\V128\K{.}\VCONST~c)
    \end{array}
    \\ \qquad
      \begin{array}[t]{@{}r@{~}l@{}}
@@ -596,13 +596,17 @@ Most vector instructions are defined in terms of generic numeric operators appli
 
 3. Pop the value :math:`\V128.\VCONST~c_1` from the stack.
 
-4. Let :math:`i^\ast` be the sequence :math:`\lanes_{t\K{x}N}(c_1)`.
+4. Let :math:`i_1^\ast` be the result of computing :math:`\lanes_{t\K{x}N}(c_1)`.
 
-5. Let :math:`j^\ast` be the sequence :math:`\lanes_{t\K{x}N}(c_2)`.
+5. Let :math:`i_2^\ast` be the result of computing :math:`\lanes_{t\K{x}N}(c_2)`.
 
-6. Let :math:`c` be the result of computing :math:`\lanes^{-1}_{t\K{x}N}(\extends_{1,|t|}(\vrelop_t(i^\ast, j^\ast)))`.
+6. Let :math:`i^\ast` be the result of computing :math:`\vrelop_t(i_1^\ast, i_2^\ast)`.
 
-7. Push the value :math:`\V128.\VCONST~c` to the stack.
+7. Let :math:`j^\ast` be the result of computing :math:`\extends_{1,|t|}(i^\ast)`.
+
+8. Let :math:`c` be the result of computing :math:`\lanes^{-1}_{t\K{x}N}(j^\ast)`.
+
+9. Push the value :math:`\V128.\VCONST~c` to the stack.
 
 .. math::
    \begin{array}{l}
@@ -629,11 +633,13 @@ Most vector instructions are defined in terms of generic numeric operators appli
 
 4. Pop the value :math:`\V128.\VCONST~c_1` from the stack.
 
-5. Let :math:`i^\ast` be the sequence :math:`\lanes_{t\K{x}N}(c_1)`.
+5. Let :math:`i^\ast` be the result of computing :math:`\lanes_{t\K{x}N}(c_1)`.
 
-6. Let :math:`c` be :math:`\lanes^{-1}_{t\K{x}N}(\vishiftop_{t}(i^\ast, s^N))`.
+6. Let :math:`j^\ast` be the result of computing :math:`\vishiftop_{t}(i^\ast, s^N)`.
 
-7. Push the value :math:`\V128.\VCONST~c` to the stack.
+7. Let :math:`c` be the result of computing :math:`\lanes^{-1}_{t\K{x}N}(j^\ast)`.
+
+8. Push the value :math:`\V128.\VCONST~c` to the stack.
 
 .. math::
    \begin{array}{l}
@@ -658,7 +664,7 @@ Most vector instructions are defined in terms of generic numeric operators appli
 
 2. Pop the value :math:`\V128.\VCONST~c_1` from the stack.
 
-3. Let :math:`i_1^\ast` be the sequence :math:`\lanes_{\shape}(c_1)`
+3. Let :math:`i_1^\ast` be the result of computing :math:`\lanes_{\shape}(c_1)`.
 
 4. Let :math:`i` be the result of computing :math:`\bool(\bigwedge(i_1 \neq 0)^\ast)`.
 
@@ -687,15 +693,17 @@ Most vector instructions are defined in terms of generic numeric operators appli
 
 2. Pop the value :math:`\V128.\VCONST~c_1` from the stack.
 
-3. Let :math:`i_1^N` be the sequence :math:`\lanes_{t\K{x}N}(c)`.
+3. Let :math:`i_1^N` be the result of computing :math:`\lanes_{t\K{x}N}(c)`.
 
 4. Let :math:`B` be the :ref:`bit width <syntax-valtype>` :math:`|t|` of :ref:`value type <syntax-valtype>` :math:`t`.
 
-5. Let :math:`i_2^N` be the sequence as a result of computing :math:`\ilts_{B}(i_1^N, 0^N)`.
+5. Let :math:`i_2^N` be the result of computing :math:`\ilts_{B}(i_1^N, 0^N)`.
 
-6. Let :math:`c` be the integer :math:`\ibits_{32}^{-1}(i_2^N~0^{32-N})`.
+6. Let :math:`j^\ast` be the concatenation of the two sequences :math:`i_2^N` and :math:`0^{32-N}`.
 
-7. Push the value :math:`\I32.\CONST~c` onto the stack.
+7. Let :math:`c` be the result of computing :math:`\ibits_{32}^{-1}(j^\ast)`.
+
+8. Push the value :math:`\I32.\CONST~c` onto the stack.
 
 .. math::
    \begin{array}{lcl@{\qquad}l}
@@ -716,15 +724,21 @@ Most vector instructions are defined in terms of generic numeric operators appli
 
 3. Pop the value :math:`\V128.\VCONST~c_2` from the stack.
 
-4. Let :math:`d_2^M` be the result of computing :math:`\narrow^{\sx}_{|t_1|,|t_2|}(\lanes_{t_1\K{x}M}(c_2))`.
+4. Let :math:`i_2^M` be the result of computing :math:`\lanes_{t_1\K{x}M}(c_2)`.
 
-5. Pop the value :math:`\V128.\VCONST~c_1` from the stack.
+5. Let :math:`d_2^M` be the result of computing :math:`\narrow^{\sx}_{|t_1|,|t_2|}(i_2^M)`.
 
-6. Let :math:`d_1^M` be the result of computing :math:`\narrow^{\sx}_{|t_1|,|t_2|}(\lanes_{t_1\K{x}M}(c_1))`.
+6. Pop the value :math:`\V128.\VCONST~c_1` from the stack.
 
-7. Let :math:`c` be the result of :math:`\lanes^{-1}_{t_2\K{x}N}(d_1^M~d_2^M)`.
+7. Let :math:`i_1^M` be the result of computing :math:`\lanes_{t_1\K{x}M}(c_1)`.
 
-8. Push the value :math:`\V128.\VCONST~c` onto the stack.
+8. Let :math:`d_1^M` be the result of computing :math:`\narrow^{\sx}_{|t_1|,|t_2|}(i_1^M)`.
+
+9. Let :math:`j^N` be the concatenation of the two sequences :math:`d_1^M` and :math:`d_2^M`.
+
+10. Let :math:`c` be the result of computing :math:`\lanes^{-1}_{t_2\K{x}N}(j^N)`.
+
+11. Push the value :math:`\V128.\VCONST~c` onto the stack.
 
 .. math::
    \begin{array}{l}
@@ -745,15 +759,19 @@ Most vector instructions are defined in terms of generic numeric operators appli
 :math:`t_2\K{x}N\K{.}\vcvtop\K{\_}t_1\K{x}M\K{\_}\sx`
 .....................................................
 
-1. Assert: due to :ref:`validation <valid-vcvtop>`, a value of :ref:`value type <syntax-valtype>` |V128| is on the top of the stack.
+1. Assert: due to :ref:`syntax <syntax-instr-vec>`, :math:`N = M`.
 
-2. Pop the value :math:`\V128.\VCONST~c_1` from the stack.
+2. Assert: due to :ref:`validation <valid-vcvtop>`, a value of :ref:`value type <syntax-valtype>` |V128| is on the top of the stack.
 
-3. Let :math:`i^\ast` be the sequence :math:`\lanes_{t_1\K{x}M}(c_1)`.
+3. Pop the value :math:`\V128.\VCONST~c_1` from the stack.
 
-4. Let :math:`c` be the result of computing :math:`\lanes^{-1}_{t_2\K{x}N}(\vcvtop^{\sx}_{|t_1|,|t_2|}(i^\ast))`
+4. Let :math:`i^\ast` be the result of computing :math:`\lanes_{t_1\K{x}M}(c_1)`.
 
-5. Push the value :math:`\V128.\VCONST~c` onto the stack.
+5. Let :math:`j^\ast` be the result of computing :math:`\vcvtop^{\sx}_{|t_1|,|t_2|}(i^\ast)`.
+
+6. Let :math:`c` be the result of computing :math:`\lanes^{-1}_{t_2\K{x}N}(j^\ast)`.
+
+7. Push the value :math:`\V128.\VCONST~c` onto the stack.
 
 .. math::
    \begin{array}{l}
@@ -770,23 +788,27 @@ Most vector instructions are defined in terms of generic numeric operators appli
 :math:`t_2\K{x}N\K{.}\vcvtop\K{\_}\half\K{\_}t_1\K{x}M\K{\_}\sx^?`
 ..................................................................
 
-1. Assert: due to :ref:`validation <valid-vcvtop>`, a value of :ref:`value type <syntax-valtype>` |V128| is on the top of the stack.
+1. Assert: due to :ref:`syntax <syntax-instr-vec>`, :math:`N = M / 2`.
 
-2. Pop the value :math:`\V128.\VCONST~c_1` from the stack.
+2. Assert: due to :ref:`validation <valid-vcvtop>`, a value of :ref:`value type <syntax-valtype>` |V128| is on the top of the stack.
 
-3. If :math:`\half` is :math:`\K{low}`, then:
+3. Pop the value :math:`\V128.\VCONST~c_1` from the stack.
 
-   a. Let :math:`i^\ast` be the sequence :math:`\lanes_{t_1\K{x}M}(c_1)[0 \slice N]`.
+4. Let :math:`i^\ast` be the result of computing :math:`\lanes_{t_1\K{x}M}(c_1)`.
 
-4. Else:
+5. If :math:`\half` is :math:`\K{low}`, then:
 
-   a. Let :math:`i^\ast` be the sequence :math:`\lanes_{t_1\K{x}M}(c_1)[N \slice N]`.
+   a. Let :math:`j^\ast` be the sequence :math:`i^\ast[0 \slice N]`.
 
-5. Let :math:`j^\ast` be the result of computing :math:`\vcvtop^{\sx^?}_{|t_1|,|t_2|}(i^\ast)`.
+6. Else:
 
-6. Let :math:`c` be the result of computing :math:`\lanes^{-1}_{t_2\K{x}N}(j^\ast)`.
+   a. Let :math:`j^\ast` be the sequence :math:`i^\ast[N \slice N]`.
 
-7. Push the value :math:`\V128.\VCONST~c` onto the stack.
+7. Let :math:`k^\ast` be the result of computing :math:`\vcvtop^{\sx^?}_{|t_1|,|t_2|}(j^\ast)`.
+
+8. Let :math:`c` be the result of computing :math:`\lanes^{-1}_{t_2\K{x}N}(k^\ast)`.
+
+9. Push the value :math:`\V128.\VCONST~c` onto the stack.
 
 .. math::
    \begin{array}{l}
@@ -811,17 +833,21 @@ where:
 :math:`t_2\K{x}N\K{.}\vcvtop\K{\_}t_1\K{x}M\K{\_}\sx\K{\_zero}`
 ...............................................................
 
-1. Assert: due to :ref:`validation <valid-vcvtop>`, a value of :ref:`value type <syntax-valtype>` |V128| is on the top of the stack.
+1. Assert: due to :ref:`syntax <syntax-instr-vec>`, :math:`N = 2 \cdot M`.
 
-2. Pop the value :math:`\V128.\VCONST~c_1` from the stack.
+2. Assert: due to :ref:`validation <valid-vcvtop>`, a value of :ref:`value type <syntax-valtype>` |V128| is on the top of the stack.
 
-3. Let :math:`i^\ast` be the sequence :math:`\lanes_{t_1\K{x}M}(c_1)`.
+3. Pop the value :math:`\V128.\VCONST~c_1` from the stack.
 
-4. Let :math:`j^\ast` be the result of computing :math:`\vcvtop^{\sx}_{|t_1|,|t_2|}(i^\ast)` concatenated with the vector :math:`0^M`.
+4. Let :math:`i^\ast` be the result of computing :math:`\lanes_{t_1\K{x}M}(c_1)`.
 
-5. Let :math:`c` be the result of computing :math:`\lanes^{-1}_{t_2\K{x}N}(j^\ast)`.
+5. Let :math:`j^\ast` be the result of computing :math:`\vcvtop^{\sx}_{|t_1|,|t_2|}(i^\ast)`.
 
-6. Push the value :math:`\V128.\VCONST~c` onto the stack.
+6. Let :math:`k^\ast` be the concatenation of the two sequences :math:`j^\ast` and :math:`0^M`.
+
+7. Let :math:`c` be the result of computing :math:`\lanes^{-1}_{t_2\K{x}N}(k^\ast)`.
+
+8. Push the value :math:`\V128.\VCONST~c` onto the stack.
 
 .. math::
    \begin{array}{l}
@@ -846,13 +872,21 @@ where:
 
 3. Pop the value :math:`\V128.\VCONST~c_1` from the stack.
 
-4. Let :math:`(i_1~i_2)^\ast` be the result of computing :math:`\imul_{32}(\extends_{16,32}(\lanes_{\I16X8}(c_1)), \extends_{16,32}(\lanes_{\I16X8}(c_2)))`
+4. Let :math:`i_1^\ast` be the result of computing :math:`\lanes_{\I16X8}(c_1)`.
 
-5. Let :math:`j^\ast` be the result of computing :math:`\iadd_{32}(i_1, i_2)^\ast`.
+5. Let :math:`j_1^\ast` be the result of computing :math:`\extends_{16,32}(i_1^\ast)`.
 
-6. Let :math:`c` be the result of computing :math:`\lanes^{-1}_{\I32X4}(j^\ast)`.
+6. Let :math:`i_2^\ast` be the result of computing :math:`\lanes_{\I16X8}(c_2)`.
 
-7. Push the value :math:`\V128.\VCONST~c` onto the stack.
+7. Let :math:`j_2^\ast` be the result of computing :math:`\extends_{16,32}(i_2^\ast)`.
+
+8. Let :math:`(k_1~k_2)^\ast` be the result of computing :math:`\imul_{32}(j_1^\ast, j_2^\ast)`.
+
+9. Let :math:`k^\ast` be the result of computing :math:`\iadd_{32}(k_1, k_2)^\ast`.
+
+10. Let :math:`c` be the result of computing :math:`\lanes^{-1}_{\I32X4}(k^\ast)`.
+
+11. Push the value :math:`\V128.\VCONST~c` onto the stack.
 
 .. math::
    \begin{array}{l}
@@ -873,27 +907,39 @@ where:
 :math:`t_2\K{x}N\K{.}\EXTMUL\K{\_}\half\K{\_}t_1\K{x}M\K{\_}\sx`
 ................................................................
 
-1. Assert: due to :ref:`validation <valid-vec-extmul>`, two values of :ref:`value type <syntax-valtype>` |V128| are on the top of the stack.
+1. Assert: due to :ref:`syntax <syntax-instr-vec>`, :math:`N = M / 2`.
 
-2. Pop the value :math:`\V128.\VCONST~c_2` from the stack.
+2. Assert: due to :ref:`validation <valid-vec-extmul>`, two values of :ref:`value type <syntax-valtype>` |V128| are on the top of the stack.
 
-3. Pop the value :math:`\V128.\VCONST~c_1` from the stack.
+3. Pop the value :math:`\V128.\VCONST~c_2` from the stack.
 
-4. If :math:`\half` is :math:`\K{low}`, then:
+4. Pop the value :math:`\V128.\VCONST~c_1` from the stack.
 
-   a. Let :math:`i^\ast` be the sequence :math:`\lanes_{t_1\K{x}M}(c_1)[0 \slice N]`.
+5. Let :math:`i_1^\ast` be the result of computing :math:`\lanes_{t_1\K{x}M}(c_1)`.
 
-   b. Let :math:`j^\ast` be the sequence :math:`\lanes_{t_1\K{x}M}(c_2)[0 \slice N]`.
+6. Let :math:`i_2^\ast` be the result of computing :math:`\lanes_{t_1\K{x}M}(c_2)`.
 
-5. Else:
+7. If :math:`\half` is :math:`\K{low}`, then:
 
-   a. Let :math:`i^\ast` be the sequence :math:`\lanes_{t_1\K{x}M}(c_1)[N \slice N]`.
+   a. Let :math:`j_1^\ast` be the sequence :math:`i_1^\ast[0 \slice N]`.
 
-   b. Let :math:`j^\ast` be the sequence :math:`\lanes_{t_1\K{x}M}(c_2)[N \slice N]`.
+   b. Let :math:`j_2^\ast` be the sequence :math:`i_2^\ast[0 \slice N]`.
 
-6. Let :math:`c` be the result of computing :math:`\lanes^{-1}_{t_2\K{x}N}(\imul_{t_2\K{x}N}(\extend^{\sx}_{|t_1|,|t_2|}(i^\ast), \extend^{\sx}_{|t_1|,|t_2|}(j^\ast)))`
+8. Else:
 
-7. Push the value :math:`\V128.\VCONST~c` onto the stack.
+   a. Let :math:`j_1^\ast` be the sequence :math:`i_1^\ast[N \slice N]`.
+
+   b. Let :math:`j_2^\ast` be the sequence :math:`i_2^\ast[N \slice N]`.
+
+9. Let :math:`k_1^\ast` be the result of computing :math:`\extend^{\sx}_{|t_1|,|t_2|}(j_1^\ast)`.
+
+10. Let :math:`k_2^\ast` be the result of computing :math:`\extend^{\sx}_{|t_1|,|t_2|}(j_2^\ast)`.
+
+11. Let :math:`k^\ast` be the result of computing :math:`\imul_{t_2\K{x}N}(k_1^\ast, k_2^\ast)`.
+
+12. Let :math:`c` be the result of computing :math:`\lanes^{-1}_{t_2\K{x}N}(k^\ast)`.
+
+13. Push the value :math:`\V128.\VCONST~c` onto the stack.
 
 .. math::
    \begin{array}{lcl@{\qquad}l}
@@ -920,17 +966,21 @@ where:
 :math:`t_2\K{x}N\K{.}\EXTADDPAIRWISE\_t_1\K{x}M\_\sx`
 .....................................................
 
-1. Assert: due to :ref:`validation <valid-vec-extadd_pairwise>`, a value of :ref:`value type <syntax-valtype>` |V128| is on the top of the stack.
+1. Assert: due to :ref:`syntax <syntax-instr-vec>`, :math:`N = M / 2`.
 
-2. Pop the value :math:`\V128.\VCONST~c_1` from the stack.
+2. Assert: due to :ref:`validation <valid-vec-extadd_pairwise>`, a value of :ref:`value type <syntax-valtype>` |V128| is on the top of the stack.
 
-3. Let :math:`(i_1~i_2)^\ast` be the sequence :math:`\extend^{\sx}_{|t_1|,|t_2|}(\lanes_{t_1\K{x}M}(c_1))`.
+3. Pop the value :math:`\V128.\VCONST~c_1` from the stack.
 
-4. Let :math:`j^\ast` be the result of computing :math:`\iadd_{N}(i_1, i_2)^\ast`.
+4. Let :math:`i^\ast` be the result of computing :math:`\lanes_{t_1\K{x}M}(c_1)`.
 
-5. Let `c` be the result of computing :math:`\lanes^{-1}_{t_2\K{x}N}(j^\ast)`.
+5. Let :math:`(j_1~j_2)^\ast` be the result of computing :math:`\extend^{\sx}_{|t_1|,|t_2|}(i^\ast)`.
 
-6. Push the value :math:`\V128.\VCONST~c` to the stack.
+6. Let :math:`k^\ast` be the result of computing :math:`\iadd_{N}(j_1, j_2)^\ast`.
+
+7. Let :math:`c` be the result of computing :math:`\lanes^{-1}_{t_2\K{x}N}(k^\ast)`.
+
+8. Push the value :math:`\V128.\VCONST~c` to the stack.
 
 .. math::
    \begin{array}{l}
@@ -994,9 +1044,9 @@ Parametric Instructions
 
 .. math::
    \begin{array}{lcl@{\qquad}l}
-   \val_1~\val_2~(\I32\K{.}\CONST~c)~\SELECT~t^? &\stepto& \val_1
+   \val_1~\val_2~(\I32\K{.}\CONST~c)~(\SELECT~t^?) &\stepto& \val_1
      & (\iff c \neq 0) \\
-   \val_1~\val_2~(\I32\K{.}\CONST~c)~\SELECT~t^? &\stepto& \val_2
+   \val_1~\val_2~(\I32\K{.}\CONST~c)~(\SELECT~t^?) &\stepto& \val_2
      & (\iff c = 0) \\
    \end{array}
 
@@ -1067,7 +1117,7 @@ Variable Instructions
 
 4. Push the value :math:`\val` to the stack.
 
-5. :ref:`Execute <exec-local.set>` the instruction :math:`(\LOCALSET~x)`.
+5. :ref:`Execute <exec-local.set>` the instruction :math:`\LOCALSET~x`.
 
 .. math::
    \begin{array}{lcl@{\qquad}l}
@@ -1290,13 +1340,19 @@ Table Instructions
 
 11. Let :math:`\X{err}` be the |i32| value :math:`2^{32}-1`, for which :math:`\signed_{32}(\X{err})` is :math:`-1`.
 
-12. Either, try :ref:`growing <grow-table>` :math:`\X{table}` by :math:`n` entries with initialization value :math:`\val`:
+12. Either:
 
-   a. If it succeeds, push the value :math:`\I32.\CONST~\X{sz}` to the stack.
+   a. If :ref:`growing <grow-table>` :math:`\X{tab}` by :math:`n` entries with initialization value :math:`\val` succeeds, then:
 
-   b. Else, push the value :math:`\I32.\CONST~\X{err}` to the stack.
+      i. Push the value :math:`\I32.\CONST~\X{sz}` to the stack.
 
-13. Or, push the value :math:`\I32.\CONST~\X{err}` to the stack.
+   b. Else:
+
+      i. Push the value :math:`\I32.\CONST~\X{err}` to the stack.
+
+13. Or:
+
+   a. push the value :math:`\I32.\CONST~\X{err}` to the stack.
 
 .. math::
    ~\\[-1ex]
@@ -1762,7 +1818,7 @@ Memory Instructions
 
 12. Let :math:`W` be the integer :math:`M \cdot 2`.
 
-13. Let :math:`n_k` be the result of :math:`\extend^{\sx}_{M,W}(m_k)`.
+13. Let :math:`n_k` be the result of computing :math:`\extend^{\sx}_{M,W}(m_k)`.
 
 14. Let :math:`c` be the result of computing :math:`\lanes^{-1}_{\X{i}W\K{x}N}(n_0 \dots n_{N-1})`.
 
@@ -1878,7 +1934,7 @@ Memory Instructions
 
 11. Let :math:`n` be the integer for which :math:`\bytes_{\iN}(n) = b^\ast`.
 
-12. Let :math:`c` be the result of :math:`\extendu_{N,128}(n)`.
+12. Let :math:`c` be the result of computing :math:`\extendu_{N,128}(n)`.
 
 13. Push the value :math:`\V128.\CONST~c` to the stack.
 
@@ -1939,9 +1995,11 @@ Memory Instructions
 
 14. Let :math:`L` be :math:`128 / N`.
 
-15. Let :math:`c` be the result of computing :math:`\lanes^{-1}_{\K{i}N\K{x}L}(\lanes_{\K{i}N\K{x}L}(v) \with [x] = r)`.
+15. Let :math:`j^\ast` be the result of computing :math:`\lanes_{\K{i}N\K{x}L}(v)`.
 
-16. Push the value :math:`\V128.\CONST~c` to the stack.
+16. Let :math:`c` be the result of computing :math:`\lanes^{-1}_{\K{i}N\K{x}L}(j^\ast \with [x] = r)`.
+
+17. Push the value :math:`\V128.\CONST~c` to the stack.
 
 .. math::
    ~\\[-1ex]
@@ -2074,9 +2132,11 @@ Memory Instructions
 
 12. Let :math:`L` be :math:`128/N`.
 
-13. Let :math:`b^\ast` be the byte sequence :math:`\bytes_{\iN}(\lanes_{\K{i}N\K{x}L}(c)[x])`.
+13. Let :math:`j^\ast` be the result of computing :math:`\lanes_{\K{i}N\K{x}L}(c)`.
 
-14. Replace the bytes :math:`\X{mem}.\MIDATA[\X{ea} \slice N/8]` with :math:`b^\ast`.
+14. Let :math:`b^\ast` be the result of computing :math:`\bytes_{\iN}(j^\ast[x])`.
+
+15. Replace the bytes :math:`\X{mem}.\MIDATA[\X{ea} \slice N/8]` with :math:`b^\ast`.
 
 .. math::
    ~\\[-1ex]
@@ -2152,13 +2212,19 @@ Memory Instructions
 
 9. Let :math:`\X{err}` be the |i32| value :math:`2^{32}-1`, for which :math:`\signed_{32}(\X{err})` is :math:`-1`.
 
-10. Either, try :ref:`growing <grow-mem>` :math:`\X{mem}` by :math:`n` :ref:`pages <page-size>`:
+10. Either:
 
-   a. If it succeeds, push the value :math:`\I32.\CONST~\X{sz}` to the stack.
+   a. If :ref:`growing <grow-mem>` :math:`\X{mem}` by :math:`n` :ref:`pages <page-size>` succeeds, then:
 
-   b. Else, push the value :math:`\I32.\CONST~\X{err}` to the stack.
+      i. Push the value :math:`\I32.\CONST~\X{sz}` to the stack.
 
-11. Or, push the value :math:`\I32.\CONST~\X{err}` to the stack.
+   b. Else:
+
+      i. Push the value :math:`\I32.\CONST~\X{err}` to the stack.
+
+11. Or:
+
+   a. Push the value :math:`\I32.\CONST~\X{err}` to the stack.
 
 .. math::
    ~\\[-1ex]
@@ -2537,17 +2603,19 @@ Control Instructions
 :math:`\BLOCK~\blocktype~\instr^\ast~\END`
 ..........................................
 
-1. Assert: due to :ref:`validation <valid-blocktype>`, :math:`\expand_F(\blocktype)` is defined.
+1. Let :math:`F` be the :ref:`current <exec-notation-textual>` :ref:`frame <syntax-frame>`.
 
-2. Let :math:`[t_1^m] \to [t_2^n]` be the :ref:`function type <syntax-functype>` :math:`\expand_F(\blocktype)`.
+2. Assert: due to :ref:`validation <valid-blocktype>`, :math:`\expand_F(\blocktype)` is defined.
 
-3. Let :math:`L` be the label whose arity is :math:`n` and whose continuation is the end of the block.
+3. Let :math:`[t_1^m] \to [t_2^n]` be the :ref:`function type <syntax-functype>` :math:`\expand_F(\blocktype)`.
 
-4. Assert: due to :ref:`validation <valid-block>`, there are at least :math:`m` values on the top of the stack.
+4. Let :math:`L` be the label whose arity is :math:`n` and whose continuation is the end of the block.
 
-5. Pop the values :math:`\val^m` from the stack.
+5. Assert: due to :ref:`validation <valid-block>`, there are at least :math:`m` values on the top of the stack.
 
-6. :ref:`Enter <exec-instr-seq-enter>` the block :math:`\val^m~\instr^\ast` with label :math:`L`.
+6. Pop the values :math:`\val^m` from the stack.
+
+7. :ref:`Enter <exec-instr-seq-enter>` the block :math:`\val^m~\instr^\ast` with label :math:`L`.
 
 .. math::
    ~\\[-1ex]
@@ -2563,17 +2631,19 @@ Control Instructions
 :math:`\LOOP~\blocktype~\instr^\ast~\END`
 .........................................
 
-1. Assert: due to :ref:`validation <valid-blocktype>`, :math:`\expand_F(\blocktype)` is defined.
+1. Let :math:`F` be the :ref:`current <exec-notation-textual>` :ref:`frame <syntax-frame>`.
 
-2. Let :math:`[t_1^m] \to [t_2^n]` be the :ref:`function type <syntax-functype>` :math:`\expand_F(\blocktype)`.
+2. Assert: due to :ref:`validation <valid-blocktype>`, :math:`\expand_F(\blocktype)` is defined.
 
-3. Let :math:`L` be the label whose arity is :math:`m` and whose continuation is the start of the loop.
+3. Let :math:`[t_1^m] \to [t_2^n]` be the :ref:`function type <syntax-functype>` :math:`\expand_F(\blocktype)`.
 
-4. Assert: due to :ref:`validation <valid-loop>`, there are at least :math:`m` values on the top of the stack.
+4. Let :math:`L` be the label whose arity is :math:`m` and whose continuation is the start of the loop.
 
-5. Pop the values :math:`\val^m` from the stack.
+5. Assert: due to :ref:`validation <valid-loop>`, there are at least :math:`m` values on the top of the stack.
 
-6. :ref:`Enter <exec-instr-seq-enter>` the block :math:`\val^m~\instr^\ast` with label :math:`L`.
+6. Pop the values :math:`\val^m` from the stack.
+
+7. :ref:`Enter <exec-instr-seq-enter>` the block :math:`\val^m~\instr^\ast` with label :math:`L`.
 
 .. math::
    ~\\[-1ex]
@@ -2595,96 +2665,48 @@ Control Instructions
 
 3. If :math:`c` is non-zero, then:
 
-   a. Execute the block instruction :math:`\BLOCK~\X{bt}~\instr_1^\ast~\END`.
+   a. Execute the block instruction :math:`\BLOCK~\blocktype~\instr_1^\ast~\END`.
 
 4. Else:
 
-   a. Execute the block instruction :math:`\BLOCK~\X{bt}~\instr_2^\ast~\END`.
+   a. Execute the block instruction :math:`\BLOCK~\blocktype~\instr_2^\ast~\END`.
 
 .. math::
    ~\\[-1ex]
    \begin{array}{lcl}
-   F; (\I32.\CONST~c)~\IF~\X{bt}~\instr_1^\ast~\ELSE~\instr_2^\ast~\END &\stepto&
-     F; \BLOCK~\X{bt}~\instr_1^\ast~\END
+   (\I32.\CONST~c)~\IF~\X{bt}~\instr_1^\ast~\ELSE~\instr_2^\ast~\END &\stepto&
+     \BLOCK~\X{bt}~\instr_1^\ast~\END
      \\&&\quad (\iff c \neq 0) \\
-   F; (\I32.\CONST~c)~\IF~\X{bt}~\instr_1^\ast~\ELSE~\instr_2^\ast~\END &\stepto&
-     F; \BLOCK~\X{bt}~\instr_2^\ast~\END
+   (\I32.\CONST~c)~\IF~\X{bt}~\instr_1^\ast~\ELSE~\instr_2^\ast~\END &\stepto&
+     \BLOCK~\X{bt}~\instr_2^\ast~\END
      \\&&\quad (\iff c = 0) \\
    \end{array}
 
 
-.. _exec-try-catch:
+.. _exec-try_table:
 
-:math:`\TRY~\blocktype~\instr_1^\ast~(\CATCH~x~\instr_2^\ast)^\ast~(\CATCHALL~\instr_3^\ast)^?~\END`
-....................................................................................................
+:math:`\TRYTABLE~\blocktype~\catch^\ast~\instr^\ast~\END`
+.........................................................
 
 1. Assert: due to :ref:`validation <valid-blocktype>`, :math:`\expand_F(\blocktype)` is defined.
 
 2. Let :math:`[t_1^m] \to [t_2^n]` be the :ref:`function type <syntax-functype>` :math:`\expand_F(\blocktype)`.
 
-3. Let :math:`L` be the label whose arity is :math:`n` and whose continuation is the end of the |TRY| instruction.
+3. Assert: due to :ref:`validation <valid-try_table>`, there are at least :math:`m` values on the top of the stack.
 
-4. Assert: due to :ref:`validation <valid-try-catch>`, there are at least :math:`m` values on the top of the stack.
+4. Pop the values :math:`\val^m` from the stack.
 
-5. Pop the values :math:`\val^m` from the stack.
+5. Let :math:`L` be the label whose arity is :math:`n` and whose continuation is the end of the |TRYTABLE| instruction.
 
-6. Let :math:`F` be the :ref:`current <exec-notation-textual>` :ref:`frame <syntax-frame>`.
-
-7. For each catch clause :math:`(\CATCH~x_i~\instr_{2i}^\ast)` do:
-
-   a. Assert: due to :ref:`validation <valid-try-catch>`, :math:`F.\AMODULE.\MITAGS[x_i]` exists.
-
-   b. Let :math:`a_i` be the tag address :math:`F.\AMODULE.\MITAGS[x_i]`.
-
-   c. Let :math:`H_i` be the handler :math:`(a_i~\instr_{2i}^\ast)`.
-
-8. If there is a catch all clause :math:`(\CATCHALL~\instr_3^\ast)`, then:
-
-    a. Let :math:`H'^?` be the handler :math:`(\epsilon~\instr_3^\ast)`.
-
-9. Else:
-
-    a. Let :math:`H'^?` be the empty handler :math:`\epsilon`.
-
-10. Let :math:`H^\ast` be the concatenation of :math:`H_i` and :math:`H'^?`.
-
-11. :ref:`Enter <exec-handler-enter>` the block :math:`\val^m~\instr_1^\ast` with label :math:`L` and exception handler :math:`H^\ast`.
+6. :ref:`Enter <exec-handler-enter>` the block :math:`\val^m~\instr_1^\ast` with label :math:`L` and exception handler :math:`\HANDLER_n\{\catch^\ast\}`.
 
 .. math::
    ~\\[-1ex]
-   \begin{array}{l}
-   F; \val^m~(\TRY~\X{bt}~\instr_1^\ast~(\CATCH~x~\instr_2^\ast)^\ast~(\CATCHALL~\instr_3^\ast)^?~\END
-   \quad \stepto \\
-   \qquad F; \LABEL_n\{\epsilon\}~(\HANDLERadm_n\{(a_x~\instr_2^\ast)^\ast~(\epsilon~\instr_3^\ast)^?\}~\val^m~\instr_1^\ast~\END)~\END \\
+   \begin{array}{r}
+   F; \val^m~(\TRYTABLE~\X{bt}~\catch^\ast~\instr^\ast~\END
+   \quad \stepto \quad
+   F; \HANDLER_n\{\catch^\ast\}~(\LABEL_n\{\epsilon\}~\val^m~\instr^\ast~\END)~\END \\ \qquad\qquad
    (\iff \expand_F(\X{bt}) = [t_1^m] \to [t_2^n] \land (F.\AMODULE.\MITAGS[x]=a_x)^\ast)
-   \end{array}
-
-
-.. _exec-try-delegate:
-
-:math:`\TRY~\blocktype~\instr^\ast~\DELEGATE~l`
-...............................................
-
-1. Assert: due to :ref:`validation <valid-blocktype>`, :math:`\expand_F(\blocktype)` is defined.
-
-2. Let :math:`[t_1^m] \to [t_2^n]` be the :ref:`function type <syntax-functype>` :math:`\expand_F(\blocktype)`.
-
-3. Let :math:`L` be the label whose arity is :math:`n` and whose continuation is the end of the |TRY| instruction.
-
-4. Let :math:`H` be the :ref:`exception handler <syntax-handler>` :math:`l`, targeting the :math:`l`-th surrounding block.
-
-5. Assert: due to :ref:`validation <valid-try-delegate>`, there are at least :math:`m` values on the top of the stack.
-
-6. Pop the values :math:`\val^m` from the stack.
-
-7. :ref:`Enter <exec-handler-enter>` the block :math:`\val^m~\instr^\ast` with label :math:`L` and  exception handler `H`.
-
-.. math::
-   ~\\[-1ex]
-   \begin{array}{lcl}
-   F; \val^m~(\TRY~\X{bt}~\instr^\ast~\DELEGATE~l) &\stepto&
-   F; \LABEL_n\{\epsilon\}~(\HANDLERadm_n\{l\}~\val^m~\instr^\ast~\END)~\END \\
-   && (\iff \expand_F(\X{bt}) = [t_1^m] \to [t_2^n])
    \end{array}
 
 
@@ -2699,37 +2721,146 @@ Control Instructions
 
 3. Let :math:`a` be the :ref:`tag address <syntax-tagaddr>` :math:`F.\AMODULE.\MITAGS[x]`.
 
-4. :ref:`Throw <exec-throwadm>` an exception with :ref:`tag address <syntax-tagaddr>` :math:`a`.
+4. Assert: due to :ref:`validation <valid-throw>`, :math:`S.\STAGS[a]` exists.
+
+5. Let :math:`\X{ti}` be the :ref:`tag instance <syntax-taginst>` :math:`S.\STAGS[a]`.
+
+6. Let :math:`[t^n] \toF [{t'}^\ast]` be the :ref:`tag type <syntax-tagtype>` :math:`\X{ti}.\TAGITYPE`.
+
+7. Assert: due to :ref:`validation <valid-throw>`, there are at least :math:`n` values on the top of the stack.
+
+8. Pop the :math:`n` values :math:`\val^n` from the stack.
+
+9. Let :math:`\X{exn}` be the :ref:`exception instance <syntax-exninst>` :math:`\{ \EITAG~a, \EIFIELDS~\val^n \}`.
+
+10. Let :math:`\X{ea}` be the length of :math:`S.\SEXNS`.
+
+11. Append :math:`\X{exn}` to :math:`S.\SEXNS`.
+
+12. Push the value :math:`\REFEXNADDR~\X{ea}` to the stack.
+
+13. Execute the instruction |THROWREF|.
 
 .. math::
    ~\\[-1ex]
    \begin{array}{lclr@{\qquad}l}
-   \THROW~x &\stepto& \THROWadm~a & (\iff F.\AMODULE.\MITAGS[x] = a) \\
+   S; F; \val^n~(\THROW~x) &\stepto& S'; F; (\REFEXNADDR~|S.\SEXNS|)~\THROWREF &
+     (\begin{array}[t]{@{}r@{~}l@{}}
+      \iff & F.\AMODULE.\MITAGS[x] = a \\
+      \land & S.\STAGS[a].\TAGITYPE = [t^n] \toF [] \\
+      \land & \X{exn} = \{ \EITAG~a, \EIFIELDS~\val^n \} \\
+      \land & S' = S \with \SEXNS = S.\SEXNS~\X{exn} ) \\
+      \end{array} \\
    \end{array}
 
 
-.. _exec-rethrow:
+.. _exec-throw_ref:
 
-:math:`\RETHROW~l`
-..................
+:math:`\THROWREF`
+.................
 
-1. Assert: due to :ref:`validation <valid-rethrow>`, the stack contains at least :math:`l+1` labels.
+1. Let :math:`F` be the :ref:`current <exec-notation-textual>` :ref:`frame <syntax-frame>`.
 
-2. Let :math:`L` be the :math:`l`-th label appearing on the stack, starting from the top and counting from zero.
+2. Assert: due to :ref:`validation <valid-throw_ref>`, a :ref:`reference <syntax-ref>` is on the top of the stack.
 
-3. Assert: due to :ref:`validation <valid-rethrow>`, :math:`L` is a catch label, i.e., a label of the form :math:`(\LCATCH~[t^\ast])`, which is a label followed by a caught exception in an active catch clause.
+3. Pop the reference :math:`\reff` from the stack.
 
-4. Let :math:`\{a~\val^\ast\}` be the caught exception.
+4. If :math:`\reff` is :math:`\REFNULL~\X{ht}`, then:
 
-5. Push the values :math:`\val^\ast` onto the stack.
+   a. Trap.
 
-6. :ref:`Throw <exec-throwadm>` an exception with :ref:`tag address <syntax-tagaddr>` :math:`a`.
+5. Assert: due to :ref:`validation <valid-throw_ref>`, :math:`\reff` is an :ref:`exception reference <syntax-ref.exn-addr>`.
+
+6. Let :math:`\REFEXNADDR~\X{ea}` be :math:`\reff`.
+
+7. Assert: due to :ref:`validation <valid-throw_ref>`, :math:`S.\SEXNS[\X{ea}]` exists.
+
+8. Let :math:`\X{exn}` be the :ref:`exception instance <syntax-exninst>` :math:`S.\SEXNS[\X{ea}]`.
+
+9. Let :math:`a` be the :ref:`tag address <syntax-tagaddr>` :math:`\X{exn}.\EITAG`.
+
+10. While the stack is not empty and the top of the stack is not an :ref:`exception handler <syntax-handler>`, do:
+
+   a. Pop the top element from the stack.
+
+11. Assert: the stack is now either empty, or there is an exception handler on the top of the stack.
+
+12. If the stack is empty, then:
+
+   a. Return the exception :math:`(\REFEXNADDR~a)` as a :ref:`result <syntax-result>`.
+
+13. Assert: there is an :ref:`exception handler <syntax-handler>` on the top of the stack.
+
+14. Pop the exception handler  :math:`\HANDLER_n\{\catch^\ast\}` from the stack.
+
+15. If :math:`\catch^\ast` is empty, then:
+
+    a. Push the exception reference :math:`\REFEXNADDR~\X{ea}` back to the stack.
+
+    b. Execute the instruction |THROWREF| again.
+
+16. Else:
+
+    a. Let :math:`\catch_1` be the first :ref:`catch clause <syntax-catch>` in :math:`\catch^\ast` and :math:`{\catch'}^\ast` the remaining clauses.
+
+    b. If :math:`\catch_1` is of the form :math:`\CATCH~x~l` and the :ref:`exception address <syntax-exnaddr>` :math:`a` equals :math:`F.\AMODULE.\MITAGS[x]`, then:
+
+       i. Push the values :math:`\X{exn}.\EIFIELDS` to the stack.
+
+       ii. Execute the instruction :math:`\BR~l`.
+
+    c. Else if :math:`\catch_1` is of the form :math:`\CATCHREF~x~l` and the :ref:`exception address <syntax-exnaddr>` :math:`a` equals :math:`F.\AMODULE.\MITAGS[x]`, then:
+
+       i. Push the values :math:`\X{exn}.\EIFIELDS` to the stack.
+
+       ii. Push the exception reference :math:`\REFEXNADDR~\X{ea}` to the stack.
+
+       iii. Execute the instruction :math:`\BR~l`.
+
+    d. Else if :math:`\catch_1` is of the form :math:`\CATCHALL~l`, then:
+
+       i. Execute the instruction :math:`\BR~l`.
+
+    e. Else if :math:`\catch_1` is of the form :math:`\CATCHALLREF~l`, then:
+
+       i. Push the exception reference :math:`\REFEXNADDR~\X{ea}` to the stack.
+
+       ii. Execute the instruction :math:`\BR~l`.
+
+    f. Else:
+
+       1. Push the modified handler  :math:`\HANDLER_n\{{\catch'}^\ast\}` back to the stack.
+
+       2. Push the exception reference :math:`\REFEXNADDR~\X{ea}` back to the stack.
+
+       3. Execute the instruction :math:`\THROWREF` again.
 
 .. math::
    ~\\[-1ex]
-   \begin{array}{lclr@{\qquad}}
-   \CAUGHTadm_n\{a~\val^n\}~\XB^l[\RETHROW~l]~\END &\stepto&
-   \CAUGHTadm_n\{a~\val^n\}~\XB^l[\val^n~(\THROWadm~a)]~\END \\
+   \begin{array}{rcl}
+   (\REFNULL~\X{ht})~\THROWREF &\stepto&
+     \TRAP \\
+   \HANDLER_n\{\}~\XT[(\REFEXNADDR~a)~\THROWREF]~\END &\stepto&
+     (\REFEXNADDR~a)~\THROWREF \\
+   S; F; \HANDLER_n\{(\CATCH~x~l)~\catch^\ast\}~\XT[(\REFEXNADDR~a)~\THROWREF]~\END &\stepto&
+     \X{exn}.\EIFIELDS~(\BR~l) \\ &&
+     (\begin{array}[t]{@{}r@{~}l@{}}
+      \iff & \X{exn} = S.\SEXNS[a] \\
+      \land & \X{exn}.\EITAG = F.\AMODULE.\MITAGS[x]) \\
+      \end{array} \\
+   S; F; \HANDLER_n\{(\CATCHREF~x~l)~\catch^\ast\}~\XT[(\REFEXNADDR~a)~\THROWREF]~\END &\stepto&
+     \X{exn}.\EIFIELDS~(\REFEXNADDR~a)~(\BR~l) \\ &&
+     (\begin{array}[t]{@{}r@{~}l@{}}
+      \iff & \X{exn} = S.\SEXNS[a] \\
+      \land & \X{exn}.\EITAG = F.\AMODULE.\MITAGS[x]) \\
+      \end{array} \\
+   \HANDLER_n\{(\CATCHALL~l)~\catch^\ast\}~\XT[(\REFEXNADDR~a)~\THROWREF]~\END &\stepto&
+     (\BR~l) \\
+   \HANDLER_n\{(\CATCHALLREF~l)~\catch^\ast\}~\XT[(\REFEXNADDR~a)~\THROWREF]~\END &\stepto&
+     (\REFEXNADDR~a)~(\BR~l) \\
+   \HANDLER_n\{\catch_1~\catch^\ast\}~\XT[(\REFEXNADDR~a)~\THROWREF]~\END &\stepto&
+     \HANDLER_n\{\catch^\ast\}~\XT[(\REFEXNADDR~a)~\THROWREF]~\END \\ &&
+     (\otherwise) \\
    \end{array}
 
 
@@ -2750,9 +2881,9 @@ Control Instructions
 
 6. Repeat :math:`l+1` times:
 
-   a. While the top of the stack is a value, a |handler|, or a |CAUGHTadm| instruction, do:
+   a. While the top of the stack is a value or a :ref:`handler <syntax-handler>`, do:
 
-      i. Pop the value from the stack.
+      i. Pop the value or handler from the stack.
 
    b. Assert: due to :ref:`validation <valid-br>`, the top of the stack now is a label.
 
@@ -2780,7 +2911,7 @@ Control Instructions
 
 3. If :math:`c` is non-zero, then:
 
-   a. :ref:`Execute <exec-br>` the instruction :math:`(\BR~l)`.
+   a. :ref:`Execute <exec-br>` the instruction :math:`\BR~l`.
 
 4. Else:
 
@@ -2809,11 +2940,11 @@ Control Instructions
 
    a. Let :math:`l_i` be the label :math:`l^\ast[i]`.
 
-   b. :ref:`Execute <exec-br>` the instruction :math:`(\BR~l_i)`.
+   b. :ref:`Execute <exec-br>` the instruction :math:`\BR~l_i`.
 
 4. Else:
 
-   a. :ref:`Execute <exec-br>` the instruction :math:`(\BR~l_N)`.
+   a. :ref:`Execute <exec-br>` the instruction :math:`\BR~l_N`.
 
 .. math::
    ~\\[-1ex]
@@ -3004,13 +3135,12 @@ When the end of a block is reached without a jump, exception, or trap aborting i
 .. index:: exception handling, throw context, tag, exception tag
    pair: handling; exception
 
-.. _exec-catchadm:
-.. _exec-delegateadm:
+.. _exec-handler:
 
 Exception Handling
 ~~~~~~~~~~~~~~~~~~
 
-The following auxiliary rules define the semantics of entering and exiting :ref:`exception handlers <syntax-handler>` through :ref:`try <syntax-try>` instructions, and handling thrown exceptions.
+The following auxiliary rules define the semantics of entering and exiting |TRYTABLE| blocks.
 
 .. _exec-handler-enter:
 
@@ -3027,161 +3157,34 @@ Entering :math:`\instr^\ast` with label :math:`L` and exception handler :math:`H
 .. note::
    No formal reduction rule is needed for entering an exception :ref:`handler <syntax-handler>`
    because it is an :ref:`administrative instruction <syntax-instr-admin>`
-   that the :ref:`try <syntax-try>` instruction reduces to directly.
+   that the |TRYTABLE| instruction reduces to directly.
 
 .. _exec-handler-exit:
 
 Exiting an exception handler
 ............................
 
-When the end of a :ref:`try <syntax-try>` instruction is reached without a jump, exception, or trap, then the following steps are performed.
+When the end of a |TRYTABLE| block is reached without a jump, exception, or trap, then the following steps are performed.
 
 1. Let :math:`m` be the number of values on the top of the stack.
 
 2. Pop the values :math:`\val^m` from the stack.
 
-3. Assert: due to :ref:`validation <valid-instr-seq>`, the handler :math:`H` is now on the top of the stack.
+3. Assert: due to :ref:`validation <valid-instr-seq>`, a handler and a label are now on the top of the stack.
 
-4. Pop the handler from the stack.
+4. Pop the label from the stack.
 
-5. Push :math:`\val^m` back to the stack.
+5. Pop the handler :math:`H` from the stack.
 
-6. Jump to the position after the |END| of the administrative instruction associated with the handler :math:`H`.
+6. Push :math:`\val^m` back to the stack.
+
+7. Jump to the position after the |END| of the administrative instruction associated with the handler :math:`H`.
 
 .. math::
    ~\\[-1ex]
    \begin{array}{lcl@{\qquad}l}
-   \HANDLERadm_m\{\handler\}~\val^m~\END &\stepto& \val^m \\
+   \HANDLER_m\{\catch^\ast\}~\val^m~\END &\stepto& \val^m \\
    \end{array}
-
-
-.. _exec-throwadm:
-
-Throwing an exception with :ref:`tag address <syntax-tagaddr>` :math:`a`
-........................................................................
-
-When a throw occurs, then values, labels, active catch clauses,
-and call frames are popped if necessary, until an appropriate exception handler is found
-on the top of the stack.
-
- 1. Assert: due to :ref:`validation <valid-throw>`, :math:`S.\STAGS[a]` exists.
-
- 2. Let :math:`[t^n] \to []` be the :ref:`tag type <syntax-tagtype>` :math:`S.\STAGS[a].\TAGITYPE`.
-
- 3. Assert: due to :ref:`validation <valid-throw>`, there are :math:`n` values on the top of the stack.
-
- 4. Pop the :math:`n` values :math:`\val^n` from the stack.
-
- 5. While the stack is not empty and the top of the stack is not an :ref:`exception handler <syntax-handler>`, do:
-
-    a. Pop the top element from the stack.
-
- 6. Assert: the stack is now either empty, or there is an exception handler on the top of the stack.
-
- 7. If the stack is empty, then:
-
-    a. Return the uncaught exception :math:`\val^n~(\THROWadm~a)` as a :ref:`result <syntax-result>`.
-
-8. Else assert: there is an :ref:`exception handler <syntax-handler>` :math:`H` on the top of the stack.
-
-9. Pop the exception handler :math:`H` from the stack.
-
-10. If :math:`H` is list of handlers, then:
-
-    a. While :math:`H` is not empty, do:
-
-       i. Let :math:`(a_1^?~\instr^\ast)` be the first handler in :math:`H`.
-
-       ii. If :math:`a_1^? = \epsilon`, then:
-
-           * :ref:`Enter <exec-caughtadm-enter>` the block :math:`\instr^\ast` with caught exception :math:`a~\val^n`.
-
-       iii. Else if :math:`a_1^? = a`, then:
-
-            * :ref:`Enter <exec-caughtadm-enter>` the block :math:`\val^n~\instr^\ast` with caught exception :math:`a~\val^n`.
-
-       iv. Else, pop the first handler from :math:`H`.
-
-    b. Else, the exception was not caught by :math:`H`:
-
-       i. Put the values :math:`\val^n` back onto the stack.
-
-       ii. :ref:`Throw <exec-throwadm>` an exception with tag address :math:`a`.
-
-11. Else :math:`H` is a label index :math:`l`.
-
-    a. Assert: due to :ref:`validation <valid-handleradm>`, the stack contains at least :math:`l` labels.
-
-    b. Repeat :math:`l` times:
-
-       i. While the top of the stack is not a label, do:
-
-          * Pop the top element from the stack.
-
-    c. Assert: due to :ref:`validation <valid-handleradm>`, the top of the stack now is a label.
-
-    d. Pop the label from the stack.
-
-    e. Push the values :math:`\val^n` onto the stack.
-
-    f. :ref:`Throw <exec-throwadm>` an exception with tag address :math:`a`.
-
-.. math::
-   \begin{array}{rcl}
-   \HANDLERadm_n\{\}~\XT[(\THROWadm~a)]~\END &\stepto&
-   \XT[(\THROWadm~a)] \\
-   \HANDLERadm_n\{(a_1^?~\instr^\ast)~(a'^?~\instr'^\ast)^\ast\}~\XT[(\THROWadm~a)]~\END &\stepto&
-   \HANDLERadm_n\{(a'^?~\instr'^\ast)^\ast~\XT[(\THROWadm~a)]~\END  \\
-   && (\iff a_1^? \neq \epsilon \land a_1^? \neq a) \\
-   S;~\HANDLERadm_n\{(a_1^?~\instr^\ast)~(a'^?~\instr'^\ast)^\ast\}~\XT[\val^n~(\THROWadm~a)]~\END &\stepto&
-   S;~\CAUGHTadm_n\{a~\val^n\}~(\val^n)^?~\instr^\ast~\END \\
-   && (\iff~(a_1^? = \epsilon \lor a_1^? = a)~\land\\
-   && \ S.\STAGS[a].\TAGITYPE = [t^n]\to[]) \\
-   \LABEL_n\{\}~\XB^l[\HANDLERadm_n\{l\}~\XT[(\THROWadm~a)]~\END]~\END &\stepto&
-   \XT[(\THROWadm~a)]  \\
-   \end{array}
-
-.. note::
-   The rules are formulated in this way to allow looking up the exception values in the throw context,
-   only when a thrown exception is caught.
-
-
-.. _exec-caughtadm-enter:
-
-Entering :math:`\instr^\ast` with caught exception :math:`\{\exn\}`
-...................................................................
-
-1. Push the caught exception |exn| onto the stack.
-
-2. Jump to the start of the instruction sequence :math:`\instr^\ast`.
-
-
-.. _exec-caughtadm-exit:
-
-Exiting a block with a caught exception
-.......................................
-
-When the |END| of a block with a caught exception is reached without a jump, thrown exception, or trap, then the following steps are performed.
-
-1. Let :math:`\val^m` be the values on the top of the stack.
-
-2. Pop the values :math:`\val^m` from the stack.
-
-3. Assert: due to :ref:`validation <valid-caughtadm>`, a caught exception is now on the top of the stack.
-
-4. Pop the caught exception from the stack.
-
-5. Push :math:`\val^m` back to the stack.
-
-6. Jump to the position after the |END| of the administrative instruction associated with the caught exception.
-
-.. math::
-   \begin{array}{rcl}
-   \CAUGHTadm_n\{\exn\}~\val^m~\END  &\stepto& \val^m
-   \end{array}
-
-.. note::
-   A caught exception can only be rethrown from the scope of the administrative instruction associated with it, i.e., from the scope of the |CATCH| or |CATCHALL| block of a :ref:`try-catch <syntax-try-catch>` instruction that caught it. Upon exit from that block, the caught exception is discarded.
 
 
 .. index:: ! call, function, function instance, label, frame
