@@ -576,6 +576,44 @@ Tags
    \end{array}
 
 
+.. _embed-tag-type:
+
+:math:`\F{tag\_type}(\store, \tagaddr) : \tagtype`
+........................................................
+
+1. Return :math:`S.\STAGS[a].\TAGITYPE`.
+
+2. Post-condition: the returned :ref:`tag type <syntax-tagtype>` is :ref:`valid  <valid-tagtype>`.
+
+.. math::
+   \begin{array}{lclll}
+   \F{tag\_type}(S, a) &=& S.\STAGS[a].\TAGITYPE \\
+   \end{array}
+
+
+.. index:: exception, exception address, store, exception instance, exception type
+.. _embed-exception:
+
+Exceptions
+~~~~~~~~~~
+
+.. _embed-exception-alloc:
+
+:math:`\F{exception\_alloc}(\store, \tagaddr, \val) : (\store, \exnaddr)`
+............................................................................
+
+1. Pre-condition: :math:`\tagaddr` is an allocated :ref:`tag address <syntax-tagaddr>`.
+
+2. Let :math:`\exnaddr` be the result of :ref:`allocating an exception <alloc-exception>` in :math:`\store` with :ref:`tag address <syntax-tagaddr>` :math:`\tagaddr` and initialization values :math:`\val^\ast`.
+
+3. Return the new store paired with :math:`\exnaddr`.
+
+.. math::
+   \begin{array}{lclll}
+   \F{exception\_alloc}(S, \X{gt}, v) &=& (S', \X{a}) && (\iff \allocglobal(S, \X{gt}, v) = S', \X{a}) \\
+   \end{array}
+
+
 .. index:: global, global address, store, global instance, global type, value
 .. _embed-global:
 
