@@ -348,7 +348,7 @@ New instances of :ref:`functions <syntax-funcinst>`, :ref:`tables <syntax-tablei
 
 2. Let :math:`a` be the first free :ref:`exception address <syntax-exnaddr>` in :math:`S`.
 
-3. Let :math:`\exninst` be the :ref:`exception instance <syntax-exninst>` :math:`\{ \EITAG~ta, \EIFIELDS~\val^\ast \}`. 
+3. Let :math:`\exninst` be the :ref:`exception instance <syntax-exninst>` :math:`\{ \EITAG~ta, \EIFIELDS~\val^\ast \}`.
 
 4. Append :math:`\exninst` to the |SEXNS| of :math:`S`.
 

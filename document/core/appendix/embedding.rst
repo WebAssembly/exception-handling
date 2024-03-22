@@ -311,7 +311,7 @@ Functions
 
   a. If it succeeds with :ref:`values <syntax-val>` :math:`{\val'}^\ast` as results, then let :math:`\X{result}` be :math:`{\val'}^\ast`.
 
-  b. Else if the outcome is an exception with :ref:`tag <syntax-tagaddr>` :math:`\tagaddr` and payload :ref:`values <syntax-val>` :math:`{\val'}^\ast`,  let :math:`\X{result}` be :math:`\ETHROW~\tagaddr~{\val'}^\ast`.
+  b. Else if the outcome is an exception with a thrown :ref:`exception <exec-throw_ref>` :math:`\REFEXNADDR~\exnaddr` as the result, then let :math:`\X{result}` be :math:`\exnaddr`
 
   c. Else it has trapped, hence let :math:`\X{result}` be :math:`\ERROR`.
 
@@ -321,7 +321,7 @@ Functions
    ~ \\
    \begin{array}{lclll}
    \F{func\_invoke}(S, a, v^\ast) &=& (S', {v'}^\ast) && (\iff \invoke(S, a, v^\ast) \stepto^\ast S'; F; {v'}^\ast) \\
-   \F{func\_invoke}(S, a, v^\ast) &=& (S', \ETHROW~a'~{v'}^\ast) && (\iff \invoke(S, a, v^\ast) \stepto^\ast S'; F; \XT[(\THROWadm~a')]) \\
+   \F{func\_invoke}(S, a, v^\ast) &=& (S', \ETHROW~a'~{v'}^\ast) && (\iff \invoke(S, a, v^\ast) \stepto^\ast S'; F; \XT[(\REFEXNADDR~\exnaddr)~\THROWREF] \\
    \F{func\_invoke}(S, a, v^\ast) &=& (S', \ERROR) && (\iff \invoke(S, a, v^\ast) \stepto^\ast S'; F; \TRAP) \\
    \end{array}
 
