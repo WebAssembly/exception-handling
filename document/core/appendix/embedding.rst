@@ -26,10 +26,19 @@ For numeric parameters, notation like :math:`n:\u32` is used to specify a symbol
 
 .. _embed-error:
 
-Errors
-~~~~~~
+Exceptions and Errors
+~~~~~~~~~~~~~~~~~~~~~
 
-Failure of an interface operation is indicated by an auxiliary syntactic class:
+Invoking an exported function may throw or propagate exceptions, expressed by an auxiliary syntactic class:
+
+.. math::
+   \begin{array}{llll}
+   \production{exception} & \exception &::=& \ETHROW ~ \tagaddr ~ val^\ast \\
+   \end{array}
+
+The tag instance :math:`tagaddr` identifies the exception thrown. The values :math:`val^\ast` are the exception's payload; their types match the tag type's parameters.
+
+Failure of an interface operation is also indicated by an auxiliary syntactic class:
 
 .. math::
    \begin{array}{llll}
@@ -41,6 +50,8 @@ In addition to the error conditions specified explicitly in this section, implem
 .. note::
    Errors are abstract and unspecific with this definition.
    Implementations can refine it to carry suitable classifications and diagnostic messages.
+
+
 
 
 Pre- and Post-Conditions
@@ -293,14 +304,16 @@ Functions
 .. index:: invocation, value, result
 .. _embed-func-invoke:
 
-:math:`\F{func\_invoke}(\store, \funcaddr, \val^\ast) : (\store, \val^\ast ~|~ \error)`
-........................................................................................
+:math:`\F{func\_invoke}(\store, \funcaddr, \val^\ast) : (\store, \val^\ast ~|~ \exception ~|~ \error)`
+......................................................................................................
 
 1. Try :ref:`invoking <exec-invocation>` the function :math:`\funcaddr` in :math:`\store` with :ref:`values <syntax-val>` :math:`\val^\ast` as arguments:
 
   a. If it succeeds with :ref:`values <syntax-val>` :math:`{\val'}^\ast` as results, then let :math:`\X{result}` be :math:`{\val'}^\ast`.
 
-  b. Else it has trapped, hence let :math:`\X{result}` be :math:`\ERROR`.
+  b. Else if the outcome is an exception with a thrown :ref:`exception <exec-throw_ref>` :math:`\REFEXNADDR~\exnaddr` as the result, then let :math:`\X{result}` be :math:`\exnaddr`
+
+  c. Else it has trapped, hence let :math:`\X{result}` be :math:`\ERROR`.
 
 2. Return the new store paired with :math:`\X{result}`.
 
@@ -308,6 +321,7 @@ Functions
    ~ \\
    \begin{array}{lclll}
    \F{func\_invoke}(S, a, v^\ast) &=& (S', {v'}^\ast) && (\iff \invoke(S, a, v^\ast) \stepto^\ast S'; F; {v'}^\ast) \\
+   \F{func\_invoke}(S, a, v^\ast) &=& (S', \ETHROW~a'~{v'}^\ast) && (\iff \invoke(S, a, v^\ast) \stepto^\ast S'; F; \XT[(\REFEXNADDR~\exnaddr)~\THROWREF] \\
    \F{func\_invoke}(S, a, v^\ast) &=& (S', \ERROR) && (\iff \invoke(S, a, v^\ast) \stepto^\ast S'; F; \TRAP) \\
    \end{array}
 
@@ -559,6 +573,44 @@ Tags
 .. math::
    \begin{array}{lclll}
    \F{tag\_alloc}(S, \X{tt}) &=& (S', \X{a}) && (\iff \alloctag(S, \X{tt}) = S', \X{a}) \\
+   \end{array}
+
+
+.. _embed-tag-type:
+
+:math:`\F{tag\_type}(\store, \tagaddr) : \tagtype`
+........................................................
+
+1. Return :math:`S.\STAGS[a].\TAGITYPE`.
+
+2. Post-condition: the returned :ref:`tag type <syntax-tagtype>` is :ref:`valid  <valid-tagtype>`.
+
+.. math::
+   \begin{array}{lclll}
+   \F{tag\_type}(S, a) &=& S.\STAGS[a].\TAGITYPE \\
+   \end{array}
+
+
+.. index:: exception, exception address, store, exception instance, exception type
+.. _embed-exception:
+
+Exceptions
+~~~~~~~~~~
+
+.. _embed-exception-alloc:
+
+:math:`\F{exception\_alloc}(\store, \tagaddr, \val) : (\store, \exnaddr)`
+............................................................................
+
+1. Pre-condition: :math:`\tagaddr` is an allocated :ref:`tag address <syntax-tagaddr>`.
+
+2. Let :math:`\exnaddr` be the result of :ref:`allocating an exception <alloc-exception>` in :math:`\store` with :ref:`tag address <syntax-tagaddr>` :math:`\tagaddr` and initialization values :math:`\val^\ast`.
+
+3. Return the new store paired with :math:`\exnaddr`.
+
+.. math::
+   \begin{array}{lclll}
+   \F{exception\_alloc}(S, \X{gt}, v) &=& (S', \X{a}) && (\iff \allocglobal(S, \X{gt}, v) = S', \X{a}) \\
    \end{array}
 
 
