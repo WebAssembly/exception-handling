@@ -162,7 +162,7 @@ after possible block parameters were popped.
 
 Then catch clauses are tried in the order
 they appear in the catching try block, until one matches. If a matching catch clause is found, control is transferred to the label of that catch clause.
-In case of `catch` or `catch_ref`,
+In case of `catch` or `catch_all`,
 the arguments of the exception are pushed back onto the stack.
 For `catch_ref` and `catch_all_ref`, an exception reference is then pushed to the stack, which represents the caught exception.
 
