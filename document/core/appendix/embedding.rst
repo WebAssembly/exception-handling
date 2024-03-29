@@ -614,6 +614,21 @@ Exceptions
    \end{array}
 
 
+.. _embed-exn-read:
+
+:math:`\F{exn\_read}(\store, \exnaddr) : (\tagaddr, \val^\ast)`
+......................................................................
+
+1. Let :math:`\X{ei}` be the :ref:`exception instance <syntax-exninst>` :math:`\store.\SEXNS[\exnaddr]`.
+
+2. Return the :ref:`tag address <syntax-tagaddr>` :math:`\X{ei}.\EITAG~\tagaddr` paired with :ref:`values <syntax-val>` :math:`\X{ei}.\EIFIELDS~\val^\ast`.
+
+.. math::
+   \begin{array}{lcll}
+   \F{exn\_read}(S, a) &=& (a', v^\ast) \\
+   \end{array}
+
+
 .. index:: global, global address, store, global instance, global type, value
 .. _embed-global:
 
