@@ -27,7 +27,7 @@ Prepare For TR: true
 <pre class="anchors">
 urlPrefix: https://tc39.github.io/ecma262/; spec: ECMASCRIPT
     type: interface; for: ECMAScript
-        text: ArrayBuffer; url: sec-arraybuffπer-objects
+        text: ArrayBuffer; url: sec-arraybuffer-objects
     type: exception; for: ECMAScript
         text: Error; url: sec-error-objects
         text: NativeError; url: sec-nativeerror-constructors
