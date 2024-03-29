@@ -1272,17 +1272,17 @@ To <dfn>initialize an Exception object</dfn> |exn| from an [=Exception address=]
 1. Assert: |map|[|exnAddress|] doesn't [=map/exist=].
 1. Set |exn|.\[[Address]] to |exnAddress|.
 1. [=map/Set=] |map|[|exnAddress|] to |exn|.
+1. Let |store| be the [=surrounding agent=]'s [=associated store=].
 1. Let (|tagaddr|, |payload|) be [=exn_read=](|store|, |exnAddress|).
 1. Set |exn|.\[[Type]] to |tagaddr|.
-1. Set |exn|.\[[Payload]] to |payload|. (XXX use a getter?)
+1. Set |exn|.\[[Payload]] to |payload|.
 1. Set |exn|.\[[Stack]] to undefined.
 
 </div>
 
 <div algorithm>
 
-To <dfn>create an Exception object</dfn> from a [=exception address=] |exnAddress| and a [=list=] of
-WebAssembly values |payload|, perform the following steps:
+To <dfn>create an Exception object</dfn> from a [=exception address=] |exnAddress|, perform the following steps:
 
 1. Let |map| be the [=surrounding agent=]'s associated [=Exception object cache=].
 1. If |map|[|exnAddress|] [=map/exists=],
@@ -1320,6 +1320,7 @@ constructor steps are:
 The <dfn method for="Exception">getArg(|index|)</dfn> method steps are:
 (XXX maybe rename this method? exns don't really have 'args' the way func types do and also for backward compatibility)
 
+1. Let |store| be the [=surrounding agent=]'s [=associated store=].
 1. Let (|tagaddr|, |payload|) be [=exn_read=](|store|, **this**.\[[Address]]).
 1. Assert: |tagaddr| is equal to **this**.\[[Type]].
 1. If |index| ≥ |payload|'s [=list/size=],
