@@ -356,10 +356,10 @@ New instances of :ref:`functions <syntax-funcinst>`, :ref:`tables <syntax-tablei
 
 .. math::
    \begin{array}{rlll}
-   \allocexn(S, \tagaddr, \val^ast) &=& S', \exnaddr \\[1ex]
+   \allocexn(S, \tagaddr, \val^\ast) &=& S', \exnaddr \\[1ex]
    \mbox{where:} \hfill \\
    \exnaddr &=& |S.\SEXNS| \\
-   \exninst &=& \{ \EITAG~\tagaddr, \GIVALUE~\val^\ast \} \\
+   \exninst &=& \{ \EITAG~\tagaddr, \EIFIELDS~\val^\ast \} \\
    S' &=& S \compose \{\SEXNS~\exninst\} \\
    \end{array}
 

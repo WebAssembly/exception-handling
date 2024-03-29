@@ -33,10 +33,10 @@ Invoking an exported function may throw or propagate exceptions, expressed by an
 
 .. math::
    \begin{array}{llll}
-   \production{exception} & \exception &::=& \ETHROW ~ \tagaddr ~ val^\ast \\
+   \production{exception} & \exception &::=& \ETHROW ~ \exnaddr \\
    \end{array}
 
-The tag instance :math:`tagaddr` identifies the exception thrown. The values :math:`val^\ast` are the exception's payload; their types match the tag type's parameters.
+The exception instance :math:`exnaddr` identifies the exception thrown.
 
 Failure of an interface operation is also indicated by an auxiliary syntactic class:
 
@@ -311,7 +311,7 @@ Functions
 
   a. If it succeeds with :ref:`values <syntax-val>` :math:`{\val'}^\ast` as results, then let :math:`\X{result}` be :math:`{\val'}^\ast`.
 
-  b. Else if the outcome is an exception with a thrown :ref:`exception <exec-throw_ref>` :math:`\REFEXNADDR~\exnaddr` as the result, then let :math:`\X{result}` be :math:`\exnaddr`
+  b. Else if the outcome is an exception with a thrown :ref:`exception <exec-throw_ref>` :math:`\REFEXNADDR~\exnaddr` as the result, then let :math:`\X{result}` be :math:`\ETHROW~\exnaddr`
 
   c. Else it has trapped, hence let :math:`\X{result}` be :math:`\ERROR`.
 
@@ -321,7 +321,7 @@ Functions
    ~ \\
    \begin{array}{lclll}
    \F{func\_invoke}(S, a, v^\ast) &=& (S', {v'}^\ast) && (\iff \invoke(S, a, v^\ast) \stepto^\ast S'; F; {v'}^\ast) \\
-   \F{func\_invoke}(S, a, v^\ast) &=& (S', \ETHROW~a'~{v'}^\ast) && (\iff \invoke(S, a, v^\ast) \stepto^\ast S'; F; \XT[(\REFEXNADDR~\exnaddr)~\THROWREF] \\
+   \F{func\_invoke}(S, a, v^\ast) &=& (S', \ETHROW~a') && (\iff \invoke(S, a, v^\ast) \stepto^\ast S'; F; \XT[(\REFEXNADDR~\exnaddr)~\THROWREF] \\
    \F{func\_invoke}(S, a, v^\ast) &=& (S', \ERROR) && (\iff \invoke(S, a, v^\ast) \stepto^\ast S'; F; \TRAP) \\
    \end{array}
 
@@ -597,9 +597,9 @@ Tags
 Exceptions
 ~~~~~~~~~~
 
-.. _embed-exception-alloc:
+.. _embed-exn-alloc:
 
-:math:`\F{exception\_alloc}(\store, \tagaddr, \val) : (\store, \exnaddr)`
+:math:`\F{exn\_alloc}(\store, \tagaddr, \val^\ast) : (\store, \exnaddr)`
 ............................................................................
 
 1. Pre-condition: :math:`\tagaddr` is an allocated :ref:`tag address <syntax-tagaddr>`.
@@ -610,7 +610,7 @@ Exceptions
 
 .. math::
    \begin{array}{lclll}
-   \F{exception\_alloc}(S, \X{gt}, v) &=& (S', \X{a}) && (\iff \allocglobal(S, \X{gt}, v) = S', \X{a}) \\
+   \F{exn\_alloc}(S, \tagaddr, \val^\ast) &=& (S', a) && (\iff \allocexn(S, \tagaddr, \val^\ast) = S', a) \\
    \end{array}
 
 
