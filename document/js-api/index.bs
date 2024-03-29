@@ -64,6 +64,7 @@ urlPrefix: https://webassembly.github.io/exception-handling/core/; spec: WebAsse
         text: ref.null
         text: ref.func
         text: ref.extern
+        text: ref.exn
     text: function index; url: syntax/modules.html#syntax-funcidx
     text: function instance; url: exec/runtime.html#function-instances
     text: store_init; url: appendix/embedding.html#embed-store-init
@@ -101,6 +102,9 @@ urlPrefix: https://webassembly.github.io/exception-handling/core/; spec: WebAsse
     text: global address; url: exec/runtime.html#syntax-globaladdr
     text: extern address; url: exec/runtime.html#syntax-externaddr
     text: tag address; url: exec/runtime.html#syntax-tagaddr
+    text: exception address; url: exec/runtime.html#syntax-exnaddr
+    text: exn_alloc; url: appendix/embedding.html#embed-exn-alloc
+    text: exn_read; url: appendix/embedding.html#embed-exn-read
     url: syntax/types.html#syntax-numtype
         text: i32
         text: i64
@@ -1013,7 +1017,6 @@ This slot holds a [=function address=] relative to the [=surrounding agent=]'s [
         1. [=list/Append=] [=ToWebAssemblyValue=](|arg|, |t|) to |args|.
         1. Set |i| to |i| + 1.
     1. Let (|store|, |ret|) be the result of [=func_invoke=](|store|, |funcaddr|, |args|).
-    1. Note: The expectation is that [=func_invoke=] will be updated to return (|store|, <var ignore>val</var>* | [=error=] | (exception |exntag| |payload| |opaqueData|)).
     1. Set the [=surrounding agent=]'s [=associated store=] to |store|.
     1. If |ret| is [=error=], throw an exception. This exception should be a WebAssembly {{RuntimeError}} exception, unless otherwise indicated by <a href="#errors">the WebAssembly error mapping</a>.
     1. If |ret| is [=THROW=] [=ref.exn=] |exnaddr|, then
@@ -1273,6 +1276,7 @@ To <dfn>initialize an Exception object</dfn> |exn| from an [=Exception address=]
 1. Set |exn|.\[[Type]] to |tagaddr|.
 1. Set |exn|.\[[Payload]] to |payload|. (XXX use a getter?)
 1. Set |exn|.\[[Stack]] to undefined.
+
 </div>
 
 <div algorithm>
