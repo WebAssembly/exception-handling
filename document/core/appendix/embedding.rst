@@ -36,7 +36,7 @@ Invoking an exported function may throw or propagate exceptions, expressed by an
    \production{exception} & \exception &::=& \ETHROW ~ \exnaddr \\
    \end{array}
 
-The exception instance :math:`exnaddr` identifies the exception thrown.
+The exception address :math:`exnaddr` identifies the exception thrown.
 
 Failure of an interface operation is also indicated by an auxiliary syntactic class:
 
@@ -321,7 +321,7 @@ Functions
    ~ \\
    \begin{array}{lclll}
    \F{func\_invoke}(S, a, v^\ast) &=& (S', {v'}^\ast) && (\iff \invoke(S, a, v^\ast) \stepto^\ast S'; F; {v'}^\ast) \\
-   \F{func\_invoke}(S, a, v^\ast) &=& (S', \ETHROW~a') && (\iff \invoke(S, a, v^\ast) \stepto^\ast S'; F; \XT[(\REFEXNADDR~\exnaddr)~\THROWREF] \\
+   \F{func\_invoke}(S, a, v^\ast) &=& (S', \ETHROW~a') && (\iff \invoke(S, a, v^\ast) \stepto^\ast S'; F; \XT[(\REFEXNADDR~a')~\THROWREF] \\
    \F{func\_invoke}(S, a, v^\ast) &=& (S', \ERROR) && (\iff \invoke(S, a, v^\ast) \stepto^\ast S'; F; \TRAP) \\
    \end{array}
 
@@ -579,7 +579,7 @@ Tags
 .. _embed-tag-type:
 
 :math:`\F{tag\_type}(\store, \tagaddr) : \tagtype`
-........................................................
+..................................................
 
 1. Return :math:`S.\STAGS[a].\TAGITYPE`.
 
@@ -600,7 +600,7 @@ Exceptions
 .. _embed-exn-alloc:
 
 :math:`\F{exn\_alloc}(\store, \tagaddr, \val^\ast) : (\store, \exnaddr)`
-............................................................................
+........................................................................
 
 1. Pre-condition: :math:`\tagaddr` is an allocated :ref:`tag address <syntax-tagaddr>`.
 
@@ -617,7 +617,7 @@ Exceptions
 .. _embed-exn-read:
 
 :math:`\F{exn\_read}(\store, \exnaddr) : (\tagaddr, \val^\ast)`
-......................................................................
+...............................................................
 
 1. Let :math:`\X{ei}` be the :ref:`exception instance <syntax-exninst>` :math:`\store.\SEXNS[\exnaddr]`.
 
