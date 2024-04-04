@@ -1257,7 +1257,7 @@ dictionary ExceptionOptions {
 [LegacyNamespace=WebAssembly, Exposed=(Window,Worker,Worklet)]
 interface Exception {
   constructor(Tag exceptionTag, sequence&lt;any> payload, optional ExceptionOptions options = {});
-  any getArg(Tag exceptionTag, [EnforceRange] unsigned long index);
+  any getArg([EnforceRange] unsigned long index);
   boolean is(Tag exceptionTag);
   readonly attribute (DOMString or undefined) stack;
 };
@@ -1320,7 +1320,6 @@ constructor steps are:
 <div algorithm>
 
 The <dfn method for="Exception">getArg(|index|)</dfn> method steps are:
-(XXX maybe rename this method? exns don't really have 'args' the way func types do and also for backward compatibility)
 
 1. Let |store| be the [=surrounding agent=]'s [=associated store=].
 1. Let (|tagaddr|, |payload|) be [=exn_read=](|store|, **this**.\[[Address]]).
