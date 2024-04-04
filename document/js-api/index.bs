@@ -1266,6 +1266,7 @@ interface Exception {
 An {{Exception}} value represents an exception.
 
 <div algorithm>
+
 To <dfn>initialize an Exception object</dfn> |exn| from an [=Exception address=] |exnAddress|, perform the following steps:
 
 1. Let |map| be the [=surrounding agent=]'s associated [=Exception object cache=].
@@ -1308,6 +1309,7 @@ constructor steps are:
 1. [=list/iterate|For each=] |value| and |resultType| of |payload| and |types|, paired linearly,
     1. [=list/Append=] ? [=ToWebAssemblyValue=](|value|, |resultType|) to |wasmPayload|.
 1. Let (|store|, |exceptionAddr|) be [=exn_alloc=](|store|, |exceptionTag|.\[[Address]], |wasmPayload|)
+1. Set the [=surrounding agent=]'s [=associated store=] to |store|.
 1. [=initialize an Exception object|Initialize=] **this** from |exceptionAddr|.
 1. If |options|["traceStack"] is true,
     1. Set **this**.\[[Stack]] to either a {{DOMString}} representation of the current call stack or undefined.
