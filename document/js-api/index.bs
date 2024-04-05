@@ -102,6 +102,8 @@ urlPrefix: https://webassembly.github.io/exception-handling/core/; spec: WebAsse
     text: global address; url: exec/runtime.html#syntax-globaladdr
     text: extern address; url: exec/runtime.html#syntax-externaddr
     text: tag address; url: exec/runtime.html#syntax-tagaddr
+    text: tag_alloc; url: appendix/embedding.html#embed-tag-alloc
+    text: tag_type; url: appendix/embedding.html#embed-tag-type
     text: exception address; url: exec/runtime.html#syntax-exnaddr
     text: exn_alloc; url: appendix/embedding.html#embed-exn-alloc
     text: exn_read; url: appendix/embedding.html#embed-exn-read
@@ -1020,8 +1022,13 @@ This slot holds a [=function address=] relative to the [=surrounding agent=]'s [
     1. Set the [=surrounding agent=]'s [=associated store=] to |store|.
     1. If |ret| is [=error=], throw an exception. This exception should be a WebAssembly {{RuntimeError}} exception, unless otherwise indicated by <a href="#errors">the WebAssembly error mapping</a>.
     1. If |ret| is [=THROW=] [=ref.exn=] |exnaddr|, then
-        1. Let |exception| be [=create an Exception object|a new Exception=] created from |exnaddr|.
-        1. Throw |exception|.
+        1. Let (|tagaddr|, |payload|) be [=exn_read=](|store|, |exnaddr|).
+        1. Let |jsTagAddr| be the result of [=get the JavaScript exception tag |getting the JavaScript exception tag=].
+        1. If |tagaddr| is equal to |jsTagAddr|,
+            1. Throw the result of [=retrieving an extern value=] from |payload|[0].
+        1. Otherwise,
+            1. Let |exception| be [=create an Exception object|a new Exception=] created from |exnaddr|.
+            1. Throw |exception|.
     1. Let |outArity| be the [=list/size=] of |ret|.
     1. If |outArity| is 0, return undefined.
     1. Otherwise, if |outArity| is 1, return [=ToJSValue=](|ret|[0]).
@@ -1078,11 +1085,13 @@ Note: Exported Functions do not have a \[[Construct]] method and thus it is not 
             1. If |v| [=implements=] {{Exception}},
                 1. Let |type| be |v|.\[[Type]].
                 1. Let |payload| be |v|.\[[Payload]].
+                1. Let |address| be |v|.\[[Address]].
+                1. [=WebAssembly/Throw=] with |address|.
             1. Otherwise,
-                1. Let |type| be the [=JavaScript exception tag=].
-                1. Let |payload| be « ».
-            1. Let |opaqueData| be [=ToWebAssemblyValue=](|v|, [=externref=])
-            1. [=WebAssembly/Throw=] with |type|, |payload| and |opaqueData|.
+                1. Let |type| be the result of [=get the JavaScript exception tag |getting the JavaScript exception tag=].
+                1. Let |payload| be [=ToWebAssemblyValue=](|v|, [=externref=]).
+                1. Let (|store|, |address|) be [=exn_alloc=](|store|, |type|, « |payload| »).
+            1. [=WebAssembly/Throw=] with |address|.
         1. Otherwise, return |result|.\[[Value]].
     1. Let |store| be the [=surrounding agent=]'s [=associated store=].
     1. Let (|store|, |funcaddr|) be [=func_alloc=](|store|, |functype|, |hostfunc|).
@@ -1173,10 +1182,6 @@ The algorithm <dfn>ToWebAssemblyValue</dfn>(|v|, |type|) coerces a JavaScript va
 
 <h3 id="tags">Tags</h3>
 
-The <dfn>tag_alloc</dfn>(|store|, |parameters|) algorithm creates a new [=tag address=] for |parameters| in |store| and returns the updated store and the [=tag address=].
-
-The <dfn>tag_parameters</dfn>(|store|, |tagAddress|) algorithm returns the [=list=] of types for |tagAddress| in |store|.
-
 <h4 id="exceptions-types">Exception types</h4>
 
 <pre class="idl">
@@ -1237,7 +1242,7 @@ The <dfn constructor for="Tag" lt="Tag(type)">new Tag(|type|)</dfn> constructor 
 The <dfn method for="Tag">type()</dfn> method steps are:
 
 1. Let |store| be the [=surrounding agent=]'s [=associated store=].
-1. Let |parameters| be [=tag_parameters=](|store|, **this**.\[[Address]]).
+1. Let [|parameters|] → [] be [=tag_type=](|store|, **this**.\[[Address]]).
 1. Let |idlParameters| be «».
 1. [=list/iterate|For each=] |type| of |parameters|,
     1. [=list/Append=] [$FromValueType$](|type|) to |idlParameters|.
@@ -1302,7 +1307,7 @@ lt="Exception(exceptionTag, payload, options)">new Exception(|exceptionTag|, |pa
 constructor steps are:
 
 1. Let |store| be the [=surrounding agent=]'s [=associated store=].
-1. Let |types| be [=tag_parameters=](|store|, |exceptionTag|.\[[Address]]).
+1. Let [|types|] → [] be [=tag_type=](|store|, |exceptionTag|.\[[Address]]).
 1. If |types|'s [=list/size=] is not |payload|'s [=list/size=],
     1. Throw a {{TypeError}}.
 1. Let |wasmPayload| be « ».
@@ -1350,18 +1355,31 @@ The <dfn attribute for="Exception">stack</dfn> getter steps are:
 
 <h4 id="js-exceptions">JavaScript exceptions</h4>
 
-The <dfn>JavaScript exception tag</dfn> is a [=tag address=] reserved by this
-specification to distinguish exceptions originating from JavaScript.
+The <dfn>JavaScript exception tag</dfn> is a [=tag address=] associated with
+the surrounding agent. It is allocated in the agent's [=associated store=] on
+first use and cached. It always has the tag type « [=externref=] » → « ».
 
-For any [=associated store=] |store|, the result of
-[=tag_parameters=](|store|, [=JavaScript exception tag=]) must be « ».
 
 <div algorithm>
 
-To <dfn for=WebAssembly>throw</dfn> with a [=tag address=] |type|, a matching [=list=] of WebAssembly values |payload|, and an [=externref=] |opaqueData|, perform the following steps:
+To <dfn>get the JavaScript exception tag</dfn>, perform the following steps:
+
+    1. If the [=surrounding agent=]'s associated [=JavaScript exception tag=] has been initialized,
+        1. return the [=surrounding agent=]'s associated [=JavaScript exception tag=]
+    1. Let |store| be the [=surrounding agent=]'s [=associated store=].
+    1. Let (|store|, |tagAddress|) be [=tag_alloc=](|store|, « [=externref=] » → « »).
+    1. Set the current agent's [=associated store=] to |store|.
+    1. Set the current agent's associated [=JavaScript exception tag=] to |tagAddress|.
+    1. return |tagAddress|.
+
+</div>
+
+<div algorithm>
+
+To <dfn for=WebAssembly>throw</dfn> with a [=tag address=] |type|, a matching [=list=] of WebAssembly values |payload|, and an [=exception address=] |address|, perform the following steps:
 
 1. Unwind the stack until reaching the *catching try block* given |type|.
-1. Invoke the catch block with |payload| and |opaqueData|.
+1. Invoke the catch block with |payload| and |address|.
 
 Note: This algorithm is expected to be moved into the core specification.
 
