@@ -1378,8 +1378,6 @@ The <dfn>JavaScript exception tag</dfn> is a [=tag address=] associated with
 the surrounding agent. It is allocated in the agent's [=associated store=] on
 first use and cached. It always has the [=tag type=] « [=externref=] » → « ».
 
-It is exposed to JavaScript code via {{WebAssembly}}.{{JSTag}} a global pre-initialized
-
 <div algorithm>
 
 To <dfn>get the JavaScript exception tag</dfn>, perform the following steps:
