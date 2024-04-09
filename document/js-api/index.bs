@@ -507,23 +507,6 @@ The verification of WebAssembly type requirements is deferred to the
 
 Note: A follow-on streaming API is documented in the <a href="https://webassembly.github.io/spec/web-api/index.html">WebAssembly Web API</a>.
 
-<div algorithm>
-<dfn>create the WebAssembly namespace object</dfn>:
-
-When the [=namespace object=] for the {{WebAssembly}} namespace is [=create a namespace object|created=], the following steps must be run:
-
-1.  Let |namespaceObject| be the [=namespace object=].
-1.  [=list/iterate|For each=] |error| of « "CompileError", "LinkError", "RuntimeError" »,
-    1.  Let |constructor| be a new object, implementing the [=NativeError Object Structure=], with <var ignore>NativeError</var> set to |error|.
-    1.  [=!=] [$DefineMethodProperty$](|namespaceObject|, |error|,  |constructor|, True).
-1. Let |JsTagAddr| be the result of [=get the JavaScript exception tag|getting the JavaScript exception tag=].
-1. Let |JsTagObject| be the result of [=create a Tag object|creating a Tag object=] from |JsTagAddr|.
-1. [=!=] [$DefineMethodProperty$](|namespaceObject|, "JSTag", |JsTagObject|, True).
-
-</div>
-
-Note: It is not currently possible to define this behavior using Web IDL.
-
 <h3 id="modules">Modules</h3>
 
 <pre class="idl">
@@ -1392,15 +1375,24 @@ To <dfn>get the JavaScript exception tag</dfn>, perform the following steps:
 
 </div>
 
-
-
 <h3 id="error-objects">Error Objects</h3>
 
 WebAssembly defines the following Error classes: <dfn exception>CompileError</dfn>, <dfn exception>LinkError</dfn>, and <dfn exception>RuntimeError</dfn>.
-Their initialization is described in [=create the WebAssembly namespace object=].
+
+<div algorithm="create the WebAssembly namespace object">
+When the [=namespace object=] for the {{WebAssembly}} namespace is [=create a namespace object|created=], the following steps must be run:
+
+1.  Let |namespaceObject| be the [=namespace object=].
+1.  [=list/iterate|For each=] |error| of « "CompileError", "LinkError", "RuntimeError" »,
+    1.  Let |constructor| be a new object, implementing the [=NativeError Object Structure=], with <var ignore>NativeError</var> set to |error|.
+    1.  [=!=] [$CreateMethodProperty$](|namespaceObject|, |error|,  |constructor|).
+
+</div>
 
 Note: This defines {{CompileError}}, {{LinkError}}, and {{RuntimeError}} classes on the {{WebAssembly}} namespace, which are produced by the APIs defined in this specification.
 They expose the same interface as native JavaScript errors like {{TypeError}} and {{RangeError}}.
+
+Note: It is not currently possible to define this behavior using Web IDL.
 
 
 <h2 id="errors">Error Condition Mappings to JavaScript</h2>
