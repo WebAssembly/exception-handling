@@ -507,6 +507,11 @@ The verification of WebAssembly type requirements is deferred to the
 
 Note: A follow-on streaming API is documented in the <a href="https://webassembly.github.io/spec/web-api/index.html">WebAssembly Web API</a>.
 
+The getter of the <dfn attribute for="WebAssembly">JSTag</dfn> attribute of the {{WebAssembly}} Namespace, when invoked, performs the following steps:
+    1. Let |JSTagAddr| be the result of [=get the JavaScript exception tag|getting the JavaScript exception tag=].
+    1. Let |JSTagObject| be the result of [=create a Tag object|creating a Tag object=] from |JSTagAddr|.
+    1. Return |JSTagObject|.
+
 <h3 id="modules">Modules</h3>
 
 <pre class="idl">
@@ -1360,6 +1365,7 @@ The <dfn attribute for="Exception">stack</dfn> getter steps are:
 The <dfn>JavaScript exception tag</dfn> is a [=tag address=] associated with
 the surrounding agent. It is allocated in the agent's [=associated store=] on
 first use and cached. It always has the [=tag type=] « [=externref=] » → « ».
+
 
 <div algorithm>
 
