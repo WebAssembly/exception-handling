@@ -1313,6 +1313,9 @@ The <dfn constructor for=Exception
 lt="Exception(exceptionTag, payload, options)">new Exception(|exceptionTag|, |payload|, |options|)</dfn>
 constructor steps are:
 
+1. Let |JSTagAddr| be the result of [=get the JavaScript exception tag|getting the JavaScript exception tag=].
+1. If |exceptionTag|.\[[Address]] is equal to |JSTagAddr|,
+    1. Throw a {{TypeError}}.
 1. Let |store| be the [=surrounding agent=]'s [=associated store=].
 1. Let [|types|] → [] be [=tag_type=](|store|, |exceptionTag|.\[[Address]]).
 1. If |types|'s [=list/size=] is not |payload|'s [=list/size=],
