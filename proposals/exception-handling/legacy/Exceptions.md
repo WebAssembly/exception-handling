@@ -1,7 +1,7 @@
 # Exception handling
 
-This explainer reflects the earlier version of the exception handling
-proposal agreed on [the CG meeting on
+This explainer reflects the earlier version of the exception handling proposal
+agreed on [the CG meeting on
 09-15-2020](https://github.com/WebAssembly/meetings/blob/master/main/2020/CG-09-15.md).
 
 ---
