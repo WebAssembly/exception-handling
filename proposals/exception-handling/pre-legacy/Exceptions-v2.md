@@ -1,7 +1,7 @@
 This V2 proposal was developed from [Level 1 Proposal](Exceptions-v2-Level-1.md)
 and supercedes [V1 proposal](Exceptions-v1.md). We decided to adopt this
 proposal in [Oct 2018 CG
-meeting]((https://github.com/WebAssembly/meetings/blob/main/main/2018/TPAC.md#exception-handling-ben-titzer)),
+meeting]((https://github.com/WebAssembly/meetings/blob/main/main/2018/TPAC.md#exception-handling-ben-titzer),
 recognizing the need for a first-class exception type, based on the reasoning
 that it is more expressive and also more extendible to other kinds of events.
 
