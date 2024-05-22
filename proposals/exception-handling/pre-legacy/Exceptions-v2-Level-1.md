@@ -18,10 +18,6 @@ levels, and either:
 2. Allow performance improvements in the VM.
 3. Introduce additional new functionality not available in Level 1.
 
-This document supersedes the original [Exceptions Proposal].
-
-[Exceptions Proposal]: Exceptions-v1.md
-
 ## Overview
 
 Exception handling allows code to break control flow when an exception is

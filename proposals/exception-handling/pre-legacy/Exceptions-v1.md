@@ -1,5 +1,5 @@
 This is the first version of the exception handling proposal, active from 2017
-to 2018 and superceded by [V2 proposal](Exceptions-v2.md) in [Oct 2018 CG
+to 2018 and superseded by [V2 proposal](Exceptions-v2.md) in [Oct 2018 CG
 meeting](https://github.com/WebAssembly/meetings/blob/main/main/2018/TPAC.md#exception-handling-ben-titzer).
 
 ---

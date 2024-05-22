@@ -7,7 +7,7 @@ which removed `exnref`. The rational then was the old proposal having a
 first-class exception reference type was not easily extensible to a future
 proposal that supports two-phase unwinding.
 
-This proposal was superceded by the [current
+This proposal was superseded by the [current
 proposal](https://github.com/WebAssembly/exception-handling/blob/main/proposals/exception-handling/Exceptions.md)
 in [Oct 2023 CG
 meeting](https://github.com/WebAssembly/meetings/blob/main/main/2023/CG-10.md#exception-handling-vote-on-proposal-to-re-introduce-exnref),
