@@ -1,8 +1,7 @@
 # Exception handling
 
 This explainer reflects the up-to-date version of the exception handling
-proposal agreed on [the CG meeting in Oct
-2023](https://github.com/WebAssembly/meetings/blob/main/main/2023/CG-10.md).
+proposal agreed on [Oct 2023 CG meeting](https://github.com/WebAssembly/meetings/blob/main/main/2023/CG-10.md).
 
 ---
 

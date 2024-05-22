@@ -1,16 +1,18 @@
 # Exception handling
 
-This explainer reflects the third version of the proposal adopted in the CG
+This explainer reflects the third version of the proposal adopted in the [CG
 meeting on
 09-15-2020](https://github.com/WebAssembly/meetings/blob/main/main/2020/CG-09-15.md#proposal-for-changes-in-eh-proposal-for-two-phase-unwinding-support-part-2--discussions-heejin-ahn-30-min),
 which removes `exnref`. The rational then was the old proposal having a
 first-class exception reference type was not easily extensible to a future
 proposal that support two-phase unwinding.
 
-This proposal was superceded by [the current
+This proposal was superceded by the [current
 proposal](https://github.com/WebAssembly/exception-handling/blob/main/proposals/exception-handling/legacy/Exceptions.md)
 in [Oct 2023 CG
-meeting](https://github.com/WebAssembly/meetings/blob/main/main/2023/CG-10.md#exception-handling-vote-on-proposal-to-re-introduce-exnref), recognizing that after all `exnref` provided important functionalities for the spec and engine/toolchain implementations.
+meeting](https://github.com/WebAssembly/meetings/blob/main/main/2023/CG-10.md#exception-handling-vote-on-proposal-to-re-introduce-exnref),
+recognizing that after all `exnref` provided important functionalities for the
+spec and engine/toolchain implementations.
 
 This proposal is currently also known as the "legacy proposal" and currently
 still supported in the web, but this can be deprecated in future and the use of
