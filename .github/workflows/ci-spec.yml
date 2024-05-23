@@ -71,7 +71,7 @@ jobs:
           name: web-api-rendered
           path: document/web-api/index.html
 
-  build-legacy-exception-handling-core-spec:
+  build-legacy-exceptions-core-spec:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -83,14 +83,14 @@ jobs:
       - name: Setup Sphinx
         run: pip install six && pip install sphinx==5.1.0
       - name: Build main spec
-        run: cd document/legacy/exception-handling/core && make main
+        run: cd document/legacy/exceptions/core && make main
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          name: legacy-exception-handling-core-rendered
-          path: document/legacy/exception-handling/core/_build/html
+          name: legacy-exceptions-core-rendered
+          path: document/legacy/exceptions/core/_build/html
 
-  build-legacy-exception-handling-js-api-spec:
+  build-legacy-exceptions-js-api-spec:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -98,16 +98,16 @@ jobs:
       - name: Setup Bikeshed
         run: pip install bikeshed && bikeshed update
       - name: Run Bikeshed
-        run: bikeshed spec "document/legacy/exception-handling/js-api/index.bs" "document/legacy/exception-handling/js-api/index.html"
+        run: bikeshed spec "document/legacy/exceptions/js-api/index.bs" "document/legacy/exceptions/js-api/index.html"
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          name: legacy-exception-handling-js-api-rendered
-          path: document/legacy/exception-handling/js-api/index.html
+          name: legacy-exceptions-js-api-rendered
+          path: document/legacy/exceptions/js-api/index.html
 
   publish-spec:
     runs-on: ubuntu-latest
-    needs: [build-core-spec, build-js-api-spec, build-web-api-spec, build-legacy-exception-handling-core-spec, build-legacy-exception-handling-js-api-spec]
+    needs: [build-core-spec, build-js-api-spec, build-web-api-spec, build-legacy-exceptions-core-spec, build-legacy-exceptions-js-api-spec]
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
@@ -128,16 +128,16 @@ jobs:
         with:
           name: web-api-rendered
           path: _output/web-api
-      - name: Download legacy exception-handling core spec artifact
+      - name: Download legacy exceptions core spec artifact
         uses: actions/download-artifact@v2
         with:
-          name: legacy-exception-handling-core-rendered
-          path: _output/legacy/exception-handling/core
-      - name: Download legacy exception-handling JS API spec artifact
+          name: legacy-exceptions-core-rendered
+          path: _output/legacy/exceptions/core
+      - name: Download legacy exceptions JS API spec artifact
         uses: actions/download-artifact@v2
         with:
-          name: legacy-exception-handling-js-api-rendered
-          path: _output/legacy/exception-handling/js-api
+          name: legacy-exceptions-js-api-rendered
+          path: _output/legacy/exceptions/js-api
       - name: Publish to GitHub Pages
         if: github.ref == 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v3
