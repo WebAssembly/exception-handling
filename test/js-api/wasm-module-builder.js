@@ -581,6 +581,16 @@ class Binary {
     }
   }
 
+  emit_type(type) {
+    if ((typeof type) == 'number') {
+      this.emit_u8(type >= 0 ? type : type & kLeb128Mask);
+    } else {
+      this.emit_u8(type.opcode);
+      if ('depth' in type) this.emit_u8(type.depth);
+      this.emit_heap_type(type.heap_type);
+    }
+  }
+
   emit_header() {
     this.emit_bytes([
       kWasmH0, kWasmH1, kWasmH2, kWasmH3, kWasmV0, kWasmV1, kWasmV2, kWasmV3
@@ -925,11 +935,11 @@ class WasmModuleBuilder {
           section.emit_u8(kWasmFunctionTypeForm);
           section.emit_u32v(type.params.length);
           for (let param of type.params) {
-            section.emit_u8(param);
+            section.emit_type(param);
           }
           section.emit_u32v(type.results.length);
           for (let result of type.results) {
-            section.emit_u8(result);
+            section.emit_type(result);
           }
         }
       });
