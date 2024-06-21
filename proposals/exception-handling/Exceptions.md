@@ -123,7 +123,7 @@ catch_ref tag label
 catch_all label
 catch_all_ref label
 ```
-All forms have a label which is branched to when an exception is cought (see
+All forms have a label which is branched to when an exception is caught (see
 below). The former two forms have an exception tag associated with it that
 identifies what exceptions it will catch. The latter two forms catch any
 exception, so that they can be used to define a _default_ handler.
@@ -164,10 +164,10 @@ after possible block parameters were popped.
 
 Then catch clauses are tried in the order they appear in the catching try block,
 until one matches. If a matching catch clause is found, control is transferred
-to the label of that catch clause. In case of `catch` or `catch_ref`, the
-arguments of the exception are pushed back onto the stack. For `catch_ref` and
-`catch_all_ref`, an exception reference is then pushed to the stack, which
-represents the caught exception.
+to the label of that catch clause. In case of `catch`, the arguments of the
+exception are pushed back onto the stack. For `catch_ref` and `catch_all_ref`,
+an exception reference is then pushed to the stack, which represents the caught
+exception.
 
 If no catch clauses were matched, the exception is implicitly rethrown.
 
