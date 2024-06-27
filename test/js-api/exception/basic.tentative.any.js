@@ -157,7 +157,6 @@ promise_test(async () => {
               kExprEnd,
               kExprReturn,
             kExprEnd,
-                kExprUnreachable,
             kExprBr, 2,
           kExprEnd,
           kExprDrop,
@@ -166,7 +165,7 @@ promise_test(async () => {
         kExprEnd,
         kExprDrop,
       kExprEnd,
-      kExprI32Const, 33,
+      kExprI32Const, 0,
     ])
     .exportFunc();
 
