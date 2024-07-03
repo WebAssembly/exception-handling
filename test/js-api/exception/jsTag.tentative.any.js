@@ -117,6 +117,5 @@ promise_test(async () => {
   });
 
   const obj = {};
-  const wasmTag = new WebAssembly.Tag({parameters:['externref']});
   assert_throws_exactly(obj, () => instance.exports.throw_js_tag(obj));
 }, "JS tag throwing test");
