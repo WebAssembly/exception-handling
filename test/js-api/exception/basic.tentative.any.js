@@ -177,6 +177,6 @@ promise_test(async () => {
   const {instance} = await WebAssembly.instantiate(buffer, {
     module: { fn, tagI32: tagI32 }
   });
-  result = instance.exports.all_catch_clauses();
+  const result = instance.exports.all_catch_clauses();
   assert_equals(result, 42);
 }, "try-table uses all four kinds of catch clauses, one of which catches an exception");
