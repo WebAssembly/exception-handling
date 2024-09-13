@@ -2193,7 +2193,6 @@ S; F; \href{../exec/runtime.html#syntax-val}{\mathit{val}}^n~(\href{../syntax/in
 <section id="xref-syntax-instructions-syntax-instr-control-mathsf-throw-ref">
 <span id="exec-throw-ref"></span><h3><span class="math notranslate nohighlight">\(\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{throw\_ref}}\)</span><a class="headerlink" href="#xref-syntax-instructions-syntax-instr-control-mathsf-throw-ref" title="Permalink to this heading">¶</a></h3>
 <ol class="arabic simple">
-<li><p>Let <span class="math notranslate nohighlight">\(F\)</span> be the <a class="reference internal" href="conventions.html#exec-notation-textual"><span class="std std-ref">current</span></a> <a class="reference internal" href="runtime.html#syntax-frame"><span class="std std-ref">frame</span></a>.</p></li>
 <li><p>Assert: due to <a class="reference internal" href="../valid/instructions.html#valid-throw-ref"><span class="std std-ref">validation</span></a>, a <a class="reference internal" href="runtime.html#syntax-ref"><span class="std std-ref">reference</span></a> is on the top of the stack.</p></li>
 <li><p>Pop the reference <span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-ref}{\mathit{ref}}\)</span> from the stack.</p></li>
 <li><p>If <span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-ref}{\mathit{ref}}\)</span> is <span class="math notranslate nohighlight">\(\href{../syntax/instructions.html#syntax-instr-ref}{\mathsf{ref{.}null}}~\mathit{ht}\)</span>, then:</p>
@@ -2206,14 +2205,11 @@ S; F; \href{../exec/runtime.html#syntax-val}{\mathit{val}}^n~(\href{../syntax/in
 <li><p>Assert: due to <a class="reference internal" href="../valid/instructions.html#valid-throw-ref"><span class="std std-ref">validation</span></a>, <span class="math notranslate nohighlight">\(S.\href{../exec/runtime.html#syntax-store}{\mathsf{exns}}[\mathit{ea}]\)</span> exists.</p></li>
 <li><p>Let <span class="math notranslate nohighlight">\(\mathit{exn}\)</span> be the <a class="reference internal" href="runtime.html#syntax-exninst"><span class="std std-ref">exception instance</span></a> <span class="math notranslate nohighlight">\(S.\href{../exec/runtime.html#syntax-store}{\mathsf{exns}}[\mathit{ea}]\)</span>.</p></li>
 <li><p>Let <span class="math notranslate nohighlight">\(a\)</span> be the <a class="reference internal" href="runtime.html#syntax-tagaddr"><span class="std std-ref">tag address</span></a> <span class="math notranslate nohighlight">\(\mathit{exn}.\href{../exec/runtime.html#syntax-exninst}{\mathsf{tag}}\)</span>.</p></li>
-<li><p>While the stack is not empty and the top of the stack is not an <a class="reference internal" href="runtime.html#syntax-handler"><span class="std std-ref">exception handler</span></a>, do:</p></li>
-</ol>
-<blockquote>
-<div><ol class="loweralpha simple">
+<li><p>While the stack is not empty and the top of the stack is not an <a class="reference internal" href="runtime.html#syntax-handler"><span class="std std-ref">exception handler</span></a>, do:</p>
+<ol class="loweralpha simple">
 <li><p>Pop the top element from the stack.</p></li>
 </ol>
-</div></blockquote>
-<ol class="arabic simple" start="11">
+</li>
 <li><p>Assert: the stack is now either empty, or there is an exception handler on the top of the stack.</p></li>
 <li><p>If the stack is empty, then:</p></li>
 </ol>
@@ -2222,7 +2218,7 @@ S; F; \href{../exec/runtime.html#syntax-val}{\mathit{val}}^n~(\href{../syntax/in
 <li><p>Return the exception <span class="math notranslate nohighlight">\((\href{../exec/runtime.html#syntax-ref.exn-addr}{\mathsf{ref{.}exn}}~a)\)</span> as a <a class="reference internal" href="runtime.html#syntax-result"><span class="std std-ref">result</span></a>.</p></li>
 </ol>
 </div></blockquote>
-<ol class="arabic simple" start="13">
+<ol class="arabic simple" start="12">
 <li><p>Assert: there is an <a class="reference internal" href="runtime.html#syntax-handler"><span class="std std-ref">exception handler</span></a> on the top of the stack.</p></li>
 <li><p>Pop the exception handler  <span class="math notranslate nohighlight">\(\href{../exec/runtime.html#syntax-handler}{\mathsf{handler}}_n\{\href{../syntax/instructions.html#syntax-catch}{\mathit{catch}}^\ast\}\)</span> from the stack.</p></li>
 <li><p>If <span class="math notranslate nohighlight">\(\href{../syntax/instructions.html#syntax-catch}{\mathit{catch}}^\ast\)</span> is empty, then:</p>
@@ -2233,6 +2229,7 @@ S; F; \href{../exec/runtime.html#syntax-val}{\mathit{val}}^n~(\href{../syntax/in
 </li>
 <li><p>Else:</p>
 <ol class="loweralpha simple">
+<li><p>Let <span class="math notranslate nohighlight">\(F\)</span> be the <a class="reference internal" href="conventions.html#exec-notation-textual"><span class="std std-ref">current</span></a> <a class="reference internal" href="runtime.html#syntax-frame"><span class="std std-ref">frame</span></a>.</p></li>
 <li><p>Let <span class="math notranslate nohighlight">\(\href{../syntax/instructions.html#syntax-catch}{\mathit{catch}}_1\)</span> be the first <a class="reference internal" href="../syntax/instructions.html#syntax-catch"><span class="std std-ref">catch clause</span></a> in <span class="math notranslate nohighlight">\(\href{../syntax/instructions.html#syntax-catch}{\mathit{catch}}^\ast\)</span> and <span class="math notranslate nohighlight">\({\href{../syntax/instructions.html#syntax-catch}{\mathit{catch}}'}^\ast\)</span> the remaining clauses.</p></li>
 <li><p>If <span class="math notranslate nohighlight">\(\href{../syntax/instructions.html#syntax-catch}{\mathit{catch}}_1\)</span> is of the form <span class="math notranslate nohighlight">\(\href{../syntax/instructions.html#syntax-instr-control}{\mathsf{catch}}~x~l\)</span> and the <a class="reference internal" href="runtime.html#syntax-tagaddr"><span class="std std-ref">tag address</span></a> <span class="math notranslate nohighlight">\(a\)</span> equals <span class="math notranslate nohighlight">\(F.\href{../exec/runtime.html#syntax-frame}{\mathsf{module}}.\href{../exec/runtime.html#syntax-moduleinst}{\mathsf{tagaddrs}}[x]\)</span>, then:</p>
 <ol class="lowerroman simple">
