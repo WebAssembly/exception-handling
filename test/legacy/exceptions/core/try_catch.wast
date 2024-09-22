@@ -175,6 +175,20 @@
   (func (export "break-try-catch_all")
     (try (do (br 0)) (catch_all))
   )
+
+  (func $longjmp-bait (throw $e0))
+  (func (export "setjmp-bait") (param $return-early i32) (result i32)
+    (local $value i32)
+    (try $try
+      (do
+        (br_if $try (local.get $return-early))
+        (local.set $value (i32.const 1))
+        (call $longjmp-bait)
+      )
+      (catch $e0)
+    )
+    (local.get $value)
+  )
 )
 
 (assert_return (invoke "empty-catch"))
@@ -221,6 +235,9 @@
 
 (assert_return (invoke "break-try-catch"))
 (assert_return (invoke "break-try-catch_all"))
+
+(assert_return (invoke "setjmp-bait" (i32.const 1)) (i32.const 0))
+(assert_return (invoke "setjmp-bait" (i32.const 0)) (i32.const 1))
 
 (module
   (func $imported-throw (import "test" "throw"))
